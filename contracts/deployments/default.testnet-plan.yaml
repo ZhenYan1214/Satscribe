@@ -1,0 +1,32 @@
+---
+id: 0
+name: Testnet deployment
+network: testnet
+stacks-node: "https://api.testnet.hiro.so"
+bitcoin-node: "http://blockstack:blockstacksystem@bitcoind.testnet.stacks.co:18332"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: creator-registry
+            expected-sender: ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ
+            cost: 82000
+            path: "contracts\\creator-registry.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: revenue-splitter
+            expected-sender: ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ
+            cost: 63290
+            path: "contracts\\revenue-splitter.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: subscription-nft
+            expected-sender: ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ
+            cost: 72190
+            path: "contracts\\subscription-nft.clar"
+            anchor-block-only: true
+            clarity-version: 3
+      epoch: "3.2"

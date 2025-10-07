@@ -1,0 +1,31 @@
+[project]
+name = "satscribe"
+version = "1.0.0"
+description = "Satscribe Creator-Fi Platform Smart Contracts"
+authors = ["Satscribe Team"]
+clarinet_version = "3.6.1"
+
+[contracts.subscription-nft]
+path = "contracts/subscription-nft.clar"
+depends_on = []
+
+[contracts.revenue-splitter]
+path = "contracts/revenue-splitter.clar"
+depends_on = []
+
+[contracts.creator-registry]
+path = "contracts/creator-registry.clar"
+depends_on = []
+
+[contracts.subscription-nft-improved]
+path = "contracts/subscription-nft-improved.clar"
+depends_on = ["revenue-splitter", "creator-registry"]
+
+[repl.analysis]
+passes = ["check_checker"]
+
+[repl.analysis.check_checker]
+strict = false
+trusted_sender = false
+trusted_caller = false
+callee_filter = false
