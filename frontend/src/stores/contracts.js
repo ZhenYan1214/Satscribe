@@ -143,6 +143,42 @@ export const useContractsStore = defineStore('contracts', () => {
   }
   
   // =================== 季度管理 ===================
+  // 新的自動季度創建函數
+  const createSeasonAuto = async (nftData) => {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      const result = await walletStore.callContract(
+        CONTRACT_ADDRESS.value,
+        'subscription-nft',
+        'create-season-auto',
+        [
+          uintCV(nftData.price * 1000000), // 轉換為 microSTX
+          stringAsciiCV(nftData.imageUri),
+          stringAsciiCV(nftData.description),
+          boolCV(nftData.enableRevenueSplit)
+        ]
+      )
+      
+      console.log('自動季度創建成功:', result)
+      
+      // 清除相關緩存並重新載入數據
+      clearCache('season', walletStore.userAddress)
+      setTimeout(() => {
+        reloadData(walletStore.userAddress)
+      }, 2000)
+      
+      return result
+    } catch (err) {
+      error.value = err.message
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+  
+  // 舊版季度創建函數（保持兼容性）
   const createSeason = async (seasonData) => {
     isLoading.value = true
     error.value = null
@@ -155,9 +191,9 @@ export const useContractsStore = defineStore('contracts', () => {
         [
           uintCV(seasonData.seasonId),
           uintCV(seasonData.price * 1000000), // 轉換為 microSTX
-          uintCV(seasonData.maxSupply),
-          uintCV(seasonData.expiryDate),
-          stringAsciiCV(seasonData.tier),
+          uintCV(seasonData.maxSupply || 9999),
+          uintCV(seasonData.expiryDate || Math.floor(Date.now() / 1000) + 86400 * 90),
+          stringAsciiCV(seasonData.tier || 'VIP'),
           boolCV(seasonData.enableRevenueSplit)
         ]
       )
@@ -235,6 +271,44 @@ export const useContractsStore = defineStore('contracts', () => {
     }
   }
   
+  // 獲取增強季度信息
+  const getEnhancedSeasonInfo = async (creatorAddress, seasonId, forceRefresh = false) => {
+    try {
+      const cacheKey = `enhanced_${creatorAddress}_${seasonId}`
+      
+      // 檢查緩存
+      if (!forceRefresh && seasonInfoCache.value.has(cacheKey)) {
+        console.log('從緩存載入增強季度資訊:', cacheKey)
+        return seasonInfoCache.value.get(cacheKey)
+      }
+      
+      const result = await walletStore.readContract(
+        CONTRACT_ADDRESS.value,
+        'subscription-nft',
+        'get-enhanced-season-info',
+        [
+          standardPrincipalCV(creatorAddress),
+          uintCV(seasonId)
+        ]
+      )
+      
+      // 解析結果
+      const parsedResult = parseContractResponse(result)
+      
+      // 存入緩存
+      if (parsedResult) {
+        seasonInfoCache.value.set(cacheKey, parsedResult)
+        console.log('增強季度資訊已更新:', cacheKey, parsedResult)
+      }
+      
+      return parsedResult
+    } catch (err) {
+      console.error('查詢增強季度資訊失敗:', err)
+      return null
+    }
+  }
+  
+  // 舊版季度信息獲取（保持兼容性）
   const getSeasonInfo = async (creatorAddress, seasonId, forceRefresh = false) => {
     try {
       const cacheKey = `${creatorAddress}_${seasonId}`
@@ -255,15 +329,35 @@ export const useContractsStore = defineStore('contracts', () => {
         ]
       )
       
+      // 解析結果
+      const parsedResult = parseContractResponse(result)
+      
       // 存入緩存
-      if (result) {
-        seasonInfoCache.value.set(cacheKey, result)
+      if (parsedResult) {
+        seasonInfoCache.value.set(cacheKey, parsedResult)
         console.log('季度資訊已更新:', cacheKey)
       }
       
-      return result
+      return parsedResult
     } catch (err) {
       console.error('查詢季度資訊失敗:', err)
+      return null
+    }
+  }
+  
+  // 獲取當前季度信息
+  const getCurrentQuarterInfo = async () => {
+    try {
+      const result = await walletStore.readContract(
+        CONTRACT_ADDRESS.value,
+        'subscription-nft',
+        'get-current-quarter-info',
+        []
+      )
+      
+      return parseContractResponse(result)
+    } catch (err) {
+      console.error('查詢當前季度資訊失敗:', err)
       return null
     }
   }
@@ -539,8 +633,11 @@ export const useContractsStore = defineStore('contracts', () => {
     
     // 季度和 NFT 相關
     createSeason,
+    createSeasonAuto,
     purchaseNFT,
     getSeasonInfo,
+    getEnhancedSeasonInfo,
+    getCurrentQuarterInfo,
     checkSubscriptionValid,
     
     // 緩存管理

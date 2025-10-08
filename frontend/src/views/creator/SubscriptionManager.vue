@@ -3,8 +3,8 @@
     <!-- 頁面標題 -->
     <div class="flex justify-between items-center mb-8">
       <div>
-        <h1 class="text-4xl font-bold text-gradient-web3 mb-2">訂閱管理中心</h1>
-        <p class="text-white/70 text-lg">管理您的訂閱季度 NFT，追蹤銷售和收益表現</p>
+        <h1 class="text-4xl font-bold text-gradient-web3 mb-2">NFT 訂閱管理中心</h1>
+        <p class="text-white/70 text-lg">創建和管理您的季度訂閱 NFT，追蹤銷售表現</p>
       </div>
       <button 
         @click="showCreateModal = true" 
@@ -13,8 +13,31 @@
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
         </svg>
-        <span>創建新季度</span>
+        <span>創建當前季度 NFT</span>
       </button>
+    </div>
+
+    <!-- 當前季度信息卡片 -->
+    <div class="card-web3 p-6 mb-8 bg-gradient-to-r from-web3-purple/20 to-web3-cyan/20">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <div class="w-16 h-16 bg-web3-purple/30 rounded-2xl flex items-center justify-center">
+            <svg class="w-8 h-8 text-web3-purple" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-2xl font-bold text-white mb-1">{{ currentQuarterInfo.name }}</h3>
+            <p class="text-web3-cyan">{{ currentQuarterInfo.timeRange }}</p>
+            <p class="text-white/70 text-sm">到期日: {{ currentQuarterInfo.endDate }}</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="text-white/70 text-sm mb-1">固定發行量</div>
+          <div class="text-3xl font-bold text-gradient-web3">9,999</div>
+          <div class="text-web3-green text-sm">VIP 會員專屬</div>
+        </div>
+      </div>
     </div>
 
     <!-- 統計儀表板 -->
@@ -262,14 +285,15 @@
       </div>
     </div>
 
-    <!-- 創建/編輯季度模態框 -->
+    <!-- 創建 NFT 模態框 -->
     <div v-if="showCreateModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-6">
-      <div class="card-web3 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div class="card-web3 w-full max-w-6xl max-h-[90vh] overflow-y-auto">
         <!-- 模態框標題 -->
         <div class="flex justify-between items-center p-6 border-b border-white/10">
-          <h3 class="text-2xl font-bold text-gradient-web3">
-            {{ editingSubscription ? '編輯季度' : '創建新季度' }}
-          </h3>
+          <div>
+            <h3 class="text-2xl font-bold text-gradient-web3">創建 {{ currentQuarterInfo.name }} NFT</h3>
+            <p class="text-white/70 text-sm mt-1">時間範圍: {{ currentQuarterInfo.timeRange }} | 到期: {{ currentQuarterInfo.endDate }}</p>
+          </div>
           <button @click="closeModal" class="text-white/60 hover:text-white transition-colors">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
@@ -277,166 +301,339 @@
           </button>
         </div>
 
-        <!-- 表單內容 -->
-        <form @submit.prevent="saveSubscription" class="p-6 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- 季度編號 -->
-            <div>
-              <label class="block text-white font-medium mb-2">季度編號</label>
-              <input 
-                v-model.number="subscriptionForm.seasonId"
-                type="number" 
-                min="1"
-                required
-                :disabled="editingSubscription"
-                class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-web3-purple focus:outline-none disabled:opacity-50"
-                placeholder="例如: 3"
-              >
-            </div>
+        <!-- 創建表單內容 - 左右分割布局 -->
+        <div class="flex flex-col lg:flex-row h-[calc(90vh-120px)]">
+          <!-- 左側: 表單區域 -->
+          <div class="lg:w-1/2 p-6 border-r border-white/10">
+            <form @submit.prevent="saveSubscription" class="space-y-6 h-full flex flex-col">
+              <div class="flex-1 space-y-6">
+                <!-- 基本設定 -->
+                <div class="space-y-4">
+                  <h4 class="text-lg font-semibold text-white mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-web3-purple" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                    </svg>
+                    NFT 基本設定
+                  </h4>
+                  
+                  <!-- 價格 -->
+                  <div>
+                    <label class="block text-white font-medium mb-2">
+                      NFT 價格 <span class="text-web3-cyan">(STX)</span>
+                    </label>
+                    <div class="relative">
+                      <input 
+                        v-model.number="nftForm.price"
+                        type="number" 
+                        step="0.1"
+                        min="0.1"
+                        required
+                        class="w-full p-4 bg-glass-dark border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-web3-purple focus:outline-none text-lg"
+                        placeholder="輸入 NFT 價格，例如: 2.5"
+                      >
+                      <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-web3-cyan font-medium">
+                        STX
+                      </div>
+                    </div>
+                    <p class="text-white/50 text-xs mt-1">建議價格範圍: 1-10 STX</p>
+                  </div>
 
-            <!-- 價格 -->
-            <div>
-              <label class="block text-white font-medium mb-2">價格 (STX)</label>
-              <input 
-                v-model.number="subscriptionForm.price"
-                type="number" 
-                step="0.1"
-                min="0.1"
-                required
-                class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-web3-purple focus:outline-none"
-                placeholder="例如: 2.5"
-              >
-            </div>
+                  <!-- NFT 圖片上傳 -->
+                  <div>
+                    <label class="block text-white font-medium mb-2">
+                      NFT 圖片 <span class="text-web3-accent">*</span>
+                    </label>
+                    
+                    <!-- 圖片上傳區域 -->
+                    <div 
+                      @drop="handleDrop"
+                      @dragover.prevent
+                      @dragenter.prevent
+                      class="relative border-2 border-dashed border-white/30 rounded-xl p-6 hover:border-web3-purple/60 transition-all duration-300"
+                      :class="{
+                        'border-web3-purple bg-web3-purple/5': isDragging,
+                        'border-web3-green bg-web3-green/5': uploadStatus.success
+                      }"
+                    >
+                      <!-- 上傳按鈕區域 -->
+                      <div v-if="!nftForm.imagePreview" class="text-center">
+                        <svg class="w-12 h-12 mx-auto mb-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        <p class="text-white mb-2">拖放圖片或點擊上傳</p>
+                        <p class="text-white/50 text-sm mb-4">支持 JPG, PNG, GIF, WebP 格式，最大 10MB</p>
+                        <button 
+                          type="button"
+                          @click="triggerFileInput"
+                          class="btn-web3 px-6 py-2 rounded-xl text-sm"
+                        >
+                          選擇圖片
+                        </button>
+                      </div>
+                      
+                      <!-- 圖片預覽 -->
+                      <div v-else class="relative">
+                        <img 
+                          :src="nftForm.imagePreview" 
+                          alt="NFT 預覽"
+                          class="w-full h-48 object-cover rounded-lg"
+                        >
+                        <div class="absolute top-2 right-2 flex space-x-2">
+                          <button 
+                            type="button"
+                            @click="triggerFileInput"
+                            class="bg-web3-purple/80 hover:bg-web3-purple text-white p-2 rounded-full transition-all"
+                            title="更換圖片"
+                          >
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                            </svg>
+                          </button>
+                          <button 
+                            type="button"
+                            @click="clearImage"
+                            class="bg-red-500/80 hover:bg-red-500 text-white p-2 rounded-full transition-all"
+                            title="刪除圖片"
+                          >
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <!-- 隐藏的文件輸入 -->
+                      <input 
+                        ref="fileInput"
+                        type="file"
+                        accept="image/*"
+                        @change="handleFileSelect"
+                        class="hidden"
+                      >
+                    </div>
+                    
+                    <!-- 上傳狀態 -->
+                    <div class="mt-3">
+                      <div v-if="uploadStatus.loading" class="flex items-center text-web3-cyan text-sm">
+                        <div class="w-4 h-4 border-2 border-web3-cyan/30 border-t-web3-cyan rounded-full animate-spin mr-2"></div>
+                        正在上傳圖片...
+                      </div>
+                      <div v-else-if="uploadStatus.error" class="text-red-400 text-sm">
+                        ⚠️ {{ uploadStatus.error }}
+                      </div>
+                      <div v-else-if="uploadStatus.success" class="text-web3-green text-sm">
+                        ✓ 圖片上傳成功！
+                      </div>
+                      <div v-if="uploadInfo" class="text-white/60 text-xs mt-1">
+                        {{ uploadInfo.originalName }} - {{ formatFileSize(uploadInfo.size) }}
+                      </div>
+                    </div>
+                  </div>
 
-            <!-- 發行量 -->
-            <div>
-              <label class="block text-white font-medium mb-2">最大發行量</label>
-              <input 
-                v-model.number="subscriptionForm.maxSupply"
-                type="number" 
-                min="1"
-                required
-                class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-web3-purple focus:outline-none"
-                placeholder="例如: 150"
-              >
-            </div>
+                  <!-- 季度描述 -->
+                  <div>
+                    <label class="block text-white font-medium mb-2">
+                      季度描述 <span class="text-white/50">(可選)</span>
+                    </label>
+                    <textarea 
+                      v-model="nftForm.description"
+                      rows="4"
+                      maxlength="200"
+                      class="w-full p-4 bg-glass-dark border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-web3-purple focus:outline-none resize-none"
+                      placeholder="描述本季度的特色內容和 VIP 會員專屬權益..."
+                    ></textarea>
+                    <div class="flex justify-between items-center mt-1">
+                      <p class="text-white/50 text-xs">描述您的 VIP 會員可以獲得的專屬內容</p>
+                      <span class="text-white/50 text-xs">{{ nftForm.description?.length || 0 }}/200</span>
+                    </div>
+                  </div>
+                </div>
 
-            <!-- 會員等級 -->
-            <div>
-              <label class="block text-white font-medium mb-2">會員等級</label>
-              <select 
-                v-model="subscriptionForm.tier"
-                class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white focus:border-web3-purple focus:outline-none"
-              >
-                <option value="basic">🥉 基礎會員</option>
-                <option value="premium">🥈 高級會員</option>
-                <option value="vip">🥇 VIP 會員</option>
-              </select>
-            </div>
+                <!-- 進階設定 -->
+                <div class="bg-glass-dark rounded-xl p-4 border border-white/10">
+                  <h4 class="text-white font-medium mb-3 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-web3-cyan" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106.886-.54 2.042-.061 2.287.947.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                    </svg>
+                    收益分配
+                  </h4>
+                  <div class="flex items-center space-x-3">
+                    <input
+                      v-model="nftForm.enableRevenueSplit"
+                      type="checkbox"
+                      id="revenue-split-modal"
+                      class="w-4 h-4 text-web3-purple rounded focus:ring-web3-purple"
+                    />
+                    <label for="revenue-split-modal" class="text-white text-sm">
+                      啟用自動分潤（購買時自動分配收益給團隊成員）
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 按鈕組 -->
+              <div class="flex space-x-4 pt-6 border-t border-white/10">
+                <button 
+                  type="button"
+                  @click="closeModal"
+                  class="flex-1 px-6 py-3 text-white/70 bg-glass hover:bg-white/20 rounded-xl transition-all"
+                >
+                  取消
+                </button>
+                <button 
+                  type="submit"
+                  :disabled="contractsStore.isLoading || !isFormValid"
+                  class="flex-1 btn-web3 px-8 py-3 rounded-xl flex items-center justify-center space-x-2 disabled:opacity-50"
+                >
+                  <svg v-if="contractsStore.isLoading" class="animate-spin w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>{{ contractsStore.isLoading ? '創建中...' : '創建 NFT' }}</span>
+                </button>
+              </div>
+            </form>
           </div>
 
-          <!-- 到期日期 -->
-          <div>
-            <label class="block text-white font-medium mb-2">到期日期</label>
-            <input 
-              v-model="subscriptionForm.expiryDate"
-              type="date" 
-              required
-              class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white focus:border-web3-purple focus:outline-none"
-            >
-          </div>
-
-          <!-- 描述 -->
-          <div>
-            <label class="block text-white font-medium mb-2">季度描述</label>
-            <textarea 
-              v-model="subscriptionForm.description"
-              rows="4"
-              class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-web3-purple focus:outline-none resize-none"
-              placeholder="描述這一季的特色內容、專屬權益和獨特價值..."
-            ></textarea>
-          </div>
-
-          <!-- 進階選項 -->
-          <div class="bg-glass-dark rounded-xl p-4 border border-white/10">
-            <h4 class="text-white font-medium mb-3 flex items-center">
-              <svg class="w-5 h-5 mr-2 text-web3-cyan" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106.886-.54 2.042-.061 2.287.947.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
-              </svg>
-              進階設定
-            </h4>
-            <div class="flex items-center space-x-3">
-              <input
-                v-model="subscriptionForm.enableRevenueSplit"
-                type="checkbox"
-                id="revenue-split-modal"
-                class="w-4 h-4 text-web3-purple rounded focus:ring-web3-purple"
-              />
-              <label for="revenue-split-modal" class="text-white text-sm">
-                啟用自動分潤（購買時自動分配收益給團隊成員）
-              </label>
+          <!-- 右側: NFT 預覽區域 -->
+          <div class="lg:w-1/2 p-6">
+            <div class="h-full flex flex-col">
+              <h4 class="text-lg font-semibold text-white mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-web3-cyan" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/>
+                  <path fill-rule="evenodd" d="M3 8a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                </svg>
+                NFT 即時預覽
+              </h4>
+              
+              <!-- NFT 卡片預覽 -->
+              <div class="flex-1 flex items-center justify-center">
+                <NFTPreviewCard 
+                  :nft-data="previewData" 
+                  :creator-info="creatorInfo"
+                  :quarter-info="currentQuarterInfo"
+                />
+              </div>
             </div>
           </div>
-
-          <!-- 按鈕組 -->
-          <div class="flex justify-end space-x-4 pt-6 border-t border-white/10">
-            <button 
-              type="button"
-              @click="closeModal"
-              class="px-6 py-3 text-white/70 bg-glass hover:bg-white/20 rounded-xl transition-all"
-            >
-              取消
-            </button>
-            <button 
-              type="submit"
-              :disabled="contractsStore.isLoading"
-              class="btn-web3 px-8 py-3 rounded-xl flex items-center space-x-2"
-            >
-              <svg v-if="contractsStore.isLoading" class="animate-spin w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
-              </svg>
-              <span>{{ contractsStore.isLoading ? '處理中...' : (editingSubscription ? '更新季度' : '創建季度') }}</span>
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useContractsStore } from '@/stores/contracts'
 import { useWalletStore } from '@/stores/wallet'
+import NFTPreviewCard from '@/components/NFTPreviewCard.vue'
 
 export default {
   name: 'SubscriptionManager',
+  components: {
+    NFTPreviewCard
+  },
   setup() {
     const contractsStore = useContractsStore()
     const walletStore = useWalletStore()
     
     const subscriptions = ref([])
     const showCreateModal = ref(false)
-    const editingSubscription = ref(null)
     const filterStatus = ref('all')
     const sortBy = ref('seasonId')
     
-    const subscriptionForm = ref({
-      seasonId: '',
+    // 新的 NFT 創建表單
+    const nftForm = ref({
       price: '',
-      maxSupply: '',
-      expiryDate: '',
-      tier: 'premium',
+      imageUri: '',
+      imageFile: null,
+      imagePreview: null,
       description: '',
       enableRevenueSplit: true
     })
     
+    // 圖片上傳狀態
+    const uploadStatus = ref({
+      loading: false,
+      success: false,
+      error: null
+    })
+    
+    const uploadInfo = ref(null)
+    const isDragging = ref(false)
+    const fileInput = ref(null)
+    
+    // 當前季度信息
+    const currentQuarterInfo = computed(() => {
+      const now = new Date()
+      const month = now.getMonth() + 1
+      const year = now.getFullYear()
+      
+      let quarter, timeRange, endDate
+      
+      if (month >= 1 && month <= 3) {
+        quarter = 1
+        timeRange = `${year}年 1月 - 3月`
+        endDate = `${year}/3/31`
+      } else if (month >= 4 && month <= 6) {
+        quarter = 2
+        timeRange = `${year}年 4月 - 6月`
+        endDate = `${year}/6/30`
+      } else if (month >= 7 && month <= 9) {
+        quarter = 3
+        timeRange = `${year}年 7月 - 9月`
+        endDate = `${year}/9/30`
+      } else {
+        quarter = 4
+        timeRange = `${year}年 10月 - 12月`
+        endDate = `${year}/12/31`
+      }
+      
+      return {
+        quarter,
+        name: `第 ${quarter} 季`,
+        timeRange,
+        endDate
+      }
+    })
+    
+    // 創作者信息
+    const creatorInfo = computed(() => {
+      return {
+        name: '您的名稱', // 從钯包或創作者註冊信息取得
+        avatar: '/default-avatar.png',
+        verified: true
+      }
+    })
+    
+    // NFT 預覽數據
+    const previewData = computed(() => {
+      return {
+        name: `${creatorInfo.value.name} - ${currentQuarterInfo.value.name} VIP 訂閱章`,
+        description: nftForm.value.description || '購買此 NFT 成為 VIP 會員，解鎖專屬內容和權益',
+        image: nftForm.value.imagePreview || nftForm.value.imageUri || '/placeholder-nft.png',
+        price: nftForm.value.price || 0,
+        tier: 'VIP',
+        quarter: currentQuarterInfo.value.quarter,
+        endDate: currentQuarterInfo.value.endDate,
+        supply: '9999'
+      }
+    })
+    
+    // 表單驗證
+    const isFormValid = computed(() => {
+      return nftForm.value.price && 
+             nftForm.value.price > 0 && 
+             (nftForm.value.imageUri || nftForm.value.imagePreview) && 
+             !uploadStatus.value.loading
+    })
+    
+    // 統計數據
     const totalSold = computed(() => {
-      return subscriptions.value.reduce((sum, s) => sum + s.currentSupply, 0)
+      return subscriptions.value.reduce((sum, s) => sum + (s.currentSupply || 0), 0)
     })
     
     const totalRevenue = computed(() => {
-      return subscriptions.value.reduce((sum, s) => sum + (s.currentSupply * s.price), 0).toFixed(1)
+      return subscriptions.value.reduce((sum, s) => sum + ((s.currentSupply || 0) * (s.price || 0)), 0).toFixed(1)
     })
     
     const activeSubscriptions = computed(() => {
@@ -444,15 +641,15 @@ export default {
     })
 
     const salesRate = computed(() => {
-      const totalMax = subscriptions.value.reduce((sum, s) => sum + s.maxSupply, 0)
+      const totalMax = subscriptions.value.length * 9999 // 每季固定 9999
       return totalMax > 0 ? Math.round((totalSold.value / totalMax) * 100) : 0
     })
 
     const avgDuration = computed(() => {
-      const activeSubs = subscriptions.value.filter(s => s.active)
-      if (activeSubs.length === 0) return 0
-      const avgExpiry = activeSubs.reduce((sum, s) => sum + new Date(s.expiryDate).getTime(), 0) / activeSubs.length
-      const daysDiff = Math.ceil((avgExpiry - Date.now()) / (1000 * 60 * 60 * 24))
+      // 簡化計算 - 只返回當前季度剩餘天數
+      const now = new Date()
+      const quarterEnd = new Date(currentQuarterInfo.value.endDate)
+      const daysDiff = Math.ceil((quarterEnd - now) / (1000 * 60 * 60 * 24))
       return Math.max(0, daysDiff)
     })
 
@@ -476,18 +673,112 @@ export default {
       return filtered
     })
     
-    const editSubscription = (subscription) => {
-      editingSubscription.value = subscription
-      subscriptionForm.value = {
-        seasonId: subscription.seasonId,
-        price: subscription.price,
-        maxSupply: subscription.maxSupply,
-        expiryDate: subscription.expiryDate.toISOString().split('T')[0],
-        tier: subscription.tier,
-        description: subscription.description || '',
-        enableRevenueSplit: subscription.enableRevenueSplit || true
+    // 文件上傳相關函數
+    const triggerFileInput = () => {
+      fileInput.value?.click()
+    }
+    
+    const handleFileSelect = (event) => {
+      const file = event.target.files?.[0]
+      if (file) {
+        processFile(file)
       }
-      showCreateModal.value = true
+    }
+    
+    const handleDrop = (event) => {
+      event.preventDefault()
+      isDragging.value = false
+      
+      const files = event.dataTransfer?.files
+      if (files && files.length > 0) {
+        processFile(files[0])
+      }
+    }
+    
+    const processFile = async (file) => {
+      // 檢查文件類型
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+      if (!allowedTypes.includes(file.type)) {
+        uploadStatus.value = {
+          loading: false,
+          success: false,
+          error: '不支持的文件類型！請上傳 JPG, PNG, GIF 或 WebP 格式的圖片。'
+        }
+        return
+      }
+      
+      // 檢查文件大小 (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        uploadStatus.value = {
+          loading: false,
+          success: false,
+          error: '文件過大！請上傳小於 10MB 的圖片。'
+        }
+        return
+      }
+      
+      // 創建預覽
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        nftForm.value.imagePreview = e.target?.result
+      }
+      reader.readAsDataURL(file)
+      
+      // 上傳到後端
+      await uploadImageToServer(file)
+    }
+    
+    const uploadImageToServer = async (file) => {
+      uploadStatus.value = { loading: true, success: false, error: null }
+      
+      try {
+        const formData = new FormData()
+        formData.append('image', file)
+        
+        const response = await fetch('http://localhost:3001/api/upload/image', {
+          method: 'POST',
+          body: formData
+        })
+        
+        const result = await response.json()
+        
+        if (result.success) {
+          nftForm.value.imageUri = result.data.imageUrl
+          nftForm.value.imageFile = file
+          uploadInfo.value = result.data
+          uploadStatus.value = { loading: false, success: true, error: null }
+        } else {
+          throw new Error(result.error || '上傳失敗')
+        }
+      } catch (error) {
+        console.error('圖片上傳失敗:', error)
+        uploadStatus.value = {
+          loading: false,
+          success: false,
+          error: '上傳失敗: ' + error.message
+        }
+      }
+    }
+    
+    const clearImage = () => {
+      nftForm.value.imagePreview = null
+      nftForm.value.imageUri = ''
+      nftForm.value.imageFile = null
+      uploadInfo.value = null
+      uploadStatus.value = { loading: false, success: false, error: null }
+      
+      // 清除 file input
+      if (fileInput.value) {
+        fileInput.value.value = ''
+      }
+    }
+    
+    const formatFileSize = (bytes) => {
+      if (bytes === 0) return '0 Bytes'
+      const k = 1024
+      const sizes = ['Bytes', 'KB', 'MB', 'GB']
+      const i = Math.floor(Math.log(bytes) / Math.log(k))
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
     }
     
     const viewDetails = (subscription) => {
@@ -502,51 +793,61 @@ export default {
       })
     }
     
+    // 保存 NFT 函數
     const saveSubscription = async () => {
+      if (!isFormValid.value) {
+        alert('請檢查所有必填欄位')
+        return
+      }
+      
       try {
-        const subscriptionData = {
-          seasonId: subscriptionForm.value.seasonId,
-          price: subscriptionForm.value.price,
-          maxSupply: subscriptionForm.value.maxSupply,
-          expiryDate: Math.floor(new Date(subscriptionForm.value.expiryDate).getTime() / 1000),
-          tier: subscriptionForm.value.tier,
-          enableRevenueSplit: subscriptionForm.value.enableRevenueSplit || true
+        const nftData = {
+          price: nftForm.value.price,
+          imageUri: nftForm.value.imageUri,
+          description: nftForm.value.description || `${currentQuarterInfo.value.name} VIP 訂閱章`,
+          enableRevenueSplit: nftForm.value.enableRevenueSplit
         }
         
-        if (editingSubscription.value) {
-          // 編輯現有季度 - 目前區塊鏈可能不支持編輯
-          alert('⚠️ 季度編輯功能暫不可用，請創建新的季度')
-        } else {
-          // 創建新季度 - 調用智能合約
-          console.log('創建新季度:', subscriptionData)
-          await contractsStore.createSeason(subscriptionData)
-          
-          alert('✅ 新季度創建成功！正在重新載入數據...')
-          
-          // 延遲重新載入區塊鏈數據
-          setTimeout(async () => {
-            await loadSubscriptions()
-          }, 3000)
-        }
+        console.log('創建當前季度 NFT:', nftData)
+        
+        // 調用新的自動季度函數
+        await contractsStore.createSeasonAuto(nftData)
+        
+        alert(`✅ ${currentQuarterInfo.value.name} NFT 創建成功！`)
+        
+        // 重新載入數據
+        setTimeout(async () => {
+          await loadSubscriptions()
+        }, 2000)
         
         closeModal()
       } catch (error) {
-        console.error('保存季度失敗:', error)
-        alert('❌ 操作失敗: ' + error.message)
+        console.error('創建 NFT 失敗:', error)
+        alert('❌ 創建失敗: ' + error.message)
       }
     }
     
+    // 關閉模態框
     const closeModal = () => {
       showCreateModal.value = false
-      editingSubscription.value = null
-      subscriptionForm.value = {
-        seasonId: '',
+      nftForm.value = {
         price: '',
-        maxSupply: '',
-        expiryDate: '',
-        tier: 'premium',
+        imageUri: '',
+        imageFile: null,
+        imagePreview: null,
         description: '',
         enableRevenueSplit: true
+      }
+      uploadStatus.value = {
+        loading: false,
+        success: false,
+        error: null
+      }
+      uploadInfo.value = null
+      
+      // 清除 file input
+      if (fileInput.value) {
+        fileInput.value.value = ''
       }
     }
     
@@ -581,6 +882,7 @@ export default {
       return gradients[Math.floor(Math.random() * gradients.length)]
     }
     
+    // 載入訂閱數據
     const loadSubscriptions = async () => {
       if (!walletStore.isConnected || !walletStore.userAddress) {
         console.log('錢包未連接，無法載入季度數據')
@@ -588,43 +890,41 @@ export default {
       }
 
       try {
-        console.log('從區塊鏈載入創作者季度數據...', walletStore.userAddress)
+        console.log('載入創作者的 NFT 季度數據...', walletStore.userAddress)
         const realSubscriptions = []
         
-        // 嘗試載入季度 1-10 的數據
-        for (let seasonId = 1; seasonId <= 10; seasonId++) {
+        // 載入當前年度的 4 個季度
+        for (let quarter = 1; quarter <= 4; quarter++) {
           try {
-            const seasonData = await contractsStore.getSeasonInfo(walletStore.userAddress, seasonId, true)
+            const seasonData = await contractsStore.getSeasonInfo(walletStore.userAddress, quarter)
             
             if (seasonData && seasonData.price !== undefined) {
-              console.log(`找到季度 ${seasonId} 數據:`, seasonData)
+              console.log(`第 ${quarter} 季 NFT 數據:`, seasonData)
               
               realSubscriptions.push({
-                seasonId: seasonId,
+                seasonId: quarter,
                 price: seasonData.price || 0,
-                maxSupply: seasonData.max_supply || seasonData.maxSupply || 0,
-                currentSupply: seasonData.current_supply || seasonData.currentSupply || 0,
-                expiryDate: seasonData.expiry_date || seasonData.expiryDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-                tier: seasonData.tier || 'premium',
+                maxSupply: 9999, // 固定發行量
+                currentSupply: seasonData.current_supply || 0,
+                expiryDate: seasonData.quarter_end_date || new Date(),
+                tier: 'VIP', // 固定 VIP
                 active: seasonData.active !== false,
-                gradient: getTierGradient(seasonData.tier || 'premium'),
-                description: seasonData.description || `季度 ${seasonId} NFT 訂閱`,
-                enableRevenueSplit: seasonData.enable_revenue_split !== false
+                gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                description: seasonData.description || `第 ${quarter} 季 VIP 訂閱章`,
+                imageUri: seasonData.image_uri || '',
+                enableRevenueSplit: seasonData.revenue_split_enabled !== false
               })
             }
           } catch (seasonError) {
-            // 如果季度不存在，繼續檢查下一個
-            if (seasonId <= 3) {
-              console.log(`季度 ${seasonId} 不存在或載入失敗:`, seasonError.message)
-            }
+            console.log(`第 ${quarter} 季不存在:`, seasonError.message)
           }
         }
         
         subscriptions.value = realSubscriptions
-        console.log(`成功載入 ${realSubscriptions.length} 個季度`)
+        console.log(`成功載入 ${realSubscriptions.length} 個季度 NFT`)
         
       } catch (error) {
-        console.error('載入季度數據失敗:', error)
+        console.error('載入 NFT 數據失敗:', error)
         subscriptions.value = []
       }
     }
@@ -644,12 +944,28 @@ export default {
       loadSubscriptions()
     })
     
+    // 拖放事件處理
+    const handleDragEnter = () => {
+      isDragging.value = true
+    }
+    
+    const handleDragLeave = () => {
+      isDragging.value = false
+    }
+    
     return {
       contractsStore,
       subscriptions,
       showCreateModal,
-      editingSubscription,
-      subscriptionForm,
+      nftForm,
+      uploadStatus,
+      uploadInfo,
+      isDragging,
+      fileInput,
+      currentQuarterInfo,
+      creatorInfo,
+      previewData,
+      isFormValid,
       filterStatus,
       sortBy,
       totalSold,
@@ -658,7 +974,13 @@ export default {
       salesRate,
       avgDuration,
       filteredSubscriptions,
-      editSubscription,
+      triggerFileInput,
+      handleFileSelect,
+      handleDrop,
+      handleDragEnter,
+      handleDragLeave,
+      clearImage,
+      formatFileSize,
       viewDetails,
       shareSubscription,
       saveSubscription,
