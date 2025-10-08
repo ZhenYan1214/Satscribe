@@ -1,7 +1,7 @@
 ;; title: subscription-nft  
-;; version: 1.0.0
-;; summary: Satscribe Subscription NFT Contract (Soulbound Token)
-;; description: Non-transferable subscription tokens with commemorative value, integrated auto revenue split
+;; version: 2.0.0
+;; summary: Satscribe Quarterly Subscription NFT Contract (Soulbound Token)
+;; description: Auto-quarterly non-transferable subscription tokens with commemorative value, integrated auto revenue split
 
 ;; Define constants
 (define-constant contract-owner tx-sender)
@@ -10,6 +10,12 @@
 (define-constant err-already-exists (err u102))
 (define-constant err-not-found (err u103))
 (define-constant err-subscription-expired (err u104))
+(define-constant err-invalid-season (err u105))
+
+;; Quarterly constants
+(define-constant BLOCKS-PER-DAY u144) ;; Approximate blocks per day in Stacks
+(define-constant DAYS-PER-QUARTER u90)
+(define-constant MAX-SUPPLY-PER-SEASON u9999)
 
 ;; Define data variables
 (define-data-var last-token-id uint u0)
@@ -38,16 +44,16 @@
   { token-id: uint, active: bool }
 )
 
-;; Creator season settings
+;; Creator season settings (simplified)
 (define-map creator-seasons
   { creator: principal, season-id: uint }
   {
     price: uint,
-    max-supply: uint,
     current-supply: uint,
     active: bool,
-    expiry-date: uint,
-    tier: (string-ascii 20),
+    created-at: uint,
+    image-uri: (string-ascii 200),
+    description: (string-ascii 500),
     revenue-split-enabled: bool
   }
 )
@@ -60,7 +66,73 @@
   )
 )
 
-;; Create new season
+;; Calculate current quarter based on block height
+;; Simplified approach: use block height to determine quarter
+(define-read-only (get-current-quarter)
+  (let
+    ((year-start-block stacks-block-height))  ;; Simplified for demo
+    ;; For production, this would need proper date calculation
+    ;; For now, we'll use a simple modulo approach
+    (+ (mod (/ stacks-block-height (* BLOCKS-PER-DAY DAYS-PER-QUARTER)) u4) u1)
+  )
+)
+
+;; Get current year (simplified)
+(define-read-only (get-current-year)
+  ;; Simplified calculation - in production this would be more sophisticated
+  (+ u2024 (/ stacks-block-height (* BLOCKS-PER-DAY u365)))
+)
+
+;; Calculate quarter end date
+(define-read-only (get-quarter-end-date (quarter uint))
+  (let
+    ((base-block stacks-block-height))
+    (+ base-block (* BLOCKS-PER-DAY DAYS-PER-QUARTER))
+  )
+)
+
+;; Generate metadata URI for NFT
+(define-read-only (generate-metadata-uri (creator principal) (season-id uint) (image-uri (string-ascii 200)) (description (string-ascii 500)))
+  ;; In production, this would point to a proper API endpoint
+  ;; For now, we'll create a simple formatted string
+  "https://api.satscribe.com/nft/metadata"
+)
+
+;; Create new season (simplified - auto-creates for current quarter)
+(define-public (create-season-auto
+  (price uint)
+  (image-uri (string-ascii 200))
+  (description (string-ascii 500))
+  (enable-revenue-split bool))
+  (let
+    ((creator tx-sender)
+     (current-quarter (get-current-quarter)))
+    (begin
+      ;; Check if season already exists for this creator and quarter
+      (asserts! (is-none (map-get? creator-seasons { creator: creator, season-id: current-quarter })) err-already-exists)
+      
+      ;; Validate quarter is valid (1-4)
+      (asserts! (and (>= current-quarter u1) (<= current-quarter u4)) err-invalid-season)
+      
+      ;; Create season with auto-calculated values
+      (map-set creator-seasons
+        { creator: creator, season-id: current-quarter }
+        {
+          price: price,
+          current-supply: u0,
+          active: true,
+          created-at: stacks-block-height,
+          image-uri: image-uri,
+          description: description,
+          revenue-split-enabled: enable-revenue-split
+        }
+      )
+      (ok current-quarter)
+    )
+  )
+)
+
+;; Legacy create season function (kept for compatibility)
 (define-public (create-season 
   (season-id uint) 
   (price uint) 
@@ -76,11 +148,11 @@
         { creator: creator, season-id: season-id }
         {
           price: price,
-          max-supply: max-supply,
           current-supply: u0,
           active: true,
-          expiry-date: expiry-date,
-          tier: tier,
+          created-at: stacks-block-height,
+          image-uri: "",
+          description: "",
           revenue-split-enabled: enable-revenue-split
         }
       )
@@ -89,7 +161,7 @@
   )
 )
 
-;; Mint subscription NFT (integrated revenue split)
+;; Mint subscription NFT (updated for new structure)
 (define-public (mint-subscription (creator principal) (season-id uint) (metadata-uri (string-ascii 200)))
   (let
     (
@@ -97,14 +169,15 @@
       (token-id (get-next-token-id))
       (season-info (unwrap! (map-get? creator-seasons { creator: creator, season-id: season-id }) err-not-found))
       (price (get price season-info))
+      (quarter-end-date (get-quarter-end-date season-id))
     )
     (begin
       ;; Basic checks
       (asserts! (is-none (map-get? user-subscriptions { subscriber: subscriber, creator: creator, season-id: season-id })) err-already-exists)
       (asserts! (get active season-info) err-not-authorized)
-      (asserts! (< (get current-supply season-info) (get max-supply season-info)) err-not-authorized)
+      (asserts! (< (get current-supply season-info) MAX-SUPPLY-PER-SEASON) err-not-authorized)
       
-      ;; Key improvement: handle payment based on revenue split setting
+      ;; Handle payment based on revenue split setting
       (if (get revenue-split-enabled season-info)
         ;; Revenue split enabled: transfer to this contract, then trigger split
         (begin
@@ -123,7 +196,7 @@
       ;; Mint NFT
       (try! (nft-mint? subscription-nft token-id subscriber))
       
-      ;; Store subscription data
+      ;; Store subscription data (updated structure)
       (map-set subscription-data
         { token-id: token-id }
         {
@@ -131,8 +204,8 @@
           subscriber: subscriber,
           season-id: season-id,
           issue-date: stacks-block-height,
-          expiry-date: (get expiry-date season-info),
-          tier: (get tier season-info),
+          expiry-date: quarter-end-date,
+          tier: "VIP",  ;; Fixed tier for all NFTs
           metadata-uri: metadata-uri,
           price-paid: price
         }
@@ -212,6 +285,36 @@
       (ok (not (get active season-info)))
     )
   )
+)
+
+;; Get enhanced season info with auto-calculated fields
+(define-read-only (get-enhanced-season-info (creator principal) (season-id uint))
+  (match (map-get? creator-seasons { creator: creator, season-id: season-id })
+    season-info 
+      (some {
+        price: (get price season-info),
+        current-supply: (get current-supply season-info),
+        max-supply: MAX-SUPPLY-PER-SEASON,
+        active: (get active season-info),
+        created-at: (get created-at season-info),
+        image-uri: (get image-uri season-info),
+        description: (get description season-info),
+        revenue-split-enabled: (get revenue-split-enabled season-info),
+        quarter-end-date: (get-quarter-end-date season-id),
+        tier: "VIP"
+      })
+    none
+  )
+)
+
+;; Get current quarter info
+(define-read-only (get-current-quarter-info)
+  {
+    quarter: (get-current-quarter),
+    year: (get-current-year),
+    quarter-end-date: (get-quarter-end-date (get-current-quarter)),
+    max-supply: MAX-SUPPLY-PER-SEASON
+  }
 )
 
 ;; Batch query user subscription status for multiple creators
