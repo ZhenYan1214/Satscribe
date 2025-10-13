@@ -592,39 +592,9 @@ export default {
           collections.value = flattenedCollections
           console.log('載入的 NFT 收藏:', collections.value)
         } else {
-          // 如果沒有真實數據，使用模擬數據進行展示
-          console.log('無真實收藏數據，使用模擬數據')
-          const mockCollections = [
-            {
-              creator: 'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ',
-              creatorName: '數位藝術家 Alice',
-              creatorAvatar: '/default-avatar.png',
-              creatorVerified: true,
-              seasonId: 4,
-              name: '2024 Q4 VIP 會員章',
-              description: 'AI 藝術創作專屬權益',
-              imageUri: 'https://via.placeholder.com/400x400/667eea/ffffff?text=Q4+NFT',
-              price: 2.5,
-              purchaseDate: '2024-10-08T10:30:00Z',
-              rarity: '限量版'
-            },
-            {
-              creator: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-              creatorName: '音樂創作者 Bob',
-              creatorAvatar: '/default-avatar.png',
-              creatorVerified: false,
-              seasonId: 3,
-              name: '2024 Q3 VIP 會員章',
-              description: '獨立音樂專屬內容',
-              imageUri: 'https://via.placeholder.com/400x400/764ba2/ffffff?text=Q3+NFT',
-              price: 1.8,
-              purchaseDate: '2024-07-15T14:20:00Z',
-              rarity: '早期支持者'
-            }
-          ]
-          
-          collections.value = mockCollections
-          console.log('載入的模擬收藏:', collections.value)
+          // 沒有真實數據，保持空收藏狀態
+          console.log('無收藏數據，顯示空狀態')
+          collections.value = []
         }
         
       } catch (error) {

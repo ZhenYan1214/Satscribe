@@ -383,6 +383,8 @@ export default {
           // 如果返回任何資訊，就認為是已註冊的創作者
           isCreator.value = true
           console.log('用戶已註冊為創作者')
+          // 載入儀表板數據
+          await loadDashboardData()
         } else {
           console.log('用戶尚未註冊為創作者，導向註冊頁面')
           router.push('/creator/setup')
@@ -399,53 +401,54 @@ export default {
     }
     
     const stats = ref({
-      totalSubscribers: 1247,
-      monthlyRevenue: 45.6,
-      activeNFTs: 12,
-      contentCount: 28
+      totalSubscribers: 0,
+      monthlyRevenue: 0,
+      activeNFTs: 0,
+      contentCount: 0
     })
     
-    const recentActivities = ref([
-      {
-        id: 1,
-        message: '新使用者購買了第3期訂閱章',
-        time: '2小時前',
-        value: 2.5
-      },
-      {
-        id: 2,
-        message: '收到Lightning打賞',
-        time: '4小時前',
-        value: 0.1
-      },
-      {
-        id: 3,
-        message: '發布了新的會員專屬內容',
-        time: '1天前'
-      },
-      {
-        id: 4,
-        message: '工作室成員收到分潤',
-        time: '2天前',
-        value: 12.3
-      },
-      {
-        id: 5,
-        message: '第2期訂閱章銷售突破100枚',
-        time: '3天前'
-      }
-    ])
+    const recentActivities = ref([])
     
     const revenueSplitConfigured = ref(true)
     
     const loadDashboardData = async () => {
       try {
-        if (walletStore.isConnected) {
-          // 這裡將來會從合約獲取真實數據
-          console.log('載入儀表板數據...')
+        if (walletStore.isConnected && walletStore.userAddress) {
+          console.log('📊 從鏈上載入儀表板數據...', walletStore.userAddress)
+          
+          // 獲取創作者資訊
+          const creatorInfo = await contractsStore.getCreatorInfo(walletStore.userAddress, true)
+          if (creatorInfo && creatorInfo.profile) {
+            const profile = creatorInfo.profile
+            console.log('✅ 創作者資料:', profile)
+            
+            // 更新統計數據
+            if (profile.data) {
+              stats.value = {
+                totalSubscribers: profile.data['total-subscribers'] || profile.data.totalSubscribers || 0,
+                monthlyRevenue: (profile.data['total-revenue'] || profile.data.totalRevenue || 0) / 1000000, // 轉換為 STX
+                activeNFTs: 0, // 將從季度數據計算
+                contentCount: 0
+              }
+            }
+          }
+          
+          // 獲取創作者季度數據
+          const creatorSeasons = await contractsStore.getCreatorNFTSeasons(walletStore.userAddress, true)
+          if (creatorSeasons && creatorSeasons.length > 0) {
+            stats.value.activeNFTs = creatorSeasons.filter(season => season.status?.isActive).length
+            console.log('✅ 活躍季度數量:', stats.value.activeNFTs)
+          }
+          
+          // 獲取分潤設定
+          const revenueSplit = await contractsStore.getRevenueSplit(walletStore.userAddress, true)
+          revenueSplitConfigured.value = Boolean(revenueSplit)
+          console.log('✅ 分潤設定狀態:', revenueSplitConfigured.value)
+          
+          console.log('📊 儀表板數據載入完成:', stats.value)
         }
       } catch (error) {
-        console.error('載入數據失敗:', error)
+        console.error('❌ 載入數據失敗:', error)
       }
     }
     
@@ -458,6 +461,7 @@ export default {
       loading,
       stats,
       recentActivities,
+      revenueSplitConfigured,
       checkCreatorStatus
     }
   }

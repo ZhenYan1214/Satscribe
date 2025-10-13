@@ -18,6 +18,25 @@
           <option value="quarter">季度</option>
         </select>
         
+        <!-- 手動刷新按鈕 -->
+        <button 
+          @click="refreshNFTData" 
+          :disabled="isLoading"
+          class="bg-glass-dark border border-white/20 rounded-xl px-4 py-2 text-white text-sm hover:border-web3-cyan hover:text-web3-cyan transition-all flex items-center space-x-2 disabled:opacity-50"
+          title="重新載入 NFT 數據"
+        >
+          <svg 
+            class="w-4 h-4" 
+            :class="{ 'animate-spin': isLoading }" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          <span>刷新</span>
+        </button>
+        
         <!-- 創建 NFT 按鈕 -->
         <button 
           @click="showCreateModal = true" 
@@ -443,7 +462,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useWalletStore } from '@/stores/wallet'
 import { useContractsStore } from '@/stores/contracts'
@@ -640,6 +659,55 @@ export default {
       }
     }
     
+    // 手動刷新 NFT 數據
+    const refreshNFTData = async () => {
+      console.log('🔄 手動刷新 NFT 數據...')
+      console.log('💡 當前用戶地址:', walletStore.userAddress)
+      
+      if (!walletStore.isConnected || !walletStore.userAddress) {
+        console.log('❌ 錢包未連接，無法刷新數據')
+        return
+      }
+      
+      try {
+        // 直接測試季度20254是否存在
+        console.log('🔍 直接測試季度20254是否存在...')
+        try {
+          const season20254 = await contractsStore.getSeasonInfo(walletStore.userAddress, 20254, true)
+          console.log('✅ 季度20254查詢結果:', season20254)
+        } catch (testError) {
+          console.log('❌ 季度20254查詢失敗:', testError)
+        }
+        
+        // 測試其他可能的季度ID
+        const testSeasonIds = [1, 2, 3, 4, 5, 20241, 20242, 20243, 20244, 20251, 20252, 20253, 20254]
+        console.log('🔍 測試所有可能的季度ID...')
+        for (const seasonId of testSeasonIds) {
+          try {
+            const seasonInfo = await contractsStore.getSeasonInfo(walletStore.userAddress, seasonId, true)
+            if (seasonInfo) {
+              console.log(`✅ 找到季度 ${seasonId}:`, seasonInfo)
+            }
+          } catch (err) {
+            // 靜默處理，只記錄找到的
+          }
+        }
+        
+        // 清除相關緩存
+        console.log('🧹 清除緩存...')
+        contractsStore.clearCache('season', walletStore.userAddress)
+        contractsStore.clearCache('creator', walletStore.userAddress)
+        
+        // 重新載入數據
+        console.log('📥 重新載入 NFT 數據...')
+        await loadSubscriptions()
+        
+        console.log('✅ NFT 數據刷新完成')
+      } catch (error) {
+        console.error('❌ 刷新 NFT 數據失敗:', error)
+      }
+    }
+    
     const triggerFileUpload = () => {
       fileInput.value?.click()
     }
@@ -779,8 +847,8 @@ export default {
           await contractsStore.createSeason(seasonData)
         }
         
-        // 成功後重新載入數據
-        await loadSubscriptions()
+        // 成功後清除緩存並重新載入數據
+        await refreshNFTData()
         closeModal()
         
       } catch (error) {
@@ -860,6 +928,18 @@ export default {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
     }
     
+    // 監聽錢包連接狀態變化
+    watch(
+      () => walletStore.userAddress,
+      async (newAddress, oldAddress) => {
+        if (newAddress && newAddress !== oldAddress) {
+          console.log('錢包地址變化，重新載入 NFT 數據:', newAddress)
+          await loadSubscriptions()
+        }
+      },
+      { immediate: false }
+    )
+    
     // 生命週期
     onMounted(async () => {
       await walletStore.initUserSession()
@@ -889,6 +969,7 @@ export default {
       
       // 方法
       loadSubscriptions,
+      refreshNFTData,
       triggerFileUpload,
       handleFileSelect,
       removeImage,
