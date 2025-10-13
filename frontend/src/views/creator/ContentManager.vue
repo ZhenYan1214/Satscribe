@@ -452,10 +452,12 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue'
+import { useWalletStore } from '@/stores/wallet'
 
 export default {
   name: 'ContentManager',
   setup() {
+    const walletStore = useWalletStore()
     const contents = ref([])
     const showCreateModal = ref(false)
     const showPreviewModal = ref(false)
@@ -556,6 +558,7 @@ export default {
     const deleteContent = (contentId) => {
       if (confirm('確定要刪除這篇內容嗎？此操作無法復原。')) {
         contents.value = contents.value.filter(c => c.id !== contentId)
+        saveContentsToStorage() // 自動保存到 localStorage
       }
     }
     
@@ -579,6 +582,7 @@ export default {
         contents.value.unshift(contentData)
       }
       
+      saveContentsToStorage() // 自動保存到 localStorage
       closeModal()
     }
     
@@ -609,64 +613,40 @@ export default {
     }
     
     const loadContents = () => {
-      // 示例數據
-      contents.value = [
-        {
-          id: 1,
-          title: '區塊鏈開發入門指南：從零開始學習 Stacks',
-          preview: '完整介紹 Stacks 區塊鏈開發的基礎知識，包含環境設置、Clarity 語言基礎、智能合約部署等核心內容。',
-          fullContent: '在這個快速發展的區塊鏈時代，Stacks 作為比特幣層 2 解決方案正在崛起...',
-          isPremium: false,
-          status: 'published',
-          publishDate: new Date('2024-01-15'),
-          views: 2847,
-          tags: ['區塊鏈', 'Stacks', '教程', '開發']
-        },
-        {
-          id: 2,
-          title: 'Clarity 智能合約進階技巧與最佳實踐',
-          preview: '深入探討 Clarity 智能合約的進階功能，包括狀態管理、錯誤處理、安全性考量等專業技術。',
-          fullContent: 'Clarity 是一種獨特的智能合約語言，它的設計理念是可預測性和安全性...',
-          isPremium: true,
-          status: 'published',
-          publishDate: new Date('2024-01-12'),
-          views: 1653,
-          tags: ['Clarity', '智能合約', '進階', '安全性']
-        },
-        {
-          id: 3,
-          title: 'NFT 市場分析：創作者經濟的新機遇',
-          preview: '分析當前 NFT 市場趨勢，探討創作者如何利用 NFT 建立可持續的收益模式。',
-          fullContent: 'NFT 不僅僅是數位藝術品，更是創作者經濟的重要組成部分...',
-          isPremium: true,
-          status: 'published',
-          publishDate: new Date('2024-01-08'),
-          views: 3241,
-          tags: ['NFT', '創作者經濟', '市場分析', '趨勢']
-        },
-        {
-          id: 4,
-          title: '去中心化應用開發實戰',
-          preview: '手把手教你開發第一個去中心化應用，從前端到智能合約的完整實踐。',
-          fullContent: '本文將帶領您完整開發一個去中心化應用...',
-          isPremium: false,
-          status: 'draft',
-          publishDate: new Date('2024-01-20'),
-          views: 0,
-          tags: ['DApp', '實戰', '前端', '全端開發']
-        },
-        {
-          id: 5,
-          title: 'Web3 設計原則與用戶體驗優化',
-          preview: '探討 Web3 應用的設計原則，如何在去中心化的環境中提供良好的用戶體驗。',
-          fullContent: 'Web3 應用面臨著獨特的用戶體驗挑戰...',
-          isPremium: true,
-          status: 'draft',
-          publishDate: new Date('2024-01-18'),
-          views: 0,
-          tags: ['Web3', '設計', 'UX', '用戶體驗']
+      // 從 localStorage 載入創作者的真實內容
+      const userAddress = walletStore.userAddress
+      if (!userAddress) {
+        console.log('用戶未連接錢包，無法載入內容')
+        contents.value = []
+        return
+      }
+      
+      const storageKey = `creator_contents_${userAddress}`
+      const savedContents = localStorage.getItem(storageKey)
+      
+      if (savedContents) {
+        try {
+          contents.value = JSON.parse(savedContents)
+          console.log(`載入創作者內容: ${contents.value.length} 篇`)
+        } catch (error) {
+          console.error('載入內容失敗:', error)
+          contents.value = []
         }
-      ]
+      } else {
+        // 新創作者，沒有任何內容
+        console.log('新創作者，尚未發布任何內容')
+        contents.value = []
+      }
+    }
+    
+    // 保存內容到 localStorage
+    const saveContentsToStorage = () => {
+      const userAddress = walletStore.userAddress
+      if (!userAddress) return
+      
+      const storageKey = `creator_contents_${userAddress}`
+      localStorage.setItem(storageKey, JSON.stringify(contents.value))
+      console.log(`內容已保存: ${contents.value.length} 篇`)
     }
     
     onMounted(() => {

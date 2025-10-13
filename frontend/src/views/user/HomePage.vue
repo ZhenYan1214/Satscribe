@@ -61,19 +61,19 @@
         <!-- 統計數據 -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
           <div class="text-center animate-scale-in" style="animation-delay: 0.2s;">
-            <div class="text-3xl md:text-4xl font-bold text-gradient-web3 mb-2">2.4K+</div>
+            <div class="text-3xl md:text-4xl font-bold text-gradient-web3 mb-2">{{ platformStats.totalCreators || 0 }}</div>
             <div class="text-web3-silver">創作者</div>
           </div>
           <div class="text-center animate-scale-in" style="animation-delay: 0.4s;">
-            <div class="text-3xl md:text-4xl font-bold text-gradient-web3 mb-2">15.6K</div>
+            <div class="text-3xl md:text-4xl font-bold text-gradient-web3 mb-2">{{ platformStats.totalNFTs || 0 }}</div>
             <div class="text-web3-silver">訂閱章 NFT</div>
           </div>
           <div class="text-center animate-scale-in" style="animation-delay: 0.6s;">
-            <div class="text-3xl md:text-4xl font-bold text-gradient-web3 mb-2">892</div>
+            <div class="text-3xl md:text-4xl font-bold text-gradient-web3 mb-2">{{ platformStats.totalRevenue || 0 }}</div>
             <div class="text-web3-silver">STX 總收益</div>
           </div>
           <div class="text-center animate-scale-in" style="animation-delay: 0.8s;">
-            <div class="text-3xl md:text-4xl font-bold text-gradient-web3 mb-2">99.2%</div>
+            <div class="text-3xl md:text-4xl font-bold text-gradient-web3 mb-2">{{ platformStats.satisfaction || 100 }}%</div>
             <div class="text-web3-silver">創作者滿意度</div>
           </div>
         </div>
@@ -412,6 +412,12 @@ export default {
     
     const featuredCreators = ref([])
     const isLoadingCreators = ref(false)
+    const platformStats = ref({
+      totalCreators: 0,
+      totalNFTs: 0,
+      totalRevenue: 0,
+      satisfaction: 100
+    })
     
     // 添加一個測試用的創作者地址（用戶自己的地址）
     const testCreatorAddress = ref('')
@@ -549,9 +555,39 @@ export default {
       }
     }
     
+    // 載入平台統計數據
+    const loadPlatformStats = async () => {
+      try {
+        console.log('📊 載入平台統計數據...')
+        const stats = await contractsStore.getPlatformStats()
+        if (stats) {
+          platformStats.value = {
+            totalCreators: stats.totalCreators || 0,
+            totalNFTs: stats.totalNFTs || 0,
+            totalRevenue: Math.floor((stats.totalRevenue || 0) / 1000000), // 轉換為 STX
+            satisfaction: 100 // 預設滿意度
+          }
+          console.log('✅ 平台統計數據載入完成:', platformStats.value)
+        } else {
+          console.log('⚠️ 沒有獲取到統計數據，使用預設值')
+          platformStats.value = {
+            totalCreators: 0,
+            totalNFTs: 0,
+            totalRevenue: 0,
+            satisfaction: 100
+          }
+        }
+      } catch (error) {
+        console.error('❌ 載入平台統計失敗:', error)
+        // 保持預設值 0
+      }
+    }
+    
     onMounted(async () => {
       // 初始化錢包
       await walletStore.initUserSession()
+      // 載入平台統計數據
+      await loadPlatformStats()
       // 延遲載入創作者，確保錢包已初始化
       setTimeout(() => {
         loadCreators()
@@ -561,6 +597,7 @@ export default {
     return {
       featuredCreators,
       isLoadingCreators,
+      platformStats,
       testCreatorAddress,
       switchToCreator,
       goToCreator,
