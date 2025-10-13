@@ -13,7 +13,7 @@ import {
 export const useContractsStore = defineStore('contracts', () => {
   const walletStore = useWalletStore()
   
-  // 合約地址（測試網部署地址）
+  // 合約地址（測試網部署地址 - V4版本）
   const CONTRACT_ADDRESS = ref('ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ')
   
   // 載入狀態
@@ -73,7 +73,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'creator-registry',
+        'creator-registry-v5',
         'register-creator',
         [
           stringAsciiCV(creatorData.name),
@@ -116,7 +116,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'revenue-splitter',
+        'revenue-splitter-v5',
         'set-revenue-split',
         [
           listCV(membersList),
@@ -151,7 +151,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft',
+        'subscription-nft-v5',
         'create-season-auto',
         [
           uintCV(nftData.price * 1000000), // 轉換為 microSTX
@@ -186,7 +186,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft',
+        'subscription-nft-v5',
         'create-season',
         [
           uintCV(seasonData.seasonId),
@@ -223,7 +223,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft',
+        'subscription-nft-v5',
         'mint-subscription',
         [
           standardPrincipalCV(creatorAddress),
@@ -253,7 +253,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'creator-registry',
+        'creator-registry-v5',
         'get-creator-info',
         [standardPrincipalCV(creatorAddress)]
       )
@@ -282,10 +282,11 @@ export const useContractsStore = defineStore('contracts', () => {
         return seasonInfoCache.value.get(cacheKey)
       }
       
+      // 優先使用詳細查詢函數
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft',
-        'get-enhanced-season-info',
+        'subscription-nft-v5',
+        'get-detailed-season-info',
         [
           standardPrincipalCV(creatorAddress),
           uintCV(seasonId)
@@ -303,8 +304,29 @@ export const useContractsStore = defineStore('contracts', () => {
       
       return parsedResult
     } catch (err) {
-      console.error('查詢增強季度資訊失敗:', err)
-      return null
+      console.error('查詢詳細季度資訊失敗:', err)
+      // 回退到基本查詢
+      try {
+        console.log('嘗試回退到基本查詢...')
+        const fallbackResult = await walletStore.readContract(
+          CONTRACT_ADDRESS.value,
+          'subscription-nft-v5',
+          'get-enhanced-season-info',
+          [
+            standardPrincipalCV(creatorAddress),
+            uintCV(seasonId)
+          ]
+        )
+        const fallbackParsed = parseContractResponse(fallbackResult)
+        if (fallbackParsed) {
+          seasonInfoCache.value.set(cacheKey, fallbackParsed)
+          console.log('基本查詢成功:', fallbackParsed)
+        }
+        return fallbackParsed
+      } catch (fallbackErr) {
+        console.error('回退查詢也失敗:', fallbackErr)
+        return null
+      }
     }
   }
   
@@ -321,7 +343,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft',
+        'subscription-nft-v5',
         'get-season-info',
         [
           standardPrincipalCV(creatorAddress),
@@ -346,11 +368,27 @@ export const useContractsStore = defineStore('contracts', () => {
   }
   
   // 獲取當前季度信息
+  const getCurrentQuarter = async () => {
+    try {
+      const result = await walletStore.readContract(
+        CONTRACT_ADDRESS.value,
+        'subscription-nft-v5',
+        'get-current-quarter',
+        []
+      )
+      
+      return parseContractResponse(result)
+    } catch (err) {
+      console.error('查詢當前季度失敗:', err)
+      return null
+    }
+  }
+
   const getCurrentQuarterInfo = async () => {
     try {
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft',
+        'subscription-nft-v5',
         'get-current-quarter-info',
         []
       )
@@ -366,7 +404,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft',
+        'subscription-nft-v5',
         'is-subscription-valid',
         [
           standardPrincipalCV(subscriber),
@@ -394,7 +432,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'revenue-splitter',
+        'revenue-splitter-v5',
         'get-revenue-split',
         [standardPrincipalCV(creatorAddress)]
       )
@@ -420,9 +458,328 @@ export const useContractsStore = defineStore('contracts', () => {
     }
   }
   
+  // =================== NFT 數據優化函數 ===================
+  // 獲取用戶的所有 NFT 收藏
+  const getUserNFTCollections = async (userAddress, forceRefresh = false) => {
+    try {
+      const cacheKey = `collections_${userAddress}`
+      
+      // 檢查緩存
+      if (!forceRefresh && seasonInfoCache.value.has(cacheKey)) {
+        console.log('從緩存載入用戶收藏:', userAddress)
+        return seasonInfoCache.value.get(cacheKey)
+      }
+      
+      // 獲取用戶持有的所有 NFT
+      const result = await walletStore.readContract(
+        CONTRACT_ADDRESS.value,
+        'subscription-nft-v5',
+        'get-user-tokens',
+        [standardPrincipalCV(userAddress)]
+      )
+      
+      const parsedResult = parseContractResponse(result)
+      
+      if (parsedResult && Array.isArray(parsedResult)) {
+        // 為每個 NFT 獲取詳細信息並優化數據結構
+        const enhancedCollections = await Promise.all(
+          parsedResult.map(async (nft) => {
+            const seasonInfo = await getEnhancedSeasonInfo(nft.creator, nft.seasonId, false)
+            return optimizeNFTData({
+              ...nft,
+              ...seasonInfo
+            }, nft.creator, nft.seasonId)
+          })
+        )
+        
+        // 按購買時間排序並分組
+        const organizedCollections = organizeNFTCollections(enhancedCollections)
+        
+        // 存入緩存
+        seasonInfoCache.value.set(cacheKey, organizedCollections)
+        console.log('用戶收藏已更新:', userAddress, organizedCollections)
+        
+        return organizedCollections
+      }
+      
+      return []
+    } catch (err) {
+      console.error('獲取用戶 NFT 收藏失敗:', err)
+      return []
+    }
+  }
+  
+  // 獲取創作者的所有 NFT 季度
+  const getCreatorNFTSeasons = async (creatorAddress, forceRefresh = false) => {
+    try {
+      const cacheKey = `creator_seasons_${creatorAddress}`
+      
+      // 檢查緩存
+      if (!forceRefresh && seasonInfoCache.value.has(cacheKey)) {
+        console.log('從緩存載入創作者季度:', creatorAddress)
+        return seasonInfoCache.value.get(cacheKey)
+      }
+      
+      // 獲取創作者的所有季度
+      const result = await walletStore.readContract(
+        CONTRACT_ADDRESS.value,
+        'subscription-nft-v5',
+        'get-creator-seasons',
+        [standardPrincipalCV(creatorAddress)]
+      )
+      
+      const parsedResult = parseContractResponse(result)
+      
+      if (parsedResult && Array.isArray(parsedResult)) {
+        // 為每個季度獲取詳細信息並優化數據結構
+        const enhancedSeasons = await Promise.all(
+          parsedResult.map(async (seasonId) => {
+            const seasonInfo = await getEnhancedSeasonInfo(creatorAddress, seasonId, false)
+            return optimizeNFTData(seasonInfo, creatorAddress, seasonId)
+          })
+        )
+        
+        // 按季度時間排序
+        const sortedSeasons = enhancedSeasons.sort((a, b) => {
+          return new Date(b.quarter.startDate) - new Date(a.quarter.startDate)
+        })
+        
+        // 存入緩存
+        seasonInfoCache.value.set(cacheKey, sortedSeasons)
+        console.log('創作者季度已更新:', creatorAddress, sortedSeasons)
+        
+        return sortedSeasons
+      }
+      
+      return []
+    } catch (err) {
+      console.error('獲取創作者 NFT 季度失敗:', err)
+      return []
+    }
+  }
+  
+  // 優化 NFT 數據結構
+  const optimizeNFTData = (rawData, creatorAddress, seasonId) => {
+    if (!rawData) return null
+    
+    // 計算當前季度信息
+    const currentDate = new Date()
+    const currentYear = currentDate.getFullYear()
+    const currentQuarter = Math.ceil((currentDate.getMonth() + 1) / 3)
+    
+    // 使用新的工具函數計算年份和季度
+    const nftYear = getSeasonYear(seasonId)
+    const nftQuarter = getSeasonQuarter(seasonId)
+    
+    // 計算季度開始和結束日期
+    const quarterStartMonth = (nftQuarter - 1) * 3
+    const quarterStartDate = new Date(nftYear, quarterStartMonth, 1)
+    const quarterEndDate = new Date(nftYear, quarterStartMonth + 3, 0, 23, 59, 59)
+    
+    // 判斷 NFT 狀態
+    const isActive = currentDate >= quarterStartDate && currentDate <= quarterEndDate
+    const isExpired = currentDate > quarterEndDate
+    const isUpcoming = currentDate < quarterStartDate
+    
+    // 優化圖片處理 - 支持多種可能的字段名
+    const imageUri = rawData.image_uri || rawData['image-uri'] || rawData.imageUri || rawData.image || ''
+    
+    return {
+      // 基本信息
+      id: seasonId,
+      seasonId,
+      creatorAddress,
+      
+      // 季度信息
+      quarter: {
+        year: nftYear,
+        quarter: nftQuarter,
+        displayName: getSeasonDisplayName(seasonId),
+        startDate: quarterStartDate.toISOString(),
+        endDate: quarterEndDate.toISOString()
+      },
+      
+      // NFT 狀態
+      status: {
+        isActive,
+        isExpired,
+        isUpcoming,
+        displayStatus: isActive ? 'active' : isExpired ? 'expired' : 'upcoming'
+      },
+      
+      // 媒體和元數據
+      media: {
+        imageUri,
+        thumbnailUri: imageUri, // 可以後續添加縮略圖處理
+        hasImage: Boolean(imageUri)
+      },
+      
+      // 定價和供應量
+      pricing: {
+        price: rawData.price || 0,
+        priceSTX: formatSTXAmount(rawData.price || 0),
+        maxSupply: rawData.max_supply || rawData['max-supply'] || rawData.maxSupply || 9999,
+        currentSupply: rawData.current_supply || rawData['current-supply'] || rawData.currentSupply || 0
+      },
+      
+      // 描述和元數據
+      metadata: {
+        description: rawData.description || '',
+        tier: rawData.tier || 'VIP',
+        enableRevenueSplit: rawData.enable_revenue_split || rawData['enable-revenue-split'] || rawData.enableRevenueSplit || false
+      },
+      
+      // 時間戳
+      timestamps: {
+        created: rawData.created_at || rawData['created-at'] || rawData.createdAt,
+        updated: rawData.updated_at || rawData['updated-at'] || rawData.updatedAt || Date.now()
+      },
+      
+      // 保留原始數據供調試
+      _raw: rawData
+    }
+  }
+  
+  // 組織 NFT 收藏數據
+  const organizeNFTCollections = (nftList) => {
+    if (!Array.isArray(nftList)) return []
+    
+    // 按年份和季度分組
+    const groupedByYear = {}
+    
+    nftList.forEach(nft => {
+      const year = nft.quarter.year
+      if (!groupedByYear[year]) {
+        groupedByYear[year] = []
+      }
+      groupedByYear[year].push(nft)
+    })
+    
+    // 轉換為數組格式並排序
+    const organizedData = Object.entries(groupedByYear)
+      .map(([year, nfts]) => ({
+        year: parseInt(year),
+        nfts: nfts.sort((a, b) => b.quarter.quarter - a.quarter.quarter),
+        count: nfts.length
+      }))
+      .sort((a, b) => b.year - a.year)
+    
+    return organizedData
+  }
+  
+  // 同步用戶數據
+  const syncUserData = async (userAddress) => {
+    try {
+      console.log('開始同步用戶數據:', userAddress)
+      
+      // 並行獲取所有相關數據
+      const [collections, creatorInfo] = await Promise.all([
+        getUserNFTCollections(userAddress, true),
+        getCreatorInfo(userAddress, true)
+      ])
+      
+      // 如果是創作者，同時獲取創作者季度數據
+      let creatorSeasons = []
+      if (creatorInfo) {
+        creatorSeasons = await getCreatorNFTSeasons(userAddress, true)
+      }
+      
+      console.log('用戶數據同步完成:', {
+        collections: collections.length,
+        isCreator: Boolean(creatorInfo),
+        creatorSeasons: creatorSeasons.length
+      })
+      
+      return {
+        collections,
+        creatorInfo,
+        creatorSeasons,
+        syncTime: Date.now()
+      }
+    } catch (err) {
+      console.error('同步用戶數據失敗:', err)
+      return null
+    }
+  }
+  
+  // 獲取平台統計數據
+  const getPlatformStats = async () => {
+    try {
+      const result = await walletStore.readContract(
+        CONTRACT_ADDRESS.value,
+        'subscription-nft-v5',
+        'get-platform-stats',
+        []
+      )
+      
+      return parseContractResponse(result)
+    } catch (err) {
+      console.error('查詢平台統計失敗:', err)
+      return null
+    }
+  }
+  
+  // 快速訂閱檢查
+  const quickSubscriptionCheck = async (userAddress, creatorAddress) => {
+    try {
+      const result = await walletStore.readContract(
+        CONTRACT_ADDRESS.value,
+        'subscription-nft-v5',
+        'quick-subscription-check',
+        [
+          standardPrincipalCV(userAddress),
+          standardPrincipalCV(creatorAddress)
+        ]
+      )
+      
+      return parseContractResponse(result)
+    } catch (err) {
+      console.error('快速訂閱檢查失敗:', err)
+      return null
+    }
+  }
+  
   // =================== 工具函數 ===================
   const formatSTXAmount = (microSTX) => {
     return (microSTX / 1000000).toFixed(2)
+  }
+  
+  // Season ID 格式處理工具函數
+  const getSeasonYear = (seasonId) => {
+    if (seasonId <= 5) {
+      return 2024 // Legacy format, assume 2024
+    }
+    return Math.floor(seasonId / 10) // New format: year = seasonId / 10
+  }
+  
+  const getSeasonQuarter = (seasonId) => {
+    if (seasonId <= 5) {
+      return seasonId // Legacy format: 1-5 maps to quarters
+    }
+    return seasonId % 10 // New format: quarter = seasonId mod 10
+  }
+  
+  const makeSeasonId = (year, quarter) => {
+    return year * 10 + quarter
+  }
+  
+  const getSeasonDisplayName = (seasonId) => {
+    const year = getSeasonYear(seasonId)
+    const quarter = getSeasonQuarter(seasonId)
+    
+    // Handle legacy format
+    if (seasonId <= 5) {
+      const quarterNames = ['', 'Q1', 'Q2', 'Q3', 'Q4', 'Q1 2025']
+      return `${year} ${quarterNames[seasonId] || `Q${quarter}`}`
+    }
+    
+    return `${year} Q${quarter}`
+  }
+  
+  const isValidSeasonId = (seasonId) => {
+    const year = getSeasonYear(seasonId)
+    const quarter = getSeasonQuarter(seasonId)
+    return year >= 2024 && quarter >= 1 && quarter <= 4
   }
   
   const parseContractResponse = (response) => {
@@ -637,8 +994,18 @@ export const useContractsStore = defineStore('contracts', () => {
     purchaseNFT,
     getSeasonInfo,
     getEnhancedSeasonInfo,
+    getCurrentQuarter,
     getCurrentQuarterInfo,
     checkSubscriptionValid,
+    
+    // NFT 數據優化
+    getUserNFTCollections,
+    getCreatorNFTSeasons,
+    optimizeNFTData,
+    organizeNFTCollections,
+    syncUserData,
+    getPlatformStats,
+    quickSubscriptionCheck,
     
     // 緩存管理
     clearCache,
@@ -647,6 +1014,13 @@ export const useContractsStore = defineStore('contracts', () => {
     // 工具函數
     formatSTXAmount,
     parseContractResponse,
-    parseClarityValue
+    parseClarityValue,
+    
+    // Season ID 工具函數
+    getSeasonYear,
+    getSeasonQuarter,
+    makeSeasonId,
+    getSeasonDisplayName,
+    isValidSeasonId
   }
 })

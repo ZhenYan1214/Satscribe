@@ -349,6 +349,51 @@
         </div>
       </div>
     </section>
+    
+    <!-- 開發者工具面板 (僅在開發環境顯示) -->
+    <section v-if="walletStore.isConnected" class="py-8 px-4 bg-red-900/20 border-t border-red-500/30">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-4">
+          <h3 class="text-lg font-bold text-red-400">🛠️ 開發者工具</h3>
+          <p class="text-red-300 text-sm">測試創作者註冊狀態檢查功能</p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-4">
+          <button 
+            @click="clearLocalRegistration"
+            class="bg-red-600/20 hover:bg-red-600/30 border border-red-500/50 rounded-lg p-4 text-red-300 hover:text-red-200 transition-colors"
+          >
+            <div class="font-medium mb-1">清除註冊狀態</div>
+            <div class="text-xs">清除本地註冊記錄</div>
+          </button>
+          
+          <button 
+            @click="checkRegistrationStatus"
+            class="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/50 rounded-lg p-4 text-blue-300 hover:text-blue-200 transition-colors"
+          >
+            <div class="font-medium mb-1">檢查註冊狀態</div>
+            <div class="text-xs">手動檢查註冊狀態</div>
+          </button>
+          
+          <button 
+            @click="switchToCreator"
+            class="bg-green-600/20 hover:bg-green-600/30 border border-green-500/50 rounded-lg p-4 text-green-300 hover:text-green-200 transition-colors"
+          >
+            <div class="font-medium mb-1">測試註冊流程</div>
+            <div class="text-xs">測試完整註冊檢查</div>
+          </button>
+        </div>
+        
+        <div class="mt-4 text-center">
+          <p class="text-white/60 text-xs">
+            當前地址: {{ walletStore.userAddress }}
+          </p>
+          <p class="text-white/60 text-xs">
+            網路: {{ walletStore.networkType }}
+          </p>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -371,6 +416,31 @@ export default {
     // 添加一個測試用的創作者地址（用戶自己的地址）
     const testCreatorAddress = ref('')
     
+    // 開發者工具
+    const clearLocalRegistration = () => {
+      if (walletStore.userAddress) {
+        walletStore.setLocalRegistrationStatus(walletStore.userAddress, false)
+        alert('已清除本地註冊狀態，請重新載入頁面測試')
+        location.reload()
+      }
+    }
+    
+    const checkRegistrationStatus = async () => {
+      if (!walletStore.isConnected) {
+        alert('請先連接錢包')
+        return
+      }
+      
+      try {
+        console.log('🔍 手動檢查註冊狀態...')
+        const isRegistered = await walletStore.isRegisteredCreator()
+        alert(`註冊狀態檢查結果：${isRegistered ? '已註冊' : '未註冊'}`)
+      } catch (error) {
+        console.error('檢查失敗:', error)
+        alert('檢查失敗，請查看控制台日誌')
+      }
+    }
+    
     const switchToCreator = async () => {
       // 檢查錢包是否連接
       if (!walletStore.isConnected) {
@@ -378,8 +448,26 @@ export default {
         return
       }
       
-      // 導向創作者註冊頁面
-      router.push('/creator/setup')
+      try {
+        console.log('🚀 開始檢查創作者註冊狀態...')
+        // 檢查是否已經註冊為創作者
+        const isRegistered = await walletStore.isRegisteredCreator()
+        console.log('📋 註冊檢查結果:', isRegistered)
+        
+        if (isRegistered) {
+          // 已註冊，直接跳轉到創作者儀表板
+          alert('您已經是註冊創作者了！即將進入創作者儀表板。')
+          router.push('/creator/dashboard')
+        } else {
+          // 未註冊，跳轉到創作者註冊頁面
+          console.log('🆕 用戶未註冊，跳轉到註冊頁面')
+          router.push('/creator/setup')
+        }
+      } catch (error) {
+        console.error('檢查創作者註冊狀態失敗:', error)
+        // 如果檢查失敗，仍然跳轉到註冊頁面
+        router.push('/creator/setup')
+      }
     }
     
     const goToCreator = (address) => {
@@ -407,7 +495,7 @@ export default {
             if (creatorInfo) {
               console.log('找到用戶的創作者資料:', creatorInfo)
               
-              // 檢查是否有可用的季度
+              // 盡量取第一個可用季度價格，否則使用預設價格
               let hasAvailableSeasons = false
               let firstSeasonPrice = 1
               
@@ -424,16 +512,15 @@ export default {
                 }
               }
               
-              if (hasAvailableSeasons) {
-                featuredCreators.value.push({
-                  address: walletStore.userAddress,
-                  name: creatorInfo.name || '您的創作者帳號',
-                  category: creatorInfo.category || '創作',
-                  subscribers: 0, // TODO: 計算真實訂閱者
-                  price: firstSeasonPrice,
-                  isOwn: true // 標記為用戶自己的帳號
-                })
-              }
+              // 即使沒有季度，也應顯示創作者卡片（以便引導去儀表板創建季度）
+              featuredCreators.value.push({
+                address: walletStore.userAddress,
+                name: creatorInfo.name || '您的創作者帳號',
+                category: creatorInfo.category || '創作',
+                subscribers: 0,
+                price: firstSeasonPrice,
+                isOwn: true
+              })
             }
           } catch (error) {
             console.log('用戶尚未註冊為創作者')
@@ -479,7 +566,14 @@ export default {
       goToCreator,
       goToExplore,
       loadCreators,
-      testPurchaseFlow
+      testPurchaseFlow,
+      
+      // 開發者工具
+      clearLocalRegistration,
+      checkRegistrationStatus,
+      
+      // Store
+      walletStore
     }
   }
 }
