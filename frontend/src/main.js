@@ -4,15 +4,15 @@ import App from './App.vue'
 import router from './router'
 import './style.css'
 
-const app = createApp(App)
+const vueApp = createApp(App)
 
-app.use(createPinia())
-app.use(router)
+vueApp.use(createPinia())
+vueApp.use(router)
 
-app.mount('#app')
+vueApp.mount('#app')
 
 // Set favicon to project logo at runtime (works in dev and build)
-(() => {
+;(() => {
   const link = document.querySelector('link[rel="icon"]') || document.createElement('link')
   link.setAttribute('rel', 'icon')
   link.setAttribute('type', 'image/png')

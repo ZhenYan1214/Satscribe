@@ -5,17 +5,17 @@ authors = []
 telemetry = true
 cache_dir = '.\.cache'
 requirements = []
-[contracts.creator-registry]
+[contracts.creator-registry-v5]
 path = 'contracts/creator-registry.clar'
 clarity_version = 3
 epoch = 'latest'
 
-[contracts.revenue-splitter]
+[contracts.revenue-splitter-v5]
 path = 'contracts/revenue-splitter.clar'
 clarity_version = 3
 epoch = 'latest'
 
-[contracts.subscription-nft]
+[contracts.subscription-nft-v5]
 path = 'contracts/subscription-nft.clar'
 clarity_version = 3
 epoch = 'latest'

@@ -20,7 +20,45 @@
     <div v-if="currentStep === 1" class="card-web3 p-8">
       <h2 class="text-2xl font-bold text-white mb-6">步驟 1: 註冊創作者資料</h2>
       
-      <form @submit.prevent="registerCreator" class="space-y-6">
+      <!-- 檢查中提示 -->
+      <div v-if="isCheckingRegistration" class="bg-web3-purple/10 border border-web3-purple/30 rounded-2xl p-6 mb-6">
+        <div class="flex items-center space-x-3">
+          <div class="w-6 h-6 border-2 border-web3-purple border-t-transparent rounded-full animate-spin"></div>
+          <span class="text-white">正在檢查註冊狀態...</span>
+        </div>
+      </div>
+      
+      <!-- 已註冊提示 -->
+      <div v-else-if="alreadyRegistered" class="bg-web3-green/10 border border-web3-green/30 rounded-2xl p-6 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="w-12 h-12 bg-web3-green/20 rounded-full flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 text-web3-green" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-bold text-web3-green mb-2">您已經是註冊創作者了！</h3>
+            <p class="text-white/80 mb-4">
+              您的錢包地址已經在我們的創作者註冊表中。您可以直接進入創作者儀表板開始使用。
+            </p>
+            <button
+              @click="router.push('/creator/dashboard')"
+              class="btn-web3 mr-4"
+            >
+              進入創作者儀表板
+            </button>
+            <button
+              @click="router.push('/')"
+              class="btn-glass"
+            >
+              返回首頁
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 註冊表單 (只在未註冊時顯示) -->
+      <form v-else @submit.prevent="registerCreator" class="space-y-6">
         <div>
           <label class="block text-white font-medium mb-2">創作者名稱</label>
           <input
@@ -42,15 +80,12 @@
           ></textarea>
         </div>
         
-        <div>
-          <label class="block text-white font-medium mb-2">頭像圖片 URL</label>
-          <input
-            v-model="creatorForm.avatarUri"
-            type="url"
-            class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white"
-            placeholder="https://your-avatar-url.com/image.jpg"
-          />
-        </div>
+        <!-- 頭像上傳組件 -->
+        <AvatarUploader 
+          v-model="creatorForm.avatarUri"
+          @upload-success="handleAvatarUploadSuccess"
+          @upload-error="handleAvatarUploadError"
+        />
         
         <div>
           <label class="block text-white font-medium mb-2">創作類別</label>
@@ -288,12 +323,13 @@
               <label class="block text-white font-medium mb-2">季度價格 (STX)</label>
               <input
                 v-model.number="seasonForm.price"
-                type="number"
+                type="text"
                 step="0.1"
                 min="0.1"
                 class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white"
                 placeholder="2.0"
                 required
+                @input="validatePrice"
               />
             </div>
             
@@ -379,9 +415,13 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useContractsStore } from '@/stores/contracts'
 import { useWalletStore } from '@/stores/wallet'
+import AvatarUploader from '@/components/AvatarUploader.vue'
 
 export default {
   name: 'CreatorSetup',
+  components: {
+    AvatarUploader
+  },
   setup() {
     const contractsStore = useContractsStore()
     const walletStore = useWalletStore()
@@ -389,6 +429,8 @@ export default {
     
     const currentStep = ref(1)
     const showAdvancedSetup = ref(false)
+    const isCheckingRegistration = ref(false)
+    const alreadyRegistered = ref(false)
     
     const steps = ref([
       { id: 1, title: '創作者資料' },
@@ -436,9 +478,48 @@ export default {
       return teamMembers.value.reduce((sum, member) => sum + (member.percentage || 0), 0)
     })
     
+    // 處理頭像上傳成功
+    const handleAvatarUploadSuccess = (uploadData) => {
+      console.log('頭像上傳成功:', uploadData)
+      // creatorForm.avatarUri 會自動通過 v-model 更新
+    }
+    
+    // 處理頭像上傳錯誤
+    const handleAvatarUploadError = (error) => {
+      console.error('頭像上傳失敗:', error)
+      // 錯誤已經在 AvatarUploader 組件中處理和顯示
+    }
+    
+    // 檢查創作者註冊狀態
+    const checkCreatorRegistration = async () => {
+      if (!walletStore.isConnected || !walletStore.userAddress) {
+        return false
+      }
+      
+      try {
+        isCheckingRegistration.value = true
+        const isRegistered = await walletStore.isRegisteredCreator()
+        alreadyRegistered.value = isRegistered
+        return isRegistered
+      } catch (error) {
+        console.error('檢查註冊狀態失敗:', error)
+        return false
+      } finally {
+        isCheckingRegistration.value = false
+      }
+    }
+    
     // 註冊創作者
     const registerCreator = async () => {
       try {
+        // 先檢查是否已經註冊
+        const isRegistered = await checkCreatorRegistration()
+        if (isRegistered) {
+          alert('您已經註冊過創作者了！即將跳轉到創作者儀表板。')
+          router.push('/creator/dashboard')
+          return
+        }
+        
         await contractsStore.registerCreator(creatorForm.value)
         currentStep.value = 2
       } catch (error) {
@@ -525,6 +606,21 @@ export default {
       router.push('/creator/dashboard')
     }
     
+    const validatePrice = (event) => {
+      const value = event.target.value
+      // 只允許數字和小數點
+      const cleanValue = value.replace(/[^0-9.]/g, '')
+      // 確保只有一個小數點
+      const parts = cleanValue.split('.')
+      if (parts.length > 2) {
+        event.target.value = parts[0] + '.' + parts.slice(1).join('')
+      } else {
+        event.target.value = cleanValue
+      }
+      // 更新 v-model
+      seasonForm.value.price = event.target.value
+    }
+    
     // 創建季度
     const createFirstSeason = async () => {
       try {
@@ -562,7 +658,9 @@ export default {
     }
     
     // 組件掛載時載入數據
-    onMounted(() => {
+    onMounted(async () => {
+      // 檢查創作者註冊狀態
+      await checkCreatorRegistration()
       loadExistingData()
     })
     
@@ -574,6 +672,8 @@ export default {
       seasonForm,
       totalPercentage,
       contractsStore,
+      isCheckingRegistration,
+      alreadyRegistered,
       
       registerCreator,
       addMember,
@@ -583,8 +683,13 @@ export default {
       createFirstSeason,
       skipRevenueSplit,
       finishSetup,
+      validatePrice,
       showAdvancedSetup,
-      loadExistingData
+      loadExistingData,
+      checkCreatorRegistration,
+      handleAvatarUploadSuccess,
+      handleAvatarUploadError,
+      router
     }
   }
 }

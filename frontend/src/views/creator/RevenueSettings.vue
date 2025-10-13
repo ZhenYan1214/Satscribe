@@ -404,11 +404,12 @@
           <label class="block text-white font-medium mb-2">收入金額 (STX)</label>
           <input 
             v-model.number="previewAmount"
-            type="number" 
+            type="text" 
             step="0.1"
             min="0.1"
             class="w-full p-3 bg-gray-800/50 border border-white/20 rounded-xl text-white focus:border-web3-purple/60 focus:outline-none"
             placeholder="例如: 10"
+            @input="validateAmount"
           >
         </div>
 
@@ -524,6 +525,21 @@ export default {
     
     const validatePercentages = () => {
       // 實時驗證邏輯
+    }
+    
+    const validateAmount = (event) => {
+      const value = event.target.value
+      // 只允許數字和小數點
+      const cleanValue = value.replace(/[^0-9.]/g, '')
+      // 確保只有一個小數點
+      const parts = cleanValue.split('.')
+      if (parts.length > 2) {
+        event.target.value = parts[0] + '.' + parts.slice(1).join('')
+      } else {
+        event.target.value = cleanValue
+      }
+      // 更新 v-model
+      previewAmount.value = event.target.value
     }
     
     const previewSplit = () => {
@@ -738,6 +754,7 @@ export default {
       addMember,
       removeMember,
       validatePercentages,
+      validateAmount,
       previewSplit,
       saveSettings,
       loadCurrentSettings
