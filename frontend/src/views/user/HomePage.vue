@@ -6,31 +6,103 @@
       <div class="absolute inset-0 opacity-10">
         <div class="absolute inset-0 bg-mesh-pattern"></div>
       </div>
-      
-      <div class="max-w-7xl mx-auto text-center relative z-10">
-        <!-- 主標題區域 -->
-        <div class="mb-12 animate-fade-in">
-          <div class="inline-flex items-center space-x-2 bg-glass-purple/50 backdrop-blur-sm px-4 py-2 rounded-full border border-web3-purple/30 mb-8">
-            <div class="w-2 h-2 bg-web3-green rounded-full animate-pulse"></div>
-            <span class="text-web3-silver text-sm font-medium">去中心化創作者經濟</span>
-          </div>
-          
-          <h1 class="text-6xl md:text-8xl font-display font-bold mb-6 leading-tight">
-            <span class="text-gradient-web3">讓每一份</span><br>
-            <span class="text-white">支持都被</span>
-            <span class="text-gradient-web3">記錄</span>
-          </h1>
-          
-          <p class="text-xl md:text-2xl text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Satscribe 將創作者支持轉化為永久的數位資產<br>
-            <span class="text-web3-cyan">透明分潤</span> • 
-            <span class="text-web3-pink">可收藏證明</span> • 
-            <span class="text-web3-gold">真正自主權</span>
-          </p>
-        </div>
+      <div class="absolute 
+            w-[260px] h-[260px] 
+            bg-gradient-to-r 
+            from-cyan-600/40 to-indigo-500/30 
+            rounded-full blur-2xl 
+            top-[28%] right-[20%] -translate-x-1/2 z-[-1]">
+</div>
 
+      <div class="absolute 
+             right-7 top-[-20%] bottom-0 
+             w-[200px] 
+             flex items-center justify-center 
+             overflow-hidden z-0">
+
+        <span class="decorative-text text-[150px] text-gray-800/10 
+                      -rotate-90                                         whitespace-nowrap opacity-50">
+            SATSCRIBE
+        </span>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="absolute right-24 top-[60%] flex flex-col items-center space-y-5 z-10">
+
+
+
+  <!-- 社群 icon 區塊 -->
+  <div class="flex flex-col items-center space-y-4">
+    <!-- Twitter -->
+    <a href="https://twitter.com/youraccount" target="_blank" class="hover:opacity-80 transition">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6 text-white/70" viewBox="0 0 24 24">
+        <path d="M23 3a10.9 10.9 0 01-3.14 1.53A4.48 4.48 0 0022.43.36a9.06 9.06 0 01-2.88 1.1A4.52 4.52 0 0016.11 0c-2.53 0-4.57 2.06-4.57 4.6 0 .36.04.72.12 1.06A12.94 12.94 0 013 1.67a4.57 4.57 0 001.41 6.13 4.48 4.48 0 01-2.07-.58v.06c0 2.26 1.6 4.15 3.72 4.58a4.52 4.52 0 01-2.06.08 4.57 4.57 0 004.27 3.2A9.06 9.06 0 012 19.54a12.83 12.83 0 006.95 2.05c8.34 0 12.9-6.93 12.9-12.93 0-.2 0-.39-.01-.58A9.22 9.22 0 0023 3z"/>
+      </svg>
+    </a>
+
+    <!-- Instagram -->
+    <a href="https://instagram.com/youraccount" target="_blank" class="hover:opacity-80 transition">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6 text-white/70" viewBox="0 0 24 24">
+        <path d="M12 2.2c3.2 0 3.6.01 4.9.07 1.2.06 1.9.25 2.4.42.6.23 1 .5 1.5 1 .5.5.77.9 1 1.5.17.5.36 1.2.42 2.4.06 1.3.07 1.7.07 4.9s0 3.6-.07 4.9c-.06 1.2-.25 1.9-.42 2.4-.23.6-.5 1-1 1.5-.5.5-.9.77-1.5 1-.5.17-1.2.36-2.4.42-1.3.06-1.7.07-4.9.07s-3.6 0-4.9-.07c-1.2-.06-1.9-.25-2.4-.42-.6-.23-1-.5-1.5-1-.5-.5-.77-.9-1-1.5-.17-.5-.36-1.2-.42-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.9c.06-1.2.25-1.9.42-2.4.23-.6.5-1 1-1.5.5-.5.9-.77 1.5-1 .5-.17 1.2-.36 2.4-.42C8.4 2.2 8.8 2.2 12 2.2m0-2.2C8.7 0 8.3 0 7 .07 5.6.13 4.6.32 3.8.63c-.8.3-1.5.7-2.2 1.4-.7.7-1.1 1.3-1.4 2.2-.31.8-.5 1.8-.56 3.2C-.01 8.3 0 8.7 0 12s-.01 3.7.07 5c.06 1.4.25 2.4.56 3.2.3.9.7 1.5 1.4 2.2.7.7 1.3 1.1 2.2 1.4.8.31 1.8.5 3.2.56 1.3.06 1.7.07 5 .07s3.7 0 5-.07c1.4-.06 2.4-.25 3.2-.56.9-.3 1.5-.7 2.2-1.4.7-.7 1.1-1.3 1.4-2.2.31-.8.5-1.8.56-3.2.06-1.3.07-1.7.07-5s0-3.7-.07-5c-.06-1.4-.25-2.4-.56-3.2-.3-.9-.7-1.5-1.4-2.2C20.3 1.3 19.7.9 18.8.63c-.8-.31-1.8-.5-3.2-.56C15.7-.01 15.3 0 12 0z"/>
+        <circle cx="12" cy="12" r="3.2"/>
+      </svg>
+    </a>
+
+    <!-- Discord -->
+    <a href="https://discord.gg/yourinvite" target="_blank" class="hover:opacity-80 transition">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-6 h-6 text-white/70" viewBox="0 0 24 24">
+        <path d="M20.317 4.369A19.91 19.91 0 0016.713 3a13.23 13.23 0 00-.622 1.272 18.69 18.69 0 00-7.762 0A13.47 13.47 0 007.707 3a19.91 19.91 0 00-3.604 1.369A19.72 19.72 0 001.5 17.308a19.91 19.91 0 006.068 3.104c.47-.647.89-1.33 1.254-2.045a12.52 12.52 0 006.356 0c.364.715.784 1.398 1.254 2.045a19.91 19.91 0 006.068-3.104A19.72 19.72 0 0020.317 4.37zM8.725 14.567c-1.18 0-2.15-1.086-2.15-2.427 0-1.34.955-2.427 2.15-2.427 1.194 0 2.162 1.087 2.15 2.427 0 1.34-.955 2.427-2.15 2.427zm6.55 0c-1.18 0-2.15-1.086-2.15-2.427 0-1.34.955-2.427 2.15-2.427 1.194 0 2.162 1.087 2.15 2.427 0 1.34-.955 2.427-2.15 2.427z"/>
+      </svg>
+    </a>
+  </div>
+</div>
+
+
+
+
+
+
+
+    
+
+
+
+
+
+      <div class="max-w-7xl mx-auto relative z-10">
+  <!-- 標題 + 副標 + 按鈕 -->
+      <div class="mb-12 text-left">
+        <h1 class="text-5xl md:text-7xl font-display font-bold mb-8 leading-snug">
+          <span class="text-white">We record every support</span><br>
+          <span class="text-gradient-web3">with Satscribe</span>
+        </h1>
+        <p class="text-base md:text-lg text-white/80 mb-6 max-w-2xl leading-snug">
+          Let every support be recorded forever — with Satscribe, creators gain transparent revenue sharing, verifiable fan recognition, and true ownership.
+        </p>
+
+      </div>
+            
+
+      
         <!-- CTA 按鈕組 -->
-        <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-16">
+        <div class="flex flex-col sm:flex-row items-center justify-start space-y-4 sm:space-y-0 sm:space-x-6 mb-16"> 
           <button 
             @click="switchToCreator"
             class="btn-web3 text-lg px-8 py-4 rounded-2xl relative group overflow-hidden min-w-[200px]"
@@ -168,94 +240,7 @@
     </section>
 
     <!-- 熱門創作者區 -->
-    <section class="py-24 px-4 relative">
-      <div class="max-w-7xl mx-auto">
-        <div class="flex justify-between items-center mb-12">
-          <div>
-            <h2 class="text-4xl md:text-5xl font-display font-bold text-gradient-web3 mb-4">精選創作者</h2>
-            <p class="text-white/70 text-lg">探索平台上最優質的創作者和內容</p>
-          </div>
-          <button class="btn-glass px-6 py-3 rounded-xl group">
-            <span class="flex items-center space-x-2">
-              <span>查看全部</span>
-              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-              </svg>
-            </span>
-          </button>
-        </div>
-        
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6" v-if="featuredCreators.length > 0">
-          <div 
-            v-for="(creator, index) in featuredCreators" 
-            :key="creator.address"
-            class="card-web3 overflow-hidden group cursor-pointer hover:scale-105 transition-all duration-500"
-            :style="`animation-delay: ${index * 0.1}s`"
-            @click="goToCreator(creator.address)"
-          >
-            <!-- 創作者頭像區域 -->
-            <div class="aspect-square bg-gradient-to-br from-web3-purple via-web3-cyan to-web3-pink relative overflow-hidden">
-              <div class="absolute inset-0 bg-black/20"></div>
-              <div class="absolute bottom-4 left-4 right-4">
-                <div class="glass backdrop-blur-md rounded-lg p-3">
-                  <div class="flex items-center justify-between mb-1">
-                    <h3 class="font-bold text-white text-lg">{{ creator.name }}</h3>
-                    <span v-if="creator.isOwn" class="bg-web3-gold text-black text-xs px-2 py-1 rounded-full font-bold">
-                      您的帳號
-                    </span>
-                  </div>
-                  <p class="text-white/80 text-sm">{{ creator.category }}</p>
-                </div>
-              </div>
-              <!-- Hover 效果 -->
-              <div class="absolute inset-0 bg-gradient-to-t from-web3-purple/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </div>
-            
-            <!-- 創作者信息 -->
-            <div class="p-6">
-              <div class="flex justify-between items-center mb-3">
-                <span class="text-white/70 text-sm">{{ creator.subscribers }} 訂閱者</span>
-                <span class="text-web3-gold font-bold">{{ creator.price }} STX</span>
-              </div>
-              <button class="btn-web3 w-full text-sm py-2 rounded-lg">
-                查看詳情
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        <div v-else class="text-center py-16">
-          <div class="w-24 h-24 bg-glass-purple rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <svg class="w-12 h-12 text-web3-purple" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-            </svg>
-          </div>
-          <h3 class="text-2xl font-bold text-white mb-3">發現您的創作者帳號</h3>
-          <p class="text-white/70 mb-6">
-            <span v-if="!testCreatorAddress">請先註冊為創作者並建立 NFT，然後重新載入</span>
-            <span v-else>發現您的創作者帳號！點擊下方測試收益分潤功能</span>
-          </p>
-          <div class="space-y-4">
-            <button 
-              @click="loadCreators"
-              class="btn-glass px-8 py-3 rounded-xl mr-4"
-              :disabled="isLoadingCreators"
-            >
-              <span v-if="isLoadingCreators">載入中...</span>
-              <span v-else>重新載入</span>
-            </button>
-            <button 
-              @click="testPurchaseFlow"
-              class="btn-web3 px-8 py-3 rounded-xl"
-              v-if="testCreatorAddress"
-            >
-              測試購買 NFT
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
+    
     <!-- CTA 區域 -->
     <section class="py-24 px-4 relative">
       <div class="max-w-4xl mx-auto text-center">
@@ -665,4 +650,18 @@ export default {
     background-position: 100% 50%;
   }
 }
+
+/* 自定義 CSS 來實現線框文字效果 */
+.decorative-text {
+    /* 1. 讓文字內容透明 */
+    color: transparent;
+    
+    /* 2. 核心技巧：使用 -webkit-text-stroke 實現描邊 */
+    /* 描邊寬度 1px，顏色使用白色 (white) 和非常低的透明度 (0.15) */
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.6); /* 針對 WebKit 核心瀏覽器 */
+    
+    /* 3. 標準 CSS 描邊 (兼容性較差，但最好加上) */
+    text-stroke: 1px rgba(255, 255, 255, 0.15);
+}
 </style>
+
