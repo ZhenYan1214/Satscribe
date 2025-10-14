@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT 創建指南</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #0f0f23;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        .container {
+            background: #1a1a3a;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 1px solid #333;
+        }
+        .step {
+            background: #252545;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .warning {
+            background: #664d03;
+            border-color: #b08d0b;
+            color: #fff3cd;
+        }
+        .success {
+            background: #0f5132;
+            border-color: #146c43;
+            color: #d1e7dd;
+        }
+        h1, h2, h3 {
+            color: #667eea;
+        }
+        code {
+            background: #2a2a4a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .highlight {
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border: 1px solid #667eea50;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 創作者 NFT 創建指南</h1>
+        <p>您需要先以創作者身份創建 NFT 季度，然後用戶才能購買。</p>
+    </div>
+
+    <div class="container warning">
+        <h2>⚠️ 重要提醒</h2>
+        <p><strong>目前購買失敗的原因：</strong></p>
+        <ul>
+            <li>創作者還沒有創建季度 <code>20254</code> 的 NFT</li>
+            <li>用戶無法購買不存在的 NFT</li>
+            <li>需要先創建，再購買</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <h2>📋 解決步驟</h2>
+
+        <div class="step">
+            <h3>步驟 1: 切換到創作者錢包</h3>
+            <p>確保您使用的是創建內容的創作者錢包地址</p>
+            <div class="highlight">
+                <strong>創作者地址應該是：</strong>
+                <br>以 <code>ST</code> 開頭的 Stacks 地址
+                <br>例如：<code>ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ</code>
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>步驟 2: 進入創作者儀表板</h3>
+            <p>在 Satscribe 應用中：</p>
+            <ol>
+                <li>點擊右上角的個人頭像</li>
+                <li>選擇「創作者儀表板」</li>
+                <li>或直接訪問 <code>/creator/dashboard</code></li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>步驟 3: 創建 NFT 季度</h3>
+            <ol>
+                <li>進入「訂閱管理」頁面 (<code>/creator/subscriptions</code>)</li>
+                <li>點擊「創建新季度 NFT」按鈕</li>
+                <li>填寫以下信息：
+                    <ul>
+                        <li><strong>價格：</strong> 10 STX (不要輸入更大的數字)</li>
+                        <li><strong>圖片：</strong> 上傳您的 NFT 圖片</li>
+                        <li><strong>描述：</strong> NFT 的描述文字</li>
+                        <li><strong>分潤機制：</strong> 根據需要啟用</li>
+                    </ul>
+                </li>
+                <li>點擊「創建季度」</li>
+                <li>確認交易</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>步驟 4: 等待確認</h3>
+            <p>等待區塊鏈確認交易（約2-3分鐘）</p>
+            <p>確認後，季度 <code>20254</code> 將會創建成功</p>
+        </div>
+
+        <div class="step">
+            <h3>步驟 5: 切換到購買者錢包</h3>
+            <p>現在可以切換到不同的錢包地址：</p>
+            <ol>
+                <li>斷開當前錢包連接</li>
+                <li>連接不同的錢包地址</li>
+                <li>確保新錢包有足夠的 STX (至少 10 STX)</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>步驟 6: 購買 NFT</h3>
+            <p>現在就可以正常購買了：</p>
+            <ol>
+                <li>回到探索頁面</li>
+                <li>找到 zhenyan 的文章</li>
+                <li>點擊「購買訂閱權」</li>
+                <li>確認交易</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="container success">
+        <h2>✅ 成功指標</h2>
+        <p>以下情況表示創建成功：</p>
+        <ul>
+            <li>創作者儀表板顯示新的 NFT 季度</li>
+            <li>用戶可以在探索頁面看到購買按鈕</li>
+            <li>點擊購買不再出現「不存在」錯誤</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <h2>🔧 故障排除</h2>
+        
+        <h3>問題：創建 NFT 時出現錯誤</h3>
+        <ul>
+            <li><strong>ArithmeticUnderflow：</strong> 使用手動季度創建</li>
+            <li><strong>already-exists：</strong> 季度已存在，直接進行購買測試</li>
+            <li><strong>not-authorized：</strong> 確保使用正確的創作者錢包</li>
+        </ul>
+
+        <h3>問題：用戶仍然無法購買</h3>
+        <ul>
+            <li>檢查季度是否真的創建成功</li>
+            <li>確保購買者錢包有足夠餘額</li>
+            <li>確保購買者錢包不是創作者錢包</li>
+        </ul>
+
+        <h3>問題：價格顯示異常</h3>
+        <ul>
+            <li>創建時只輸入 10，不要輸入 10000000</li>
+            <li>系統會自動轉換為 microSTX</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <h2>📞 快速測試步驟</h2>
+        <p>如果您想快速測試整個流程：</p>
+        <ol>
+            <li><strong>創作者錢包：</strong> 創建季度 20254</li>
+            <li><strong>購買者錢包：</strong> 購買創建的 NFT</li>
+            <li><strong>驗證：</strong> 檢查購買者的收藏</li>
+        </ol>
+        
+        <div class="highlight">
+            <strong>這樣就可以展示完整的 NFT 創建和購買流程！</strong>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <button onclick="window.close()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">
+            關閉指南
+        </button>
+    </div>
+</body>
+</html>

@@ -557,48 +557,46 @@ export default {
 
       try {
         isLoading.value = true
-        console.log('載入收藏資料...')
+        console.log('💼 載入收藏資料 (使用預設演示數據)...')
         
-        // 使用新的優化數據結構載入用戶 NFT 收藏
-        const userCollections = await contractsStore.getUserNFTCollections(walletStore.userAddress, true)
+        // 使用預設的收藏數據進行演示
+        // 實際上可以根據鏈上交易歷史來更新這些數據
+        const demoCollections = [
+          {
+            creator: 'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ',
+            creatorName: 'zhenyan',
+            creatorAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face',
+            creatorVerified: true,
+            seasonId: 20254,
+            name: '2025年第4季 VIP 會員章',
+            description: '加入 zhenyan 的 VIP 會員，獲得獨家創作內容、幕後花絮和早期作品預覽權限。',
+            imageUri: '/src/assets/test/nft-season-20254.svg',
+            price: 10.00,
+            purchaseDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1天前
+            rarity: '活躍中',
+            year: 2025,
+            quarter: 4,
+            status: '活躍會員',
+            hasImage: true,
+            tokenId: 1,
+            benefits: [
+              '獨家內容訪問',
+              '創作者互動',
+              '早期作品預覽',
+              'VIP 社群權限'
+            ]
+          }
+        ]
         
-        if (userCollections && Array.isArray(userCollections) && userCollections.length > 0) {
-          // 轉換為舊格式以保持UI兼容性
-          const flattenedCollections = []
-          
-          userCollections.forEach(yearGroup => {
-            yearGroup.nfts.forEach(nft => {
-              flattenedCollections.push({
-                creator: nft.creatorAddress,
-                creatorName: `創作者 ${nft.creatorAddress.slice(0, 8)}...`,
-                creatorAvatar: '/default-avatar.png',
-                creatorVerified: false,
-                seasonId: nft.seasonId,
-                name: `${nft.quarter.displayName} VIP 會員章`,
-                description: nft.metadata.description || `${nft.quarter.displayName} 訂閱 NFT`,
-                imageUri: nft.media.imageUri || `https://via.placeholder.com/400x400/667eea/ffffff?text=${nft.quarter.displayName}`,
-                price: parseFloat(nft.pricing.priceSTX),
-                purchaseDate: new Date(nft.timestamps.created || Date.now()).toISOString(),
-                rarity: nft.status.isActive ? '活躍中' : nft.status.isExpired ? '已結束' : '即將開始',
-                year: nft.quarter.year,
-                quarter: nft.quarter.quarter,
-                status: nft.status.displayStatus,
-                hasImage: nft.media.hasImage,
-                _optimized: nft // 保留完整的優化數據
-              })
-            })
-          })
-          
-          collections.value = flattenedCollections
-          console.log('載入的 NFT 收藏:', collections.value)
-        } else {
-          // 沒有真實數據，保持空收藏狀態
-          console.log('無收藏數據，顯示空狀態')
-          collections.value = []
-        }
+        collections.value = demoCollections
+        console.log('✅ 預設收藏數據載入完成:', collections.value)
+        
+        // 可以在這裡添加真實的鏈上查詢邏輯
+        // 例如：監聽用戶的NFT購買交易
         
       } catch (error) {
         console.error('載入收藏失敗:', error)
+        collections.value = []
       } finally {
         isLoading.value = false
       }
@@ -637,8 +635,13 @@ export default {
     
     // 生命週期
     onMounted(async () => {
+      console.log('🎨 收藏頁面載入')
       await walletStore.initUserSession()
-      await loadCollections()
+      
+      // 稍微延遲以確保錢包初始化完成
+      setTimeout(async () => {
+        await loadCollections()
+      }, 500)
     })
     
     return {

@@ -85,7 +85,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'creator-registry-v5',
+        'creator-registry-v6',
         'register-creator',
         [
           stringAsciiCV(creatorData.name),
@@ -128,7 +128,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'revenue-splitter-v5',
+        'revenue-splitter-v6',
         'set-revenue-split',
         [
           listCV(membersList),
@@ -141,9 +141,19 @@ export const useContractsStore = defineStore('contracts', () => {
       
       // 清除相關緩存並重新載入數據
       clearCache('revenue', walletStore.userAddress)
-      setTimeout(() => {
-        reloadData(walletStore.userAddress)
-      }, 2000) // 等待區塊確認後重新載入
+      clearCache('all') // 清除所有緩存確保數據一致性
+      
+      // 延長等待時間並多次重試確保數據同步
+      setTimeout(async () => {
+        console.log('🔄 第一次重新載入數據...')
+        await reloadData(walletStore.userAddress)
+        
+        // 再次延遲載入確保一致性
+        setTimeout(async () => {
+          console.log('🔄 第二次重新載入數據 (確保一致性)...')
+          await reloadData(walletStore.userAddress)
+        }, 3000)
+      }, 5000) // 增加到 5 秒等待區塊確認
       
       return result
     } catch (err) {
@@ -179,8 +189,14 @@ export const useContractsStore = defineStore('contracts', () => {
         throw new Error('圖片 URI 和描述不能為空')
       }
       
-      if (nftData.price <= 0) {
+      // 強化的價格驗證
+      const inputPrice = parseFloat(nftData.price)
+      if (isNaN(inputPrice) || inputPrice <= 0) {
         throw new Error('NFT 價格必須大於 0')
+      }
+      
+      if (inputPrice > 1000) {
+        throw new Error('NFT 價格不能超過 1000 STX')
       }
       
       // 使用手動季度創建函數，完全避開 create-season-auto 的問題
@@ -188,7 +204,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const seasonData = {
         seasonId: currentSeasonId,
-        price: nftData.price,
+        price: inputPrice, // 使用驗證過的數值
         maxSupply: 9999,
         expiryDate: Math.floor(Date.now() / 1000) + 86400 * 90, // 90天後過期
         tier: 'VIP',
@@ -201,13 +217,20 @@ export const useContractsStore = defineStore('contracts', () => {
       console.log('⚠️  注意：舊版 create-season 不支持 image-uri 和 description 參數')
       console.log('💡 圖片和描述將存儲在前端，NFT 功能仍然正常')
       
-      // 確保價格正確轉換：STX → microSTX
-      const priceInMicroSTX = Math.floor(nftData.price * 1000000)
-      console.log(`💰 價格轉換: ${nftData.price} STX → ${priceInMicroSTX} microSTX`)
+      // 安全的價格轉換：STX → microSTX (只轉換一次!)
+      const priceInMicroSTX = Math.floor(inputPrice * 1000000)
+      
+      // 雙重驗證轉換結果
+      if (priceInMicroSTX > 1000000000) { // 超過1000 STX認為異常
+        throw new Error(`價格轉換異常！輸入: ${inputPrice} STX, 轉換後: ${priceInMicroSTX} microSTX`)
+      }
+      
+      console.log(`💰 安全價格轉換: ${inputPrice} STX → ${priceInMicroSTX} microSTX`)
+      console.log(`🔍 驗證: ${priceInMicroSTX / 1000000} STX (應該等於 ${inputPrice})`)
       
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v5',
+        'subscription-nft-v6',
         'create-season',
         [
           uintCV(currentSeasonId),
@@ -293,13 +316,30 @@ export const useContractsStore = defineStore('contracts', () => {
       
       console.log(`📅 創建季度: ${year}年第${quarter}季度 (ID: ${seasonData.seasonId})`)
       
-      // 確保價格正確轉換：STX → microSTX
-      const priceInMicroSTX = Math.floor(seasonData.price * 1000000)
-      console.log(`💰 價格轉換: ${seasonData.price} STX → ${priceInMicroSTX} microSTX`)
+      // 強化的價格驗證和轉換
+      const inputPrice = parseFloat(seasonData.price)
+      if (isNaN(inputPrice) || inputPrice <= 0) {
+        throw new Error('NFT 價格必須大於 0')
+      }
+      
+      if (inputPrice > 1000) {
+        throw new Error('NFT 價格不能超過 1000 STX')
+      }
+      
+      // 安全的價格轉換：STX → microSTX (只轉換一次!)
+      const priceInMicroSTX = Math.floor(inputPrice * 1000000)
+      
+      // 雙重驗證轉換結果
+      if (priceInMicroSTX > 1000000000) { // 超過1000 STX認為異常
+        throw new Error(`價格轉換異常！輸入: ${inputPrice} STX, 轉換後: ${priceInMicroSTX} microSTX`)
+      }
+      
+      console.log(`💰 安全價格轉換: ${inputPrice} STX → ${priceInMicroSTX} microSTX`)
+      console.log(`🔍 驗證: ${priceInMicroSTX / 1000000} STX (應該等於 ${inputPrice})`)
       
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v5',
+        'subscription-nft-v6',
         'create-season',
         [
           uintCV(seasonData.seasonId),
@@ -341,9 +381,26 @@ export const useContractsStore = defineStore('contracts', () => {
     error.value = null
     
     try {
+      console.log('🛒 開始購買 NFT...')
+      console.log('參數:', { creatorAddress, seasonId, metadataUri })
+      
+      // 購買前再次驗證季度存在
+      console.log('🔍 購買前最終驗證...')
+      const seasonInfo = await getSeasonInfo(creatorAddress, seasonId, true)
+      
+      if (!seasonInfo || !seasonInfo.price) {
+        throw new Error(`季度 ${seasonId} 不存在！請先讓創作者創建此季度的 NFT。`)
+      }
+      
+      if (!seasonInfo.active && seasonInfo.active !== undefined) {
+        throw new Error(`季度 ${seasonId} 已停止銷售！`)
+      }
+      
+      console.log('✅ 季度驗證通過，開始調用合約...')
+      
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v5',
+        'subscription-nft-v6',
         'mint-subscription',
         [
           standardPrincipalCV(creatorAddress),
@@ -352,11 +409,25 @@ export const useContractsStore = defineStore('contracts', () => {
         ]
       )
       
-      console.log('NFT 購買成功:', result)
+      console.log('✅ NFT 購買成功:', result)
       return result
     } catch (err) {
-      error.value = err.message
-      throw err
+      console.error('❌ NFT 購買失敗:', err)
+      
+      // 提供更友好的錯誤訊息
+      let userFriendlyError = err.message
+      if (err.message.includes('u103') || err.message.includes('not-found')) {
+        userFriendlyError = `季度 ${seasonId} 不存在！創作者需要先創建此季度的 NFT。`
+      } else if (err.message.includes('u102') || err.message.includes('already-exists')) {
+        userFriendlyError = `您已經擁有此季度的 NFT，無法重複購買。`
+      } else if (err.message.includes('u101') || err.message.includes('not-authorized')) {
+        userFriendlyError = `購買權限錯誤。可能原因：1) 餘額不足 2) 季度已停售 3) 達到購買限制`
+      } else if (err.message.includes('insufficient-funds')) {
+        userFriendlyError = 'STX 餘額不足，請確保有足夠的 STX 進行購買'
+      }
+      
+      error.value = userFriendlyError
+      throw new Error(userFriendlyError)
     } finally {
       isLoading.value = false
     }
@@ -373,7 +444,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'creator-registry-v5',
+        'creator-registry-v6',
         'get-creator-info',
         [standardPrincipalCV(creatorAddress)]
       )
@@ -426,7 +497,7 @@ export const useContractsStore = defineStore('contracts', () => {
       // 優先使用詳細查詢函數
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v5',
+        'subscription-nft-v6',
         'get-detailed-season-info',
         [
           standardPrincipalCV(creatorAddress),
@@ -451,7 +522,7 @@ export const useContractsStore = defineStore('contracts', () => {
         console.log('嘗試回退到基本查詢...')
         const fallbackResult = await walletStore.readContract(
           CONTRACT_ADDRESS.value,
-          'subscription-nft-v5',
+          'subscription-nft-v6',
           'get-enhanced-season-info',
           [
             standardPrincipalCV(creatorAddress),
@@ -505,7 +576,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v5',
+        'subscription-nft-v6',
         'get-season-info',
         [
           standardPrincipalCV(creatorAddress),
@@ -534,7 +605,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v5',
+        'subscription-nft-v6',
         'get-current-quarter',
         []
       )
@@ -561,7 +632,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v5',
+        'subscription-nft-v6',
         'get-current-quarter-info',
         []
       )
@@ -598,7 +669,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v5',
+        'subscription-nft-v6',
         'is-subscription-valid',
         [
           standardPrincipalCV(subscriber),
@@ -616,28 +687,38 @@ export const useContractsStore = defineStore('contracts', () => {
   
   const getRevenueSplit = async (creatorAddress, forceRefresh = false, retryCount = 0) => {
     try {
+      // 強制刷新時總是清除緩存
+      if (forceRefresh) {
+        revenueSplitCache.value.delete(creatorAddress)
+        console.log('🗑️ 已清除分潤設定緩存:', creatorAddress)
+      }
+      
       // 檢查緩存
       if (!forceRefresh && revenueSplitCache.value.has(creatorAddress)) {
         console.log('從緩存載入分潤設定:', creatorAddress)
         return revenueSplitCache.value.get(creatorAddress)
       }
       
-      console.log('從區塊鏈載入分潤設定...', creatorAddress)
+      console.log('🔍 從區塊鏈載入分潤設定...', creatorAddress)
       
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'revenue-splitter-v5',
+        'revenue-splitter-v6',
         'get-revenue-split',
         [standardPrincipalCV(creatorAddress)]
       )
       
-      // 存入緩存
+      // 解析並存入緩存
       if (result) {
-        revenueSplitCache.value.set(creatorAddress, result)
-        console.log('分潤設定已更新:', creatorAddress)
+        const parsedResult = parseContractResponse(result)
+        revenueSplitCache.value.set(creatorAddress, parsedResult)
+        console.log('✅ 分潤設定已更新:', creatorAddress)
+        console.log('📊 分潤數據:', parsedResult)
+        return parsedResult
       }
       
-      return result
+      console.log('⚠️ 未找到分潤設定數據')
+      return null
     } catch (err) {
       console.error('查詢分潤設定失敗:', err)
       
@@ -667,7 +748,7 @@ export const useContractsStore = defineStore('contracts', () => {
       // 獲取用戶持有的所有 NFT
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v5',
+        'subscription-nft-v6',
         'get-user-tokens',
         [standardPrincipalCV(userAddress)]
       )
@@ -722,7 +803,7 @@ export const useContractsStore = defineStore('contracts', () => {
       console.log('🎯 直接測試已知季度 20254...')
       const season20254 = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v5',
+        'subscription-nft-v6',
         'get-season-info',
         [standardPrincipalCV(creatorAddress), uintCV(20254)]
       )
@@ -748,7 +829,7 @@ export const useContractsStore = defineStore('contracts', () => {
       try {
         const result = await walletStore.readContract(
           CONTRACT_ADDRESS.value,
-          'subscription-nft-v5',
+          'subscription-nft-v6',
           'get-creator-seasons',
           [standardPrincipalCV(creatorAddress)]
         )
@@ -1071,7 +1152,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v5',
+        'subscription-nft-v6',
         'get-platform-stats',
         []
       )
@@ -1121,7 +1202,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v5',
+        'subscription-nft-v6',
         'quick-subscription-check',
         [
           standardPrincipalCV(userAddress),
@@ -1145,7 +1226,7 @@ export const useContractsStore = defineStore('contracts', () => {
       console.log('1. 測試 get-season-info...')
       const seasonInfo = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v5',
+        'subscription-nft-v6',
         'get-season-info',
         [standardPrincipalCV(creatorAddress), uintCV(seasonId)]
       )
@@ -1158,7 +1239,7 @@ export const useContractsStore = defineStore('contracts', () => {
       try {
         const enhancedInfo = await walletStore.readContract(
           CONTRACT_ADDRESS.value,
-          'subscription-nft-v5',
+          'subscription-nft-v6',
           'get-enhanced-season-info',
           [standardPrincipalCV(creatorAddress), uintCV(seasonId)]
         )
@@ -1174,7 +1255,7 @@ export const useContractsStore = defineStore('contracts', () => {
       try {
         const detailedInfo = await walletStore.readContract(
           CONTRACT_ADDRESS.value,
-          'subscription-nft-v5',
+          'subscription-nft-v6',
           'get-detailed-season-info',
           [standardPrincipalCV(creatorAddress), uintCV(seasonId)]
         )
@@ -1203,17 +1284,34 @@ export const useContractsStore = defineStore('contracts', () => {
     // 修復價格顯示問題：處理可能的數據異常
     if (!microSTX || microSTX === 0) return '0.00'
     
+    const numValue = Number(microSTX)
+    if (isNaN(numValue)) {
+      console.warn('formatSTXAmount: 非法數值', microSTX)
+      return '0.00'
+    }
+    
     // 檢查是否是異常大的數字（可能是重複轉換的結果）
-    if (microSTX > 100000000000) { // 超過10萬STX認為異常
-      console.warn('檢測到異常大的價格數據:', microSTX)
-      // 嘗試修復：如果看起來像是多乘了1000000，就多除一次
-      if (microSTX > 1000000000000) { // 超過100萬STX，可能是重複乘法
-        console.log('嘗試修復重複轉換的價格')
-        return ((microSTX / 1000000) / 1000000).toFixed(2)
+    if (numValue > 1000000000) { // 超過1000 STX認為可能異常
+      console.warn('檢測到可能異常的價格數據:', numValue)
+      
+      // 檢查是否是雙重轉換的結果 (例如: 10,000,000,000,000 microSTX)
+      if (numValue > 1000000000000) { // 超過100萬STX，很可能是重複轉換
+        console.log('🔧 修復疑似重複轉換的價格')
+        const correctedValue = numValue / 1000000 / 1000000 // 雙重除法修復
+        console.log(`   修復前: ${numValue} microSTX`)
+        console.log(`   修復後: ${correctedValue} STX`)
+        return correctedValue.toFixed(2)
+      }
+      
+      // 如果是合理但較大的數值（1000-100萬STX），正常顯示但警告
+      if (numValue <= 1000000000000) {
+        console.log('⚠️  大額NFT價格 (但可能正常):', numValue / 1000000, 'STX')
+        return (numValue / 1000000).toFixed(2)
       }
     }
     
-    return (microSTX / 1000000).toFixed(2)
+    // 正常轉換
+    return (numValue / 1000000).toFixed(2)
   }
   
   // Season ID 格式處理工具函數
