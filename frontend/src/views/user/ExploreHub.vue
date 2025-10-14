@@ -291,6 +291,7 @@
             :style="`animation-delay: ${index * 0.05}s`"
             class="animate-fade-in"
             @click="openArticle(article)"
+            @nftPurchase="handleNFTPurchase"
           />
         </div>
 
@@ -431,9 +432,78 @@ export default {
       tags: ['Web3', '創作者經濟', '區塊鏈', 'NFT', 'DeFi']
     })
     
-    // Enhanced mock articles with more realistic data
-    const allArticles = ref([
-      {
+    // Enhanced mock articles with more realistic data  
+    const allArticles = ref([])
+    
+    // 動態加載真實的 NFT 文章
+    const loadRealNFTArticle = async () => {
+      console.log('🔍 正在加載真實的 NFT 文章...')
+      
+      // 檢查是否有真實的創作者和NFT數據
+      let realCreatorAddress = null
+      let hasRealNFT = false
+      
+      // 如果用戶已連接錢包，檢查是否有創建的NFT
+      if (walletStore.isConnected) {
+        try {
+          const seasonInfo = await contractsStore.getSeasonInfo(walletStore.userAddress, 20254, false)
+          if (seasonInfo && seasonInfo.price) {
+            realCreatorAddress = walletStore.userAddress
+            hasRealNFT = true
+            console.log('✅ 找到真實創作者NFT:', realCreatorAddress)
+          }
+        } catch (error) {
+          console.log('📍 當前用戶沒有創建NFT，使用默認演示')
+        }
+      }
+      
+      // 如果沒有找到真實NFT，使用演示地址
+      if (!hasRealNFT) {
+        realCreatorAddress = 'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ'
+        console.log('🎯 使用演示創作者地址:', realCreatorAddress)
+      }
+      
+      // 創建真實的NFT文章
+      const realNFTArticle = {
+        id: 'demo-nft-real-creator',
+        title: '🎨 解鎖 2025 創作之旅 - VIP 會員限量招募',
+        excerpt: '加入我的 VIP 會員，獲得獨家創作內容、幕後花絮和早期作品預覽權限。限量發售，終身會員權益！',
+        category: '創作者經濟',
+        author: {
+          id: realCreatorAddress,
+          name: hasRealNFT ? '你的創作' : 'zhenyan',
+          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face',
+          subscribers: 1250,
+          verified: true
+        },
+        image: '/src/assets/test/demo-article.svg',
+        publishedAt: new Date(Date.now() - 15 * 1000), // 15秒前
+        readTime: 3,
+        likes: 47,
+        comments: 12,
+        views: 328,
+        earnings: 0, // 剛發布，還沒收益
+        tags: ['NFT', 'VIP會員', '創作者經濟', '限量'],
+        // NFT 相關信息
+        hasNFT: true,
+        nftSeasonId: 20254,
+        nftPrice: 10,
+        nftSupply: {
+          current: 0,
+          max: 9999
+        },
+        isLatestNFT: true // 標記為最新NFT
+      }
+      
+      // 將真實NFT文章添加到列表開頭
+      allArticles.value.unshift(realNFTArticle)
+      console.log('✅ 真實NFT文章已添加到探索列表')
+    }
+    
+    // 初始化其他演示文章
+    const initOtherArticles = () => {
+      const otherArticles = [
+        {
         id: 'article-1',
         title: 'NFT 藝術市場深度分析：2024年趨勢與投資機會',
         excerpt: '全面解析當前 NFT 藝術市場的發展狀況，探討藝術家如何在數位時代創造可持續的收益模式。',
@@ -517,7 +587,12 @@ export default {
         earnings: 67.4,
         tags: ['攝影', 'Web3', '版權', '創作']
       }
-    ])
+      ]
+      
+      // 將其他文章添加到列表
+      allArticles.value.push(...otherArticles)
+      console.log('✅ 其他演示文章已添加')
+    }
     
     const trendingCreators = ref([
       {
@@ -699,14 +774,97 @@ export default {
       router.push(`/creator/${creator.id}`)
     }
     
+    // NFT 購買處理
+    const handleNFTPurchase = async (nftData) => {
+      console.log('🛒 處理 NFT 購買:', nftData)
+      
+      try {
+        // 檢查錢包連接狀態
+        if (!walletStore.isConnected) {
+          alert('請先連接錢包以購買 NFT')
+          return
+        }
+        
+        // 使用文章中設定的創作者地址
+        const creatorAddress = nftData.creatorAddress
+        console.log('📍 使用創作者地址:', creatorAddress)
+        
+        // 檢查是否為創作者本人  
+        if (walletStore.userAddress === creatorAddress) {
+          alert('不能購買自己創建的 NFT')
+          return
+        }
+        
+        const confirmed = confirm(`確定要購買 ${nftData.article.title} 的 VIP NFT 嗎？\n\n價格: ${nftData.price} STX\n創作者: ${nftData.article.author.name}`)
+        
+        if (!confirmed) {
+          return
+        }
+        
+        console.log('📞 調用合約購買 NFT...')
+        console.log('參數:', {
+          creatorAddress: creatorAddress,
+          seasonId: nftData.nftSeasonId,
+          price: nftData.price
+        })
+        
+        // 調用合約購買NFT
+        const result = await contractsStore.purchaseNFT(
+          creatorAddress, // 使用修正後的創作者地址
+          nftData.nftSeasonId,    // 季度ID
+          `nft-${nftData.nftSeasonId}-${Date.now()}` // metadata URI
+        )
+        
+        console.log('✅ NFT 購買成功:', result)
+        
+        alert(`🎉 NFT 購買成功！\n\n交易 ID: ${result.txId}\n\n您已成為 ${nftData.article.author.name} 的 VIP 會員！`)
+        
+        // 更新文章數據（增加供應量）
+        const article = allArticles.value.find(a => a.id === nftData.article.id)
+        if (article) {
+          article.nftSupply.current += 1
+          article.earnings += nftData.price
+        }
+        
+      } catch (error) {
+        console.error('❌ NFT 購買失敗:', error)
+        
+        let errorMessage = '購買失敗，請重試'
+        if (error.message.includes('not-authorized')) {
+          errorMessage = '沒有權限購買此 NFT，請檢查是否已連接正確錢包'
+        } else if (error.message.includes('insufficient-funds')) {
+          errorMessage = 'STX 餘額不足，無法完成購買'
+        } else if (error.message.includes('season-not-active')) {
+          errorMessage = '此季度 NFT 已結束銷售'
+        } else if (error.message.includes('max-supply-reached')) {
+          errorMessage = 'NFT 已售完，無法購買'
+        }
+        
+        alert(`❌ ${errorMessage}\n\n錯誤詳情: ${error.message}`)
+      }
+    }
+    
     // Watchers
     watch([selectedCategories, sortBy, timeRange, readingTime], () => {
       currentPage.value = 1
     })
     
     // Lifecycle
-    onMounted(() => {
+    onMounted(async () => {
       console.log('探索頁面已載入')
+      
+      // 初始化文章數據
+      try {
+        // 先加載其他演示文章
+        initOtherArticles()
+        
+        // 然後加載真實NFT文章（異步）
+        await loadRealNFTArticle()
+      } catch (error) {
+        console.error('初始化文章數據失敗:', error)
+        // 如果失敗，至少保證有其他文章
+        initOtherArticles()
+      }
     })
     
     return {
@@ -740,7 +898,8 @@ export default {
       clearSearch,
       loadMoreArticles,
       openArticle,
-      goToCreator
+      goToCreator,
+      handleNFTPurchase
     }
   }
 }
