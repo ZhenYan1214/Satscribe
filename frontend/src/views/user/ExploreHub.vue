@@ -435,32 +435,34 @@ export default {
     // Enhanced mock articles with more realistic data  
     const allArticles = ref([])
     
-    // 加載固定的第四季度 NFT 文章
+    // 加載預設的 zhenyan 創作者 NFT 文章
     const loadRealNFTArticle = async () => {
-      console.log('🔍 加載固定的第四季度 NFT 文章...')
+      console.log('🎨 加載預設 zhenyan 創作者 NFT...')
       
-      // 使用固定的創作者地址和季度數據
-      const realCreatorAddress = 'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ'
-      const realSeasonId = 20254
-      const nftPrice = 10 // 固定顯示10 STX
-      const nftSupply = { current: 0, max: 9999 }
+      // 使用固定的預設數據，但保持可以購買的功能
+      const realCreatorAddress = 'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ' // 真實的創作者地址
+      const creatorName = 'zhenyan'
+      const seasonId = 20254 // 第2025年第4季
+      const nftPrice = 10 // 固定10STX價格
+      const nftSupply = { current: 0, max: 9999 } // 預設供應量
       
-      console.log('✅ 使用固定數據:', {
+      console.log('📝 使用預設數據:', {
         creatorAddress: realCreatorAddress,
-        seasonId: realSeasonId,
+        creatorName,
+        seasonId,
         price: nftPrice,
         supply: nftSupply
       })
       
-      // 創建第四季度NFT文章
-      const q4NFTArticle = {
-        id: 'q4-2025-nft',
-        title: '🎨 2025第四季 VIP 會員限量招募',
-        excerpt: '加入我的第四季 VIP 會員，獲得獨家創作內容、幕後花絮和早期作品預覽權限。限量發售，季度會員權益！',
+      // 創建 zhenyan 的 NFT 文章
+      const nftArticle = {
+        id: `nft-${realCreatorAddress}-${seasonId}`,
+        title: `🎨 ${creatorName} - 2025年第4季 VIP 會員章`,
+        excerpt: `加入 ${creatorName} 的 VIP 會員，獲得獨家創作內容、幕後花絮和早期作品預覽權限。限量發售，季度會員權益！`,
         category: '創作者經濟',
         author: {
           id: realCreatorAddress,
-          name: 'zhenyan',
+          name: creatorName,
           avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face',
           subscribers: 1250,
           verified: true
@@ -472,18 +474,20 @@ export default {
         comments: 12,
         views: 328,
         earnings: 0, // 剛發布，還沒收益
-        tags: ['NFT', '第四季', 'VIP會員', '創作者經濟'],
+        tags: ['NFT', '第4季', 'VIP會員', '創作者經濟'],
         // NFT 相關信息
         hasNFT: true,
-        nftSeasonId: realSeasonId,
+        nftSeasonId: seasonId,
         nftPrice: nftPrice,
         nftSupply: nftSupply,
-        isLatestNFT: true
+        isLatestNFT: true,
+        creatorAddress: realCreatorAddress, // 用於購買時的真實地址
+        chainData: null // 不依賴鏈上數據
       }
       
-      // 將NFT文章添加到列表開頭
-      allArticles.value.unshift(q4NFTArticle)
-      console.log('✅ 第四季度NFT文章已添加到探索列表')
+      // 將 NFT 文章添加到列表開頭
+      allArticles.value.unshift(nftArticle)
+      console.log('✅ zhenyan 的 NFT 文章已添加到探索列表')
     }
     
     // 初始化其他演示文章
@@ -775,13 +779,57 @@ export default {
         const creatorAddress = nftData.creatorAddress
         console.log('📍 使用創作者地址:', creatorAddress)
         
-        // 檢查是否為創作者本人  
-        if (walletStore.userAddress === creatorAddress) {
-          alert('不能購買自己創建的 NFT')
+        // 🔍 診斷季度狀態
+        console.log('🔍 開始診斷季度20254狀態...')
+        try {
+          const seasonInfo = await contractsStore.getSeasonInfo(creatorAddress, nftData.nftSeasonId, true)
+          console.log('📊 季度詳細信息:', seasonInfo)
+          
+          if (!seasonInfo || !seasonInfo.price) {
+            // 季度不存在，提供創建選項
+            const shouldCreate = confirm(`❌ 季度 ${nftData.nftSeasonId} 不存在！\n\n這是因為創作者 (${nftData.article.author.name}) 還沒有創建這個季度的 NFT。\n\n解決方案：\n1. 切換到創作者錢包 (${creatorAddress})\n2. 在創作者儀表板創建季度 ${nftData.nftSeasonId} 的 NFT\n3. 然後再切換回購買者錢包進行購買\n\n是否要查看創建指南？`)
+            
+            if (shouldCreate) {
+              // 打開創建指南
+              window.open('create-nft-guide.html', '_blank')
+            }
+            return
+          }
+          
+          console.log('📋 診斷結果:')
+          console.log('- Active:', seasonInfo.active || seasonInfo.isActive)
+          console.log('- Price (microSTX):', seasonInfo.price)
+          console.log('- Price (STX):', seasonInfo.priceSTX || (seasonInfo.price ? seasonInfo.price / 1000000 : 'unknown'))
+          console.log('- Current Supply:', seasonInfo.pricing?.currentSupply || seasonInfo.currentSupply)
+          console.log('- Max Supply:', seasonInfo.pricing?.maxSupply || seasonInfo.maxSupply)
+          console.log('- Revenue Split:', seasonInfo.revenueSplitEnabled || seasonInfo.revenueSpitEnabled)
+          
+          // 檢查用戶餘額
+          const userBalance = await walletStore.getSTXBalance()
+          const requiredSTX = seasonInfo.priceSTX || (seasonInfo.price ? seasonInfo.price / 1000000 : nftData.price)
+          console.log('💰 餘額檢查:')
+          console.log('- 用戶餘額:', userBalance, 'STX')
+          console.log('- 需要金額:', requiredSTX, 'STX')
+          console.log('- 餘額足夠:', userBalance >= requiredSTX)
+          
+          if (userBalance < requiredSTX) {
+            alert(`❌ 餘額不足！\n\n需要: ${requiredSTX} STX\n當前: ${userBalance} STX\n\n請注意：此NFT的實際價格可能是 ${requiredSTX} STX 而不是 ${nftData.price} STX`)
+            return
+          }
+          
+        } catch (diagError) {
+          console.error('❌ 診斷失敗:', diagError)
+          alert(`診斷季度狀態失敗: ${diagError.message}`)
           return
         }
         
-        const confirmed = confirm(`確定要購買 ${nftData.article.title} 的 VIP NFT 嗎？\n\n價格: ${nftData.price} STX\n創作者: ${nftData.article.author.name}`)
+        // 檢查是否為創作者本人  
+        if (walletStore.userAddress === creatorAddress) {
+          alert('不能購買自己創建的 NFT，請使用其他錢包地址測試購買功能')
+          return
+        }
+        
+        const confirmed = confirm(`確定要購買 ${nftData.article.title} 的 VIP NFT 嗎？\n\n價格: ${nftData.price} STX\n創作者: ${nftData.article.author.name}\n季度: 2025年第4季\n\n購買後您將成為 VIP 會員！`)
         
         if (!confirmed) {
           return
@@ -803,7 +851,7 @@ export default {
         
         console.log('✅ NFT 購買成功:', result)
         
-        alert(`🎉 NFT 購買成功！\n\n交易 ID: ${result.txId}\n\n您已成為 ${nftData.article.author.name} 的 VIP 會員！`)
+        alert(`🎉 NFT 購買成功！\n\n交易 ID: ${result.txId}\n\n您已成為 ${nftData.article.author.name} 的 VIP 會員！\n季度: 2025年第4季\n\n請在「我的收藏」中查看您的 NFT！`)
         
         // 更新文章數據（增加供應量）
         const article = allArticles.value.find(a => a.id === nftData.article.id)
@@ -841,11 +889,15 @@ export default {
       
       // 初始化文章數據
       try {
+        console.log('🚀 初始化探索頁面文章數據')
+        
         // 先加載其他演示文章
         initOtherArticles()
         
-        // 然後加載真實NFT文章（異步）
-        await loadRealNFTArticle()
+        // 加載 zhenyan 的 NFT 文章（使用預設數據）
+        loadRealNFTArticle()
+        
+        console.log('✅ 所有文章數據加載完成')
       } catch (error) {
         console.error('初始化文章數據失敗:', error)
         // 如果失敗，至少保證有其他文章

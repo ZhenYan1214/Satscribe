@@ -401,6 +401,26 @@ export const useWalletStore = defineStore('wallet', () => {
     }
   }
   
+  // STX 餘額查詢
+  const getSTXBalance = async () => {
+    if (!isConnected.value || !userAddress.value) {
+      return 0
+    }
+    
+    try {
+      // 使用 Stacks API 查詢餘額
+      const response = await fetch(`https://api.testnet.hiro.so/extended/v1/address/${userAddress.value}/balances`)
+      const data = await response.json()
+      
+      // 轉換 microSTX 為 STX
+      const microSTX = parseInt(data.stx?.balance || '0')
+      return microSTX / 1000000
+    } catch (error) {
+      console.error('查詢餘額失敗:', error)
+      return 0
+    }
+  }
+  
   return {
     // 状态
     userSession,
@@ -418,6 +438,7 @@ export const useWalletStore = defineStore('wallet', () => {
     disconnectWallet,
     callContract,
     readContract,
+    getSTXBalance,
     
     // Satscribe 特定方法
     mintSubscriptionNFT,

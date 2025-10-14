@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT 完整流程測試</title>
+    <script src="https://unpkg.com/@stacks/connect@8"></script>
+    <script src="https://unpkg.com/@stacks/transactions@6"></script>
+    <script src="https://unpkg.com/@stacks/network@6"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #0f0f23;
+            color: #ffffff;
+        }
+        .container {
+            background: #1a1a3a;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 1px solid #333;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            background: #252545;
+            border-radius: 0 8px 8px 0;
+        }
+        .success { border-color: #28a745; background: #0f2419; }
+        .error { border-color: #dc3545; background: #2c0b0e; }
+        .warning { border-color: #ffc107; background: #2c2415; }
+        .info { border-color: #17a2b8; background: #0c2228; }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover { opacity: 0.9; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #2a2a4a;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .log {
+            background: #1e1e1e;
+            border: 1px solid #444;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .phase {
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .phase-title {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 NFT 完整流程測試</h1>
+    <p>這個工具會測試從創建到購買的完整 NFT 流程</p>
+
+    <div class="container">
+        <h2>🔌 錢包連接</h2>
+        <button id="connectWallet">連接錢包</button>
+        <div id="walletStatus">❌ 未連接</div>
+        <div id="currentWallet" style="margin-top: 10px; font-family: monospace; font-size: 12px;"></div>
+    </div>
+
+    <!-- 階段一：創作者流程 -->
+    <div class="phase">
+        <div class="phase-title">
+            🎨 階段一：創作者流程
+            <span id="creatorPhaseStatus">⏳ 待執行</span>
+        </div>
+        
+        <div class="step">
+            <h3>步驟 1: 確認創作者身份</h3>
+            <p>確保您使用的是創作者錢包地址</p>
+            <button id="checkCreatorStatus">檢查創作者狀態</button>
+            <div id="creatorStatusResult"></div>
+        </div>
+
+        <div class="step">
+            <h3>步驟 2: 創建 NFT 季度</h3>
+            <div class="grid">
+                <div>
+                    <label>季度 ID:</label>
+                    <input type="number" id="seasonIdToCreate" value="20254">
+                </div>
+                <div>
+                    <label>價格 (STX):</label>
+                    <input type="number" id="nftPrice" value="10" step="0.01">
+                </div>
+            </div>
+            <label>描述:</label>
+            <input type="text" id="nftDescription" value="2025年第4季 VIP 會員 NFT">
+            <button id="createNFTSeason">創建 NFT 季度</button>
+            <div id="createSeasonResult"></div>
+        </div>
+
+        <div class="step">
+            <h3>步驟 3: 驗證創建結果</h3>
+            <button id="verifyCreation">驗證季度創建</button>
+            <div id="verifyCreationResult"></div>
+        </div>
+    </div>
+
+    <!-- 階段二：購買者流程 -->
+    <div class="phase">
+        <div class="phase-title">
+            🛒 階段二：購買者流程
+            <span id="buyerPhaseStatus">⏳ 待執行</span>
+        </div>
+
+        <div class="step">
+            <h3>步驟 1: 切換購買者錢包</h3>
+            <p>請切換到不同的錢包地址來模擬用戶購買</p>
+            <button id="switchToBuyer">提醒切換錢包</button>
+            <div id="buyerWalletCheck"></div>
+        </div>
+
+        <div class="step">
+            <h3>步驟 2: 檢查購買條件</h3>
+            <div class="grid">
+                <div>
+                    <label>創作者地址:</label>
+                    <input type="text" id="creatorAddressForPurchase" placeholder="ST...">
+                </div>
+                <div>
+                    <label>季度 ID:</label>
+                    <input type="number" id="seasonIdForPurchase" value="20254">
+                </div>
+            </div>
+            <button id="checkPurchaseConditions">檢查購買條件</button>
+            <div id="purchaseConditionsResult"></div>
+        </div>
+
+        <div class="step">
+            <h3>步驟 3: 執行購買</h3>
+            <button id="purchaseNFT">購買 NFT</button>
+            <div id="purchaseResult"></div>
+        </div>
+
+        <div class="step">
+            <h3>步驟 4: 驗證購買結果</h3>
+            <button id="verifyPurchase">驗證購買結果</button>
+            <div id="verifyPurchaseResult"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📋 測試日誌</h2>
+        <button id="clearLog">清除日誌</button>
+        <div id="logContainer" class="log">等待開始測試...</div>
+    </div>
+
+    <script>
+        const CONTRACT_ADDRESS = 'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ';
+        
+        let walletConnected = false;
+        let userAddress = '';
+        let creatorAddress = '';
+        let testData = {
+            seasonId: 20254,
+            price: 10
+        };
+        
+        // 日誌功能
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logContainer = document.getElementById('logContainer');
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            logContainer.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const colors = {
+                success: '#28a745',
+                error: '#dc3545', 
+                warning: '#ffc107',
+                info: '#17a2b8'
+            };
+            element.innerHTML = message;
+            element.style.color = colors[type] || colors.info;
+        }
+
+        // 連接錢包
+        document.getElementById('connectWallet').addEventListener('click', async () => {
+            try {
+                log('正在連接錢包...');
+                
+                await window.StacksConnect.connect();
+                
+                if (window.StacksConnect.isConnected()) {
+                    const userData = window.StacksConnect.getLocalStorage();
+                    userAddress = userData.addresses.stx[0].address;
+                    walletConnected = true;
+                    
+                    updateStatus('walletStatus', `✅ 已連接: ${userAddress}`, 'success');
+                    document.getElementById('currentWallet').textContent = `當前錢包: ${userAddress}`;
+                    log(`錢包連接成功: ${userAddress}`, 'success');
+                    
+                    // 自動填入創作者地址
+                    document.getElementById('creatorAddressForPurchase').value = userAddress;
+                } else {
+                    throw new Error('連接失敗');
+                }
+            } catch (error) {
+                log(`錢包連接失敗: ${error.message}`, 'error');
+                updateStatus('walletStatus', `❌ 連接失敗: ${error.message}`, 'error');
+            }
+        });
+
+        // 檢查創作者狀態
+        document.getElementById('checkCreatorStatus').addEventListener('click', async () => {
+            if (!walletConnected) {
+                alert('請先連接錢包');
+                return;
+            }
+
+            try {
+                log('檢查創作者註冊狀態...');
+                
+                const creatorInfo = await checkCreatorRegistered(userAddress);
+                
+                if (creatorInfo) {
+                    log('✅ 創作者已註冊', 'success');
+                    updateStatus('creatorStatusResult', `✅ 已註冊創作者: ${creatorInfo.name}`, 'success');
+                    creatorAddress = userAddress;
+                } else {
+                    log('❌ 創作者未註冊', 'error');
+                    updateStatus('creatorStatusResult', '❌ 尚未註冊為創作者，請先在應用中註冊', 'error');
+                }
+            } catch (error) {
+                log(`檢查創作者狀態失敗: ${error.message}`, 'error');
+                updateStatus('creatorStatusResult', `❌ 檢查失敗: ${error.message}`, 'error');
+            }
+        });
+
+        // 創建 NFT 季度
+        document.getElementById('createNFTSeason').addEventListener('click', async () => {
+            if (!walletConnected || !creatorAddress) {
+                alert('請先檢查創作者狀態');
+                return;
+            }
+
+            try {
+                const seasonId = parseInt(document.getElementById('seasonIdToCreate').value);
+                const price = parseFloat(document.getElementById('nftPrice').value);
+                const description = document.getElementById('nftDescription').value;
+
+                log(`開始創建季度 ${seasonId}...`);
+                log(`價格: ${price} STX`);
+                log(`描述: ${description}`);
+
+                // 先檢查季度是否已存在
+                const existingSeason = await checkSeasonExists(creatorAddress, seasonId);
+                if (existingSeason) {
+                    log('⚠️ 季度已存在', 'warning');
+                    updateStatus('createSeasonResult', '⚠️ 季度已存在，跳過創建步驟', 'warning');
+                    return;
+                }
+
+                // 創建季度（使用手動創建方式）
+                const priceInMicroSTX = Math.floor(price * 1000000);
+                
+                const result = await window.StacksConnect.request('stx_callContract', {
+                    contractAddress: CONTRACT_ADDRESS,
+                    contractName: 'subscription-nft-v6',
+                    functionName: 'create-season',
+                    functionArgs: [
+                        window.StacksTransactions.uintCV(seasonId),
+                        window.StacksTransactions.uintCV(priceInMicroSTX),
+                        window.StacksTransactions.uintCV(9999), // maxSupply
+                        window.StacksTransactions.uintCV(Math.floor(Date.now() / 1000) + 86400 * 90), // expiryDate
+                        window.StacksTransactions.stringAsciiCV('VIP'), // tier
+                        window.StacksTransactions.boolCV(true) // enableRevenueSplit
+                    ]
+                });
+
+                log('✅ 季度創建交易已提交', 'success');
+                updateStatus('createSeasonResult', `✅ 交易已提交: ${result.txId}`, 'success');
+                updateStatus('creatorPhaseStatus', '✅ 完成', 'success');
+
+                testData.seasonId = seasonId;
+                testData.price = price;
+
+            } catch (error) {
+                log(`創建季度失敗: ${error.message}`, 'error');
+                updateStatus('createSeasonResult', `❌ 創建失敗: ${error.message}`, 'error');
+            }
+        });
+
+        // 驗證創建結果
+        document.getElementById('verifyCreation').addEventListener('click', async () => {
+            try {
+                const seasonId = testData.seasonId;
+                log(`驗證季度 ${seasonId} 創建結果...`);
+
+                const seasonInfo = await checkSeasonExists(creatorAddress, seasonId);
+                
+                if (seasonInfo) {
+                    log('✅ 季度創建驗證成功', 'success');
+                    updateStatus('verifyCreationResult', 
+                        `✅ 季度存在<br>價格: ${(seasonInfo.price / 1000000).toFixed(2)} STX<br>狀態: ${seasonInfo.active ? '活躍' : '停用'}`, 
+                        'success');
+                } else {
+                    log('❌ 季度不存在', 'error');
+                    updateStatus('verifyCreationResult', '❌ 季度不存在，請重新創建', 'error');
+                }
+            } catch (error) {
+                log(`驗證失敗: ${error.message}`, 'error');
+                updateStatus('verifyCreationResult', `❌ 驗證失敗: ${error.message}`, 'error');
+            }
+        });
+
+        // 切換購買者錢包提醒
+        document.getElementById('switchToBuyer').addEventListener('click', () => {
+            alert('請執行以下步驟：\n\n1. 斷開當前錢包連接\n2. 連接不同的錢包地址\n3. 確保新錢包有至少 ' + testData.price + ' STX\n4. 點擊「連接錢包」重新連接\n\n這樣可以模擬不同用戶購買 NFT 的場景');
+        });
+
+        // 檢查購買條件
+        document.getElementById('checkPurchaseConditions').addEventListener('click', async () => {
+            if (!walletConnected) {
+                alert('請先連接錢包');
+                return;
+            }
+
+            try {
+                const creatorAddr = document.getElementById('creatorAddressForPurchase').value;
+                const seasonId = parseInt(document.getElementById('seasonIdForPurchase').value);
+
+                log('檢查購買條件...');
+
+                // 檢查是否為創作者本人
+                if (userAddress === creatorAddr) {
+                    log('⚠️ 警告: 不能購買自己的 NFT', 'warning');
+                    updateStatus('buyerWalletCheck', '⚠️ 當前錢包是創作者，請切換錢包', 'warning');
+                }
+
+                // 檢查季度存在
+                const seasonInfo = await checkSeasonExists(creatorAddr, seasonId);
+                if (!seasonInfo) {
+                    log('❌ 季度不存在', 'error');
+                    updateStatus('purchaseConditionsResult', '❌ 季度不存在', 'error');
+                    return;
+                }
+
+                // 檢查餘額
+                const balance = await getUserBalance();
+                const requiredSTX = seasonInfo.price / 1000000;
+
+                log(`用戶餘額: ${balance} STX`);
+                log(`需要金額: ${requiredSTX} STX`);
+
+                if (balance >= requiredSTX) {
+                    log('✅ 購買條件檢查通過', 'success');
+                    updateStatus('purchaseConditionsResult', 
+                        `✅ 條件符合<br>季度: ${seasonId}<br>價格: ${requiredSTX} STX<br>餘額: ${balance} STX`, 
+                        'success');
+                    updateStatus('buyerPhaseStatus', '⏳ 準備購買', 'info');
+                } else {
+                    log('❌ 餘額不足', 'error');
+                    updateStatus('purchaseConditionsResult', `❌ 餘額不足<br>需要: ${requiredSTX} STX<br>當前: ${balance} STX`, 'error');
+                }
+
+            } catch (error) {
+                log(`檢查購買條件失敗: ${error.message}`, 'error');
+                updateStatus('purchaseConditionsResult', `❌ 檢查失敗: ${error.message}`, 'error');
+            }
+        });
+
+        // 購買 NFT
+        document.getElementById('purchaseNFT').addEventListener('click', async () => {
+            if (!walletConnected) {
+                alert('請先連接錢包');
+                return;
+            }
+
+            try {
+                const creatorAddr = document.getElementById('creatorAddressForPurchase').value;
+                const seasonId = parseInt(document.getElementById('seasonIdForPurchase').value);
+
+                if (userAddress === creatorAddr) {
+                    alert('不能購買自己的 NFT！請使用不同的錢包地址');
+                    return;
+                }
+
+                const confirmed = confirm(`確定要購買季度 ${seasonId} 的 NFT 嗎？\n\n創作者: ${creatorAddr}\n價格: ${testData.price} STX`);
+                
+                if (!confirmed) return;
+
+                log('開始購買 NFT...');
+
+                const result = await window.StacksConnect.request('stx_callContract', {
+                    contractAddress: CONTRACT_ADDRESS,
+                    contractName: 'subscription-nft-v6',
+                    functionName: 'mint-subscription',
+                    functionArgs: [
+                        window.StacksTransactions.standardPrincipalCV(creatorAddr),
+                        window.StacksTransactions.uintCV(seasonId),
+                        window.StacksTransactions.stringAsciiCV(`nft-${seasonId}-${Date.now()}`)
+                    ]
+                });
+
+                log('✅ NFT 購買交易已提交', 'success');
+                updateStatus('purchaseResult', `✅ 購買交易已提交: ${result.txId}`, 'success');
+                updateStatus('buyerPhaseStatus', '✅ 完成', 'success');
+
+            } catch (error) {
+                log(`購買失敗: ${error.message}`, 'error');
+                updateStatus('purchaseResult', `❌ 購買失敗: ${error.message}`, 'error');
+                
+                // 提供具體的錯誤解釋
+                if (error.message.includes('u103')) {
+                    updateStatus('purchaseResult', '❌ 季度不存在！請確保創作者已創建此季度的 NFT', 'error');
+                } else if (error.message.includes('u102')) {
+                    updateStatus('purchaseResult', '❌ 您已擁有此季度的 NFT', 'error');
+                }
+            }
+        });
+
+        // 驗證購買結果
+        document.getElementById('verifyPurchase').addEventListener('click', async () => {
+            try {
+                log('驗證購買結果...');
+                
+                // 這裡可以添加查詢用戶 NFT 的邏輯
+                // 由於合約的 get-user-tokens 函數返回空列表，我們使用其他方式驗證
+                
+                log('✅ 如果上面的購買交易成功，則 NFT 已被鑄造', 'success');
+                updateStatus('verifyPurchaseResult', '✅ 請檢查區塊鏈瀏覽器確認交易狀態', 'success');
+                
+            } catch (error) {
+                log(`驗證失敗: ${error.message}`, 'error');
+                updateStatus('verifyPurchaseResult', `❌ 驗證失敗: ${error.message}`, 'error');
+            }
+        });
+
+        // 清除日誌
+        document.getElementById('clearLog').addEventListener('click', () => {
+            document.getElementById('logContainer').textContent = '日誌已清除...\n';
+        });
+
+        // 輔助函數
+        async function checkCreatorRegistered(creatorAddress) {
+            try {
+                const result = await window.StacksTransactions.callReadOnlyFunction({
+                    contractAddress: CONTRACT_ADDRESS,
+                    contractName: 'creator-registry-v6',
+                    functionName: 'get-creator-info',
+                    functionArgs: [
+                        window.StacksTransactions.standardPrincipalCV(creatorAddress)
+                    ],
+                    network: new window.StacksNetwork.StacksTestnet(),
+                    senderAddress: userAddress
+                });
+
+                if (result.type === 'some' && result.value) {
+                    return parseClarityValue(result.value);
+                }
+                return null;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        async function checkSeasonExists(creatorAddress, seasonId) {
+            try {
+                const result = await window.StacksTransactions.callReadOnlyFunction({
+                    contractAddress: CONTRACT_ADDRESS,
+                    contractName: 'subscription-nft-v6',
+                    functionName: 'get-season-info',
+                    functionArgs: [
+                        window.StacksTransactions.standardPrincipalCV(creatorAddress),
+                        window.StacksTransactions.uintCV(seasonId)
+                    ],
+                    network: new window.StacksNetwork.StacksTestnet(),
+                    senderAddress: userAddress
+                });
+
+                if (result.type === 'some' && result.value) {
+                    return parseClarityValue(result.value);
+                }
+                return null;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        async function getUserBalance() {
+            try {
+                const response = await fetch(`https://api.testnet.hiro.so/extended/v1/address/${userAddress}/stx`);
+                const data = await response.json();
+                return parseInt(data.balance) / 1000000;
+            } catch (error) {
+                return 0;
+            }
+        }
+
+        function parseClarityValue(value) {
+            if (!value) return null;
+
+            switch (value.type) {
+                case 12: // tuple
+                    const result = {};
+                    if (value.data) {
+                        for (const [key, val] of Object.entries(value.data)) {
+                            result[key] = parseClarityValue(val);
+                        }
+                    }
+                    return result;
+                    
+                case 1: // uint
+                case 2: // uint
+                    return typeof value.value === 'bigint' ? Number(value.value) : parseInt(value.value);
+                    
+                case 3: // bool false
+                    return false;
+                    
+                case 4: // bool true  
+                    return true;
+                    
+                case 13: // string-ascii
+                case 14: // string-ascii
+                case 15: // string-utf8
+                    return value.data;
+                    
+                default:
+                    return value;
+            }
+        }
+
+        log('NFT 流程測試工具已載入完成');
+        log('請按順序執行：1) 連接錢包 2) 檢查創作者 3) 創建季度 4) 切換錢包 5) 購買 NFT');
+    </script>
+</body>
+</html>

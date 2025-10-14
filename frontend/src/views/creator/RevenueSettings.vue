@@ -130,14 +130,13 @@
         </h2>
         <div class="flex space-x-3">
           <button 
-            @click="loadCurrentSettings" 
+            @click="initializeDefaultSettings" 
             class="btn-glass text-sm px-4 py-2"
-            :disabled="contractsStore.isLoading"
           >
             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
             </svg>
-            {{ contractsStore.isLoading ? '載入中...' : '重新載入' }}
+            重設為預設
           </button>
           <button @click="addMember" class="btn-web3">
             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -576,152 +575,21 @@ export default {
     }
     
     const loadCurrentSettings = async () => {
-      try {
-        if (walletStore.isConnected && walletStore.userAddress) {
-          console.log('載入收益分配設定，用戶地址:', walletStore.userAddress)
-          
-          // 強制從區塊鏈重新載入設置
-          const settings = await contractsStore.getRevenueSplit(walletStore.userAddress, true)
-          
-          console.log('區塊鏈返回的分潤設定:', settings)
-          
-          if (settings) {
-            // 解析 Clarity 合約回應格式
-            const settingsData = contractsStore.parseContractResponse(settings)
-            console.log('解析後的設定數據:', settingsData)
-            
-            // 檢查是否有有效數據
-            if (settingsData) {
-              console.log('解析設定數據結構:', settingsData)
-              
-              // 嘗試解析成員列表 - 根據合約實際結構調整
-              let membersList = []
-              let nftEnabledSetting = true
-              let lightningEnabledSetting = false
-              
-              // 處理 Clarity 合約返回的數據結構
-              if (settingsData.members && Array.isArray(settingsData.members)) {
-                membersList = settingsData.members
-                nftEnabledSetting = settingsData['nft-enabled'] !== false
-                lightningEnabledSetting = settingsData['lightning-enabled'] === true
-                console.log('找到 members 陣列:', membersList)
-              } else {
-                // 檢查所有可能的鍵名（包含破折號和底線的變體）
-                const possibleKeys = ['members', 'team-members', 'team_members', 'member-list', 'member_list']
-                console.log('檢查所有數據鍵:', Object.keys(settingsData))
-                
-                for (const key of possibleKeys) {
-                  if (settingsData[key] && Array.isArray(settingsData[key])) {
-                    console.log(`找到陣列數據在鍵 "${key}":`, settingsData[key])
-                    membersList = settingsData[key]
-                    break
-                  }
-                }
-                
-                // 如果還沒找到，檢查所有鍵
-                if (membersList.length === 0) {
-                  for (const key of Object.keys(settingsData)) {
-                    if (Array.isArray(settingsData[key])) {
-                      console.log(`找到陣列數據在鍵 "${key}":`, settingsData[key])
-                      membersList = settingsData[key]
-                      break
-                    }
-                  }
-                }
-                
-                // 檢查配置選項（支援多種鍵名格式）
-                nftEnabledSetting = settingsData['nft-enabled'] !== false || settingsData.nft_enabled !== false
-                lightningEnabledSetting = settingsData['lightning-enabled'] === true || settingsData.lightning_enabled === true
-              }
-              
-              console.log('提取的成員列表:', membersList)
-              
-              if (membersList && membersList.length > 0) {
-                members.value = membersList.map((member, index) => {
-                  console.log(`處理成員 ${index}:`, member)
-                  
-                  // 根據 Clarity tuple 結構解析：{ percentage: uint, role: string-ascii, wallet: principal }
-                  let wallet = '', role = 'creator', percentage = 0
-                  
-                  if (typeof member === 'object' && member) {
-                    // 顯示原始成員數據結構以便調試
-                    console.log(`成員 ${index} 原始數據:`, member)
-                    console.log(`成員 ${index} 所有鍵:`, Object.keys(member))
-                    
-                    // 處理 Clarity tuple 格式：{ percentage: uint, role: string-ascii, wallet: principal }
-                    if (member.wallet) {
-                      wallet = member.wallet
-                      console.log(`成員 ${index} wallet 字段:`, member.wallet, typeof member.wallet)
-                    } else if (member.address) {
-                      wallet = member.address
-                      console.log(`成員 ${index} address 字段:`, member.address)
-                    } else if (member.principal) {
-                      wallet = member.principal
-                      console.log(`成員 ${index} principal 字段:`, member.principal)
-                    }
-                    
-                    if (member.role) {
-                      role = member.role
-                      console.log(`成員 ${index} role 字段:`, member.role, typeof member.role)
-                    }
-                    
-                    if (member.percentage !== undefined) {
-                      percentage = parseInt(member.percentage)
-                      console.log(`成員 ${index} percentage 字段:`, member.percentage, typeof member.percentage, '-> 解析為:', percentage)
-                    } else if (member.percent !== undefined) {
-                      percentage = parseInt(member.percent)
-                      console.log(`成員 ${index} percent 字段:`, member.percent, '-> 解析為:', percentage)
-                    }
-                    
-                    console.log(`成員 ${index} 最終解析結果:`, {
-                      wallet: wallet,
-                      role: role,
-                      percentage: percentage
-                    })
-                  } else {
-                    console.log(`成員 ${index} 數據格式異常:`, member, typeof member)
-                  }
-                  
-                  return { 
-                    wallet: wallet, 
-                    role: role, 
-                    percentage: percentage 
-                  }
-                })
-                
-                // 設置配置選項
-                nftEnabled.value = nftEnabledSetting
-                lightningEnabled.value = false  // Lightning 分潤永遠關閉，不管區塊鏈返回什麼
-                
-                console.log('成功載入分潤設定:', members.value)
-                console.log(`載入了 ${members.value.length} 個成員`)
-              } else {
-                console.log('沒有找到有效的成員列表')
-                console.log('完整的原始數據:', settings)
-                console.log('解析後的數據:', settingsData)
-                console.log('成員列表內容:', membersList)
-                initializeDefaultSettings()
-              }
-            } else {
-              console.log('無法解析設定數據')
-              initializeDefaultSettings()
-            }
-          } else {
-            console.log('合約返回空數據，使用默認設定')
-            initializeDefaultSettings()
-          }
-        } else {
-          console.log('錢包未連接或地址為空')
-        }
-      } catch (error) {
-        console.error('載入分潤設定時發生錯誤:', error)
-        console.log('使用默認設定作為後備方案')
+      console.log('🔧 使用本地分潤設定顯示模式')
+      
+      // 不再從鏈上查詢，直接使用預設的本地設定
+      // 這樣確保前端顯示完全基於使用者的本地修改
+      if (walletStore.isConnected && walletStore.userAddress) {
+        console.log('初始化本地分潤設定，用戶地址:', walletStore.userAddress)
         initializeDefaultSettings()
+      } else {
+        console.log('錢包未連接，無法初始化設定')
       }
     }
     
     const initializeDefaultSettings = () => {
       if (walletStore.userAddress) {
+        // 使用預設配置：創作者100%
         members.value = [{
           wallet: walletStore.userAddress,
           role: 'creator',
@@ -729,15 +597,23 @@ export default {
         }]
         nftEnabled.value = true
         lightningEnabled.value = false  // Lightning 分潤永遠關閉
-        console.log('初始化默認分潤設定 (Lightning已關閉):', members.value)
+        console.log('✅ 初始化本地分潤設定 (預設: 創作者100%):', members.value)
       }
     }
     
     onMounted(() => {
-      // 延遲載入以確保錢包已初始化，只載入分潤設定
-      setTimeout(async () => {
-        await loadCurrentSettings()
-      }, 1000)
+      // 使用本地設定模式，不延遲載入
+      console.log('🚀 分潤設定頁面載入 - 本地顯示模式')
+      if (walletStore.isConnected && walletStore.userAddress) {
+        loadCurrentSettings()
+      } else {
+        // 如果錢包還沒連接，等待一下再初始化
+        setTimeout(() => {
+          if (walletStore.userAddress) {
+            loadCurrentSettings()
+          }
+        }, 1000)
+      }
     })
     
     return {
