@@ -381,7 +381,7 @@ export default {
     const timeRange = ref('all')
     const readingTime = ref('all')
     const viewMode = ref('grid')
-    const sortBy = ref('trending')
+    const sortBy = ref('latest')
     const currentPage = ref(1)
     const isLoading = ref(false)
     const isLoadingMore = ref(false)
