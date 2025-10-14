@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT 數據調試測試</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: #16213e;
+            border: 1px solid #0f3460;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .result {
+            background: #0f3460;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+        input {
+            background: #0f3460;
+            border: 1px solid #667eea;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #a0a0a0;
+            font-weight: bold;
+        }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .warning { color: #fbbf24; }
+        .info { color: #60a5fa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 NFT 數據調試測試工具</h1>
+        <p>這個頁面幫助測試和調試你的 NFT 合約數據獲取問題。</p>
+
+        <div class="test-section">
+            <h2>📋 測試配置</h2>
+            <div class="input-group">
+                <label for="contractAddress">合約地址:</label>
+                <input type="text" id="contractAddress" value="ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ">
+            </div>
+            <div class="input-group">
+                <label for="creatorAddress">創作者地址:</label>
+                <input type="text" id="creatorAddress" placeholder="輸入你的創作者地址">
+            </div>
+            <div class="input-group">
+                <label for="seasonId">季度ID:</label>
+                <input type="number" id="seasonId" value="20254">
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 基本測試</h2>
+            <button onclick="testBasicConnection()">測試基本連接</button>
+            <button onclick="testSeasonQuery()">測試季度查詢</button>
+            <button onclick="testAllSeasons()">測試所有季度</button>
+            <div class="result" id="basicTestResult">點擊按鈕開始測試...</div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔬 深度調試</h2>
+            <button onclick="debugRawData()">調試原始數據</button>
+            <button onclick="testDataParsing()">測試數據解析</button>
+            <button onclick="simulateUIData()">模擬UI數據</button>
+            <div class="result" id="debugResult">調試結果將顯示在這裡...</div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 預期 vs 實際</h2>
+            <p>根據 Hiro 瀏覽器的結果，我們預期看到：</p>
+            <div class="result">
+預期的合約返回格式:
+(some (tuple 
+  (active true) 
+  (created-at u3597258) 
+  (current-supply u0) 
+  (description "") 
+  (image-uri "") 
+  (price u10000000000000) 
+  (revenue-split-enabled true)
+))
+
+解析後應該得到:
+{
+  active: true,
+  "created-at": 3597258,
+  "current-supply": 0,
+  description: "",
+  "image-uri": "",
+  price: 10000000000000,
+  "revenue-split-enabled": true
+}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 基本配置
+        const API_BASE = 'https://api.testnet.hiro.so';
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            console.log(`[${timestamp}] ${prefix} ${message}`);
+        }
+
+        function updateResult(elementId, content, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.textContent = content;
+        }
+
+        async function testBasicConnection() {
+            updateResult('basicTestResult', '測試基本連接中...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/v2/info`);
+                const data = await response.json();
+                
+                updateResult('basicTestResult', 
+                    `✅ 基本連接成功!\n網絡: ${data.network_id}\n鏈ID: ${data.stacks_tip_height}`, 
+                    'success'
+                );
+                log('基本連接測試成功', 'success');
+            } catch (error) {
+                updateResult('basicTestResult', 
+                    `❌ 連接失敗: ${error.message}`, 
+                    'error'
+                );
+                log(`連接測試失敗: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSeasonQuery() {
+            const contractAddress = document.getElementById('contractAddress').value;
+            const creatorAddress = document.getElementById('creatorAddress').value;
+            const seasonId = document.getElementById('seasonId').value;
+
+            if (!creatorAddress) {
+                updateResult('basicTestResult', '❌ 請輸入創作者地址', 'error');
+                return;
+            }
+
+            updateResult('basicTestResult', `測試季度 ${seasonId} 查詢中...`, 'info');
+
+            try {
+                // 構建函數調用參數
+                const args = [
+                    `0x${creatorAddress.replace('ST', '')}`, // 轉換地址格式
+                    `u${seasonId}` // uint格式
+                ];
+
+                const callData = {
+                    sender: creatorAddress,
+                    arguments: args
+                };
+
+                const url = `${API_BASE}/v2/contracts/call-read/${contractAddress}/subscription-nft-v5/get-season-info`;
+                
+                log(`調用 URL: ${url}`);
+                log(`調用參數: ${JSON.stringify(callData)}`);
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(callData)
+                });
+
+                const result = await response.json();
+                
+                updateResult('basicTestResult', 
+                    `📊 季度查詢結果:\n${JSON.stringify(result, null, 2)}`, 
+                    response.ok ? 'success' : 'error'
+                );
+                
+                log(`季度查詢${response.ok ? '成功' : '失敗'}`, response.ok ? 'success' : 'error');
+
+            } catch (error) {
+                updateResult('basicTestResult', 
+                    `❌ 查詢失敗: ${error.message}`, 
+                    'error'
+                );
+                log(`季度查詢失敗: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAllSeasons() {
+            updateResult('basicTestResult', '測試所有可能的季度ID...', 'info');
+            
+            const contractAddress = document.getElementById('contractAddress').value;
+            const creatorAddress = document.getElementById('creatorAddress').value;
+            
+            if (!creatorAddress) {
+                updateResult('basicTestResult', '❌ 請輸入創作者地址', 'error');
+                return;
+            }
+
+            const testSeasonIds = [20254, 20253, 20252, 20251, 20244, 20243, 20242, 20241, 5, 4, 3, 2, 1];
+            const results = [];
+
+            for (const seasonId of testSeasonIds) {
+                try {
+                    const callData = {
+                        sender: creatorAddress,
+                        arguments: [
+                            `0x${creatorAddress.replace('ST', '')}`,
+                            `u${seasonId}`
+                        ]
+                    };
+
+                    const url = `${API_BASE}/v2/contracts/call-read/${contractAddress}/subscription-nft-v5/get-season-info`;
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(callData)
+                    });
+
+                    const result = await response.json();
+                    
+                    if (response.ok && result.okay === true) {
+                        results.push(`✅ 季度 ${seasonId}: 找到數據`);
+                        log(`找到季度 ${seasonId}`, 'success');
+                    } else {
+                        results.push(`❌ 季度 ${seasonId}: ${result.error || '無數據'}`);
+                    }
+                } catch (error) {
+                    results.push(`⚠️ 季度 ${seasonId}: 查詢錯誤`);
+                }
+            }
+
+            updateResult('basicTestResult', 
+                `🔍 所有季度測試完成:\n${results.join('\n')}`, 
+                'info'
+            );
+        }
+
+        async function debugRawData() {
+            updateResult('debugResult', '開始深度調試...', 'info');
+            
+            // 這裡會是更詳細的調試邏輯
+            const mockData = {
+                "active": true,
+                "created-at": 3597258,
+                "current-supply": 0,
+                "description": "",
+                "image-uri": "",
+                "price": 10000000000000,
+                "revenue-split-enabled": true
+            };
+
+            updateResult('debugResult', 
+                `🔬 模擬解析結果:\n${JSON.stringify(mockData, null, 2)}\n\n📊 UI 顯示數據:\n價格: ${(mockData.price / 1000000).toFixed(1)} STX\n銷售: ${mockData['current-supply']}/${9999}\n狀態: ${mockData.active ? '啟用' : '停用'}`, 
+                'info'
+            );
+        }
+
+        async function testDataParsing() {
+            updateResult('debugResult', '測試數據解析邏輯...', 'info');
+            
+            // 模擬前端解析邏輯
+            const clarityResponse = {
+                type: 11, // some type
+                value: {
+                    type: 12, // tuple type
+                    data: {
+                        "active": { type: 4 }, // bool-true
+                        "created-at": { type: 1, value: "3597258" },
+                        "current-supply": { type: 1, value: "0" },
+                        "description": { type: 13, data: "" },
+                        "image-uri": { type: 13, data: "" },
+                        "price": { type: 1, value: "10000000000000" },
+                        "revenue-split-enabled": { type: 4 }
+                    }
+                }
+            };
+
+            updateResult('debugResult', 
+                `🧠 Clarity 數據結構:\n${JSON.stringify(clarityResponse, null, 2)}`, 
+                'info'
+            );
+        }
+
+        async function simulateUIData() {
+            updateResult('debugResult', '模擬 UI 數據格式...', 'info');
+            
+            const uiData = {
+                seasonId: 20254,
+                quarterName: "2025 Q4",
+                description: "第 20254 季 VIP 訂閱章 - 解鎖專屬內容和特殊權益",
+                image: null, // 無圖片
+                price: 10000000000000,
+                priceSTX: "10000000.0 STX",
+                currentSupply: 0,
+                maxSupply: 9999,
+                active: true,
+                status: "active"
+            };
+
+            updateResult('debugResult', 
+                `🎨 UI 數據格式:\n${JSON.stringify(uiData, null, 2)}\n\n✨ 這就是前端應該顯示的數據格式`, 
+                'success'
+            );
+        }
+
+        // 頁面載入時的初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            log('NFT 調試工具已載入', 'success');
+        });
+    </script>
+</body>
+</html>

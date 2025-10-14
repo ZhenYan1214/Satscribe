@@ -37,6 +37,18 @@
           <span>刷新</span>
         </button>
         
+        <!-- 調試按鈕 -->
+        <button 
+          @click="debugContractData" 
+          class="bg-yellow-600/20 border border-yellow-500/30 rounded-xl px-4 py-2 text-yellow-400 text-sm hover:bg-yellow-600/30 transition-all flex items-center space-x-2"
+          title="調試合約數據"
+        >
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+          </svg>
+          <span>調試</span>
+        </button>
+        
         <!-- 創建 NFT 按鈕 -->
         <button 
           @click="showCreateModal = true" 
@@ -113,19 +125,22 @@
           <div class="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4 bg-gradient-to-br from-web3-purple/20 to-web3-cyan/20">
             <!-- NFT 圖片 -->
             <img 
-              v-if="(nft.image || nft.imageUri) && (nft.image || nft.imageUri) !== ''" 
-              :src="nft.image || nft.imageUri" 
+              v-if="getNFTImageUrl(nft)" 
+              :src="getNFTImageUrl(nft)" 
               :alt="`${nft.quarterName || '第 ' + nft.seasonId + ' 季'} NFT`"
               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               @error="handleImageError(nft, $event)"
             />
-            <!-- 佔位符 -->
-            <div v-else class="w-full h-full flex items-center justify-center text-white/50">
+            <!-- 改進的佔位符 -->
+            <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-web3-purple/30 to-web3-cyan/30">
               <div class="text-center">
-                <svg class="w-16 h-16 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v1.586l8.707 8.707a1 1 0 001.414 0L20.828 6.5a1 1 0 000-1.414L12.707.293a1 1 0 00-1.414 0L2.586 8.5A2 2 0 002 10v8a2 2 0 002 2h16a2 2 0 002-2V4a2 2 0 00-2-2H4z" clip-rule="evenodd"/>
-                </svg>
-                <p class="text-sm">新增圖片</p>
+                <div class="w-20 h-20 bg-web3-purple/40 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-10 h-10 text-white/80" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v1.586l8.707 8.707a1 1 0 001.414 0L20.828 6.5a1 1 0 000-1.414L12.707.293a1 1 0 00-1.414 0L2.586 8.5A2 2 0 002 10v8a2 2 0 002 2h16a2 2 0 002-2V4a2 2 0 00-2-2H4z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <p class="text-sm text-white/80 font-medium">第 {{ nft.seasonId }} 季</p>
+                <p class="text-xs text-white/60">VIP 會員章</p>
               </div>
             </div>
             
@@ -209,7 +224,7 @@
               <div class="text-center p-3 bg-glass-dark rounded-xl">
                 <div class="text-white/60 text-xs mb-1">銷售</div>
                 <div class="text-lg font-bold text-web3-cyan">
-                  {{ nft.currentSupply }}/{{ nft.maxSupply }}
+                  {{ getSafeSupply(nft, 'current') }}/{{ getSafeSupply(nft, 'max') }}
                 </div>
               </div>
             </div>
@@ -221,12 +236,12 @@
                   <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0z"/>
                   </svg>
-                  <span>{{ nft.currentSupply }} 持有者</span>
+                  <span>{{ getSafeSupply(nft, 'current') }} 持有者</span>
                 </div>
               </div>
               <div class="text-right">
                 <div class="text-web3-emerald font-bold text-sm">
-                  {{ formatRevenue(nft.price * nft.currentSupply) }} STX
+                  {{ formatRevenue(getNFTRevenue(nft)) }} STX
                 </div>
                 <div class="text-white/50 text-xs">總收益</div>
               </div>
@@ -613,49 +628,78 @@ export default {
     // 方法
     const loadSubscriptions = async () => {
       if (!walletStore.isConnected || !walletStore.userAddress) {
-        console.log('錢包未連接')
+        console.log('❌ 錢包未連接，無法載入NFT數據')
         return
       }
 
       try {
         isLoading.value = true
-        console.log('載入創作者 NFT 季度資料...')
+        console.log('🔄 開始載入創作者 NFT 季度資料...')
+        console.log('📍 用戶地址:', walletStore.userAddress)
         
         // 使用新的優化數據結構載入創作者的所有 NFT 季度
         const creatorSeasons = await contractsStore.getCreatorNFTSeasons(walletStore.userAddress, true)
+        console.log('📊 從合約獲取的季度數據:', creatorSeasons)
         
-        if (creatorSeasons && Array.isArray(creatorSeasons)) {
+        if (creatorSeasons && Array.isArray(creatorSeasons) && creatorSeasons.length > 0) {
+          console.log('✅ 找到', creatorSeasons.length, '個季度')
+          
           // 轉換為舊格式以保持UI兼容性
-          const convertedSubscriptions = creatorSeasons.map(season => ({
-            seasonId: season.seasonId,
-            price: season.pricing.price,
-            priceSTX: season.pricing.priceSTX,
-            maxSupply: season.pricing.maxSupply,
-            currentSupply: season.pricing.currentSupply,
-            expiryDate: new Date(season.quarter.endDate),
-            tier: season.metadata.tier,
-            active: season.status.isActive,
-            quarter: season.quarter.quarter,
-            year: season.quarter.year,
-            quarterName: season.quarter.displayName,
-            image: season.media.imageUri,
-            description: season.metadata.description,
-            status: season.status.displayStatus,
-            hasImage: season.media.hasImage,
-            _optimized: season // 保留完整的優化數據
-          }))
+          const convertedSubscriptions = creatorSeasons.map((season, index) => {
+            console.log(`🔄 轉換季度 ${index + 1}:`, season)
+            
+            return {
+              seasonId: season.seasonId,
+              price: season.pricing?.price || 0,
+              priceSTX: season.pricing?.priceSTX || '0 STX',
+              maxSupply: season.pricing?.maxSupply || 9999,
+              currentSupply: season.pricing?.currentSupply || 0,
+              expiryDate: season.quarter?.endDate ? new Date(season.quarter.endDate) : new Date(),
+              tier: season.metadata?.tier || 'VIP',
+              active: season.status?.isActive || true,
+              quarter: season.quarter?.quarter || 4,
+              year: season.quarter?.year || 2025,
+              quarterName: season.quarter?.displayName || `第 ${season.seasonId} 季`,
+              image: season.media?.imageUri || '',
+              description: season.metadata?.description || '',
+              status: season.status?.displayStatus || 'active',
+              hasImage: season.media?.hasImage || false,
+              metadata: season.metadata,
+              pricing: season.pricing,
+              _optimized: season // 保留完整的優化數據
+            }
+          })
           
           subscriptions.value = convertedSubscriptions
-          console.log('載入的創作者季度數據:', subscriptions.value)
+          console.log('✅ NFT數據載入完成，共', convertedSubscriptions.length, '個NFT')
+          console.log('📋 最終的訂閱數據:', subscriptions.value)
+          
+          // 顯示每個NFT的關鍵信息
+          convertedSubscriptions.forEach((nft, index) => {
+            console.log(`NFT ${index + 1}:`, {
+              seasonId: nft.seasonId,
+              price: nft.priceSTX,
+              supply: `${nft.currentSupply}/${nft.maxSupply}`,
+              status: nft.status,
+              hasImage: nft.hasImage
+            })
+          })
+          
         } else {
-          console.log('無創作者季度數據')
+          console.log('⚠️ 未找到任何季度數據')
           subscriptions.value = []
         }
         
       } catch (error) {
-        console.error('載入訂閱失敗:', error)
+        console.error('❌ 載入訂閱失敗:', error)
+        subscriptions.value = []
       } finally {
         isLoading.value = false
+        console.log('🏁 載入過程結束，最終狀態:', {
+          載入中: isLoading.value,
+          NFT數量: subscriptions.value.length,
+          會顯示空狀態: subscriptions.value.length === 0
+        })
       }
     }
     
@@ -870,8 +914,107 @@ export default {
     }
     
     const openNFTDetail = (nft) => {
-      // 可以導向詳細頁面或開啟詳細模態框
       console.log('開啟 NFT 詳情:', nft)
+      
+      // 創建詳細信息模態框
+      const detailsHtml = `
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" onclick="this.remove()">
+          <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+            <div class="p-6">
+              <!-- 標題 -->
+              <div class="flex justify-between items-start mb-6">
+                <div>
+                  <h2 class="text-2xl font-bold text-white mb-2">${getNFTDisplayName(nft)}</h2>
+                  <p class="text-gray-400">季度 ID: ${nft.seasonId}</p>
+                </div>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-white transition-colors">
+                  <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- NFT 圖片 -->
+              <div class="aspect-[4/3] rounded-xl overflow-hidden mb-6 bg-gradient-to-br from-purple-500/20 to-cyan-500/20">
+                ${getNFTImageUrl(nft) ? 
+                  `<img src="${getNFTImageUrl(nft)}" alt="NFT" class="w-full h-full object-cover">` :
+                  `<div class="w-full h-full flex items-center justify-center">
+                    <div class="text-center">
+                      <div class="w-24 h-24 bg-purple-500/40 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-12 h-12 text-white/80" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v1.586l8.707 8.707a1 1 0 001.414 0L20.828 6.5a1 1 0 000-1.414L12.707.293a1 1 0 00-1.414 0L2.586 8.5A2 2 0 002 10v8a2 2 0 002 2h16a2 2 0 002-2V4a2 2 0 00-2-2H4z" clip-rule="evenodd"/>
+                        </svg>
+                      </div>
+                      <p class="text-white/80 font-medium">第 ${nft.seasonId} 季</p>
+                      <p class="text-white/60">VIP 會員章</p>
+                    </div>
+                  </div>`
+                }
+              </div>
+
+              <!-- 基本信息網格 -->
+              <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-gray-800 rounded-xl p-4">
+                  <div class="text-gray-400 text-sm mb-1">價格</div>
+                  <div class="text-2xl font-bold text-yellow-400">${getFormattedPrice(nft)}</div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-4">
+                  <div class="text-gray-400 text-sm mb-1">銷售量</div>
+                  <div class="text-2xl font-bold text-cyan-400">${getSafeSupply(nft, 'current')}/${getSafeSupply(nft, 'max')}</div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-4">
+                  <div class="text-gray-400 text-sm mb-1">狀態</div>
+                  <div class="text-lg font-bold ${nft.status === 'active' || nft.active ? 'text-green-400' : 'text-red-400'}">
+                    ${nft.status === 'active' || nft.active ? '🟢 活躍中' : '🔴 已結束'}
+                  </div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-4">
+                  <div class="text-gray-400 text-sm mb-1">總收益</div>
+                  <div class="text-lg font-bold text-green-400">${formatRevenue(getNFTRevenue(nft))} STX</div>
+                </div>
+              </div>
+
+              <!-- 描述 -->
+              <div class="bg-gray-800 rounded-xl p-4 mb-6">
+                <div class="text-gray-400 text-sm mb-2">描述</div>
+                <div class="text-white">${nft.description || nft.metadata?.description || `第 ${nft.seasonId} 季 VIP 訂閱章 - 解鎖專屬內容和特殊權益`}</div>
+              </div>
+
+              <!-- 技術信息 -->
+              <div class="bg-gray-800 rounded-xl p-4">
+                <div class="text-gray-400 text-sm mb-2">技術信息</div>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">合約地址:</span>
+                    <span class="text-gray-300 font-mono">ST2FGW...301HQ</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">創建時間:</span>
+                    <span class="text-gray-300">${nft.timestamps?.created ? new Date(nft.timestamps.created * 1000).toLocaleString() : '未知'}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-400">分潤啟用:</span>
+                    <span class="text-gray-300">${nft.metadata?.enableRevenueSplit ? '✅ 是' : '❌ 否'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 操作按鈕 -->
+              <div class="flex gap-4 mt-6">
+                <button onclick="alert('編輯功能開發中...')" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-medium transition-colors">
+                  編輯 NFT
+                </button>
+                <button onclick="alert('管理功能開發中...')" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-xl font-medium transition-colors">
+                  管理銷售
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+      
+      // 添加到頁面
+      document.body.insertAdjacentHTML('beforeend', detailsHtml)
     }
     
     const editNFT = (nft) => {
@@ -905,15 +1048,60 @@ export default {
       return `第 ${nft.seasonId} 季 VIP 會員章`
     }
     
+    const getNFTImageUrl = (nft) => {
+      // 嘗試多種可能的圖片字段
+      const possibleImages = [
+        nft.image,
+        nft.imageUri,
+        nft.media?.imageUri,
+        nft._optimized?.media?.imageUri
+      ]
+      
+      for (const img of possibleImages) {
+        if (img && img !== '') {
+          return img
+        }
+      }
+      
+      return null
+    }
+    
     const formatPrice = (price) => {
       return parseFloat(price || 0).toFixed(1)
     }
     
     const getFormattedPrice = (nft) => {
+      // 嘗試多種可能的價格字段
       if (nft.priceSTX) {
         return `${nft.priceSTX} STX`
       }
-      return `${formatPrice(nft.price / 1000000)} STX`
+      
+      if (nft.pricing?.priceSTX) {
+        return `${nft.pricing.priceSTX} STX`
+      }
+      
+      // 直接從price字段計算
+      const price = nft.price || nft.pricing?.price || 0
+      if (price > 0) {
+        return `${formatPrice(price / 1000000)} STX`
+      }
+      
+      return '0 STX'
+    }
+    
+    const getSafeSupply = (nft, type) => {
+      if (type === 'current') {
+        return nft.currentSupply || nft.pricing?.currentSupply || 0
+      } else if (type === 'max') {
+        return nft.maxSupply || nft.pricing?.maxSupply || 9999
+      }
+      return 0
+    }
+    
+    const getNFTRevenue = (nft) => {
+      const price = nft.price || nft.pricing?.price || 0
+      const currentSupply = getSafeSupply(nft, 'current')
+      return (price * currentSupply) / 1000000 // 轉換為 STX
     }
     
     const formatRevenue = (revenue) => {
@@ -926,6 +1114,43 @@ export default {
       const sizes = ['Bytes', 'KB', 'MB', 'GB']
       const i = Math.floor(Math.log(bytes) / Math.log(k))
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+    }
+    
+    // 調試合約數據
+    const debugContractData = async () => {
+      if (!walletStore.userAddress) {
+        alert('請先連接錢包')
+        return
+      }
+      
+      console.log('🔧 開始調試合約數據...')
+      console.log('📍 創作者地址:', walletStore.userAddress)
+      
+      try {
+        // 直接測試季度20254
+        console.log('1. 測試季度20254...')
+        const result = await contractsStore.debugSeasonData(walletStore.userAddress, 20254)
+        console.log('調試結果:', result)
+        
+        // 手動觸發數據刷新
+        console.log('2. 手動刷新數據...')
+        await refreshNFTData()
+        
+        // 顯示當前狀態
+        console.log('3. 當前狀態總結:')
+        console.log('   - NFT數量:', subscriptions.value.length)
+        console.log('   - 會顯示空狀態嗎?', subscriptions.value.length === 0)
+        console.log('   - 訂閱數據:', subscriptions.value)
+        
+        alert(`調試完成！
+NFT數量: ${subscriptions.value.length}
+會顯示空狀態: ${subscriptions.value.length === 0 ? '是' : '否'}
+詳細信息請查看控制台`)
+        
+      } catch (error) {
+        console.error('調試失敗:', error)
+        alert('調試失敗: ' + error.message)
+      }
     }
     
     // 監聽錢包連接狀態變化
@@ -942,8 +1167,15 @@ export default {
     
     // 生命週期
     onMounted(async () => {
+      console.log('🚀 SubscriptionManager 組件載入中...')
       await walletStore.initUserSession()
-      await loadSubscriptions()
+      
+      if (walletStore.isConnected) {
+        console.log('✅ 錢包已連接，用戶地址:', walletStore.userAddress)
+        await loadSubscriptions()
+      } else {
+        console.log('⚠️ 錢包未連接')
+      }
     })
     
     return {
@@ -970,6 +1202,7 @@ export default {
       // 方法
       loadSubscriptions,
       refreshNFTData,
+      debugContractData,
       triggerFileUpload,
       handleFileSelect,
       removeImage,
@@ -980,8 +1213,11 @@ export default {
       toggleNFTStatus,
       handleImageError,
       getNFTDisplayName,
+      getNFTImageUrl,
       formatPrice,
       getFormattedPrice,
+      getSafeSupply,
+      getNFTRevenue,
       formatRevenue,
       formatFileSize,
       

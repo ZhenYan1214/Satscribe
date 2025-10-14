@@ -1,0 +1,38 @@
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="articleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+      <stop offset="25%" style="stop-color:#4ECDC4;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#45B7D1;stop-opacity:1" />
+      <stop offset="75%" style="stop-color:#96CEB4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FECA57;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="600" height="400" fill="url(#articleGrad)" rx="15"/>
+  
+  <!-- 主要視覺元素 -->
+  <circle cx="150" cy="120" r="60" fill="white" opacity="0.9"/>
+  <text x="150" y="130" text-anchor="middle" fill="#FF6B6B" font-family="Arial, sans-serif" font-size="24" font-weight="bold">🎨</text>
+  
+  <!-- 文字內容 -->
+  <rect x="250" y="60" width="320" height="120" fill="rgba(255,255,255,0.95)" rx="10"/>
+  <text x="270" y="85" fill="#333" font-family="Arial, sans-serif" font-size="20" font-weight="bold">解鎖 2025 創作之旅</text>
+  <text x="270" y="110" fill="#666" font-family="Arial, sans-serif" font-size="14">加入 VIP 會員，獲得獨家內容</text>
+  <text x="270" y="130" fill="#666" font-family="Arial, sans-serif" font-size="14">• 專屬創作過程分享</text>
+  <text x="270" y="150" fill="#666" font-family="Arial, sans-serif" font-size="14">• 早期作品預覽權限</text>
+  <text x="270" y="170" fill="#666" font-family="Arial, sans-serif" font-size="14">• 與創作者直接互動機會</text>
+  
+  <!-- 裝飾元素 -->
+  <circle cx="500" cy="250" r="40" fill="white" opacity="0.7"/>
+  <text x="500" y="260" text-anchor="middle" fill="#4ECDC4" font-family="Arial, sans-serif" font-size="30">💎</text>
+  
+  <!-- NFT標識 -->
+  <rect x="50" y="250" width="500" height="80" fill="rgba(0,0,0,0.7)" rx="15"/>
+  <text x="300" y="280" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="18" font-weight="bold">限量 VIP 會員 NFT</text>
+  <text x="300" y="305" text-anchor="middle" fill="#FECA57" font-family="Arial, sans-serif" font-size="16">僅售 10 STX • 終身會員權益</text>
+  
+  <!-- 創作者簽名 -->
+  <text x="520" y="380" fill="white" font-family="Arial, sans-serif" font-size="12" opacity="0.8">by zhenyan</text>
+</svg>

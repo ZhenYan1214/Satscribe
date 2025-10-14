@@ -221,7 +221,7 @@
         (begin
           (try! (stx-transfer? price subscriber (as-contract tx-sender)))
           ;; Call revenue splitter contract
-          (try! (contract-call? .revenue-splitter-v4 distribute-nft-revenue creator price))
+          (try! (contract-call? .revenue-splitter-v5 distribute-nft-revenue creator price))
           true
         )
         ;; Revenue split disabled: transfer directly to creator
@@ -262,7 +262,7 @@
       )
       
       ;; Update creator statistics
-      (try! (contract-call? .creator-registry-v4 update-stats creator price u0 1 0))
+      (try! (contract-call? .creator-registry-v5 update-stats creator price u0 1 0))
       
       (ok token-id)
     )

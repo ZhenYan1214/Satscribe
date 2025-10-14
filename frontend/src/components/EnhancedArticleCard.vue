@@ -98,6 +98,33 @@
           </p>
         </div>
         
+        <!-- NFT 購買區域 (如果文章有 NFT) -->
+        <div v-if="article.hasNFT" class="mb-4 p-4 bg-gradient-to-r from-web3-purple/20 to-web3-cyan/20 rounded-xl border border-web3-purple/30">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-web3-purple to-web3-cyan rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v1.586l8.707 8.707a1 1 0 001.414 0L20.828 6.5a1 1 0 000-1.414L12.707.293a1 1 0 00-1.414 0L2.586 8.5A2 2 0 002 10v8a2 2 0 002 2h16a2 2 0 002-2V4a2 2 0 00-2-2H4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-white font-semibold text-sm">VIP 會員 NFT</h4>
+                <p class="text-web3-cyan text-xs">{{ article.nftPrice }} STX • {{ article.nftSupply.current }}/{{ article.nftSupply.max }}</p>
+              </div>
+            </div>
+            <button 
+              @click.stop="handleNFTPurchase(article)"
+              class="bg-gradient-to-r from-web3-purple to-web3-cyan hover:from-web3-purple/80 hover:to-web3-cyan/80 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-web3-purple/25"
+            >
+              購買訂閱權
+            </button>
+          </div>
+          <!-- NFT 權益說明 -->
+          <div class="mt-3 text-xs text-web3-gray-300">
+            💎 終身會員權益 • 🎨 獨家內容 • 🚀 早期預覽
+          </div>
+        </div>
+
         <!-- Article Footer -->
         <div class="flex items-center justify-between pt-4 border-t border-web3-gray-700/50">
           <div class="flex items-center space-x-4">
@@ -200,6 +227,29 @@
             </p>
           </div>
           
+          <!-- NFT 購買區域 (列表視圖) -->
+          <div v-if="article.hasNFT" class="mb-4 p-3 bg-gradient-to-r from-web3-purple/20 to-web3-cyan/20 rounded-lg border border-web3-purple/30">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gradient-to-br from-web3-purple to-web3-cyan rounded-lg flex items-center justify-center">
+                  <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v1.586l8.707 8.707a1 1 0 001.414 0L20.828 6.5a1 1 0 000-1.414L12.707.293a1 1 0 00-1.414 0L2.586 8.5A2 2 0 002 10v8a2 2 0 002 2h16a2 2 0 002-2V4a2 2 0 00-2-2H4z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-white font-semibold text-sm">VIP NFT • {{ article.nftPrice }} STX</p>
+                  <p class="text-web3-cyan text-xs">{{ article.nftSupply.current }}/{{ article.nftSupply.max }} 已售出</p>
+                </div>
+              </div>
+              <button 
+                @click.stop="handleNFTPurchase(article)"
+                class="bg-gradient-to-r from-web3-purple to-web3-cyan hover:from-web3-purple/80 hover:to-web3-cyan/80 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 hover:scale-105"
+              >
+                購買訂閱權
+              </button>
+            </div>
+          </div>
+
           <!-- Article Footer -->
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-6 text-sm">
@@ -272,8 +322,18 @@ export default {
       validator: (value) => ['grid', 'list'].includes(value)
     }
   },
-  emits: ['click'],
+  emits: ['click', 'nftPurchase'],
   methods: {
+    handleNFTPurchase(article) {
+      // 發出 NFT 購買事件給父組件處理
+      console.log('🛒 用戶點擊購買 NFT:', article.title)
+      this.$emit('nftPurchase', {
+        article,
+        nftSeasonId: article.nftSeasonId,
+        creatorAddress: article.author.id,
+        price: article.nftPrice
+      })
+    },
     formatDate(date) {
       const now = new Date()
       const articleDate = new Date(date)
