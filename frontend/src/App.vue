@@ -16,10 +16,10 @@
         <div class="flex justify-between items-center h-20">
           <!-- Logo -->
           <div class="flex items-center space-x-3">
-            <router-link to="/" class="flex items-center space-x-3 group">
+            <router-link to="/" class="flex items-center space-x-1.5 group">
               <!-- Site Logo Image -->
               <div class="relative w-12 h-12 rounded-2xl overflow-hidden shadow-glow group-hover:shadow-glow-lg transition-all duration-300">
-                <img src="@/assets/LOGO.png" alt="Satscribe Logo" class="w-full h-full object-cover" />
+                <img src="@/assets/LOGO.png" alt="Satscribe Logo" class="w-full h-full object-cover transform rotate-[10deg]" />
               </div>
               <div>
                 <h1 class="text-2xl font-display font-bold text-gradient-web3">Satscribe</h1>

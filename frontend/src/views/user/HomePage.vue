@@ -105,27 +105,27 @@
         <div class="flex flex-col sm:flex-row items-center justify-start space-y-4 sm:space-y-0 sm:space-x-6 mb-16"> 
           <button 
             @click="switchToCreator"
-            class="btn-web3 text-lg px-8 py-4 rounded-2xl relative group overflow-hidden min-w-[200px]"
+            class="btn-web3 text-[20px] px-8 py-4 rounded-2xl relative group overflow-hidden min-w-[200px]"
           >
             <span class="relative z-10 flex items-center justify-center space-x-2">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"/>
               </svg>
-              <span>成為創作者</span>
+              <span>Become a creator</span>
             </span>
             <div class="absolute inset-0 bg-gradient-to-r from-web3-purple to-web3-pink opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </button>
           
           <button 
             @click="goToExplore"
-            class="btn-glass text-lg px-8 py-4 rounded-2xl min-w-[200px] group"
+            class="btn-glass text-[16px] px-8 py-4 rounded-2xl min-w-[200px] group"
           >
             <span class="flex items-center justify-center space-x-2">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                 <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
               </svg>
-              <span>探索平台</span>
+              <span>Explore the Platform</span>
             </span>
           </button>
         </div>
@@ -134,19 +134,19 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
           <div class="text-center animate-scale-in" style="animation-delay: 0.2s;">
             <div class="text-3xl md:text-4xl font-bold text-gradient-web3 mb-2">{{ platformStats.totalCreators || 0 }}</div>
-            <div class="text-web3-silver">創作者</div>
+            <div class="text-web3-silver">Creator</div>
           </div>
           <div class="text-center animate-scale-in" style="animation-delay: 0.4s;">
             <div class="text-3xl md:text-4xl font-bold text-gradient-web3 mb-2">{{ platformStats.totalNFTs || 0 }}</div>
-            <div class="text-web3-silver">訂閱章 NFT</div>
+            <div class="text-web3-silver">Subscription  NFT</div>
           </div>
           <div class="text-center animate-scale-in" style="animation-delay: 0.6s;">
             <div class="text-3xl md:text-4xl font-bold text-gradient-web3 mb-2">{{ platformStats.totalRevenue || 0 }}</div>
-            <div class="text-web3-silver">STX 總收益</div>
+            <div class="text-web3-silver">STX Revenue</div>
           </div>
           <div class="text-center animate-scale-in" style="animation-delay: 0.8s;">
             <div class="text-3xl md:text-4xl font-bold text-gradient-web3 mb-2">{{ platformStats.satisfaction || 100 }}%</div>
-            <div class="text-web3-silver">創作者滿意度</div>
+            <div class="text-web3-silver">Creator Satisfaction</div>
           </div>
         </div>
       </div>
@@ -164,11 +164,11 @@
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-20">
           <h2 class="text-4xl md:text-6xl font-display font-bold mb-6">
-            <span class="text-gradient-web3">重新定義</span><br>
-            <span class="text-white">創作者經濟</span>
+            <span class="text-gradient-web3">Re-definition</span><br>
+            <span class="text-white">The Creator Economy</span>
           </h2>
           <p class="text-xl text-white/80 max-w-3xl mx-auto">
-            基於 Stacks 區塊鏈的創新 Creator-Fi 平台，讓支持變成可收藏的數位資產
+            An innovative Creator-Fi platform built on the Stacks blockchain, turning support into collectible digital assets.
           </p>
         </div>
 
@@ -181,13 +181,13 @@
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
               </div>
-              <h3 class="text-2xl font-bold text-white mb-3">可收藏的支持證明</h3>
+              <h3 class="text-2xl font-bold text-white mb-3">Collectible Proof of Support</h3>
               <p class="text-white/70 leading-relaxed">
-                每次訂閱都鑄造為獨一無二的 Soulbound Token，永久記錄您的支持歷程，讓每一份支持都成為珍貴的數位收藏。
+                Each subscription is minted as a unique Soulbound Token, permanently recording your history of support and turning every contribution into a valuable digital collectible.
               </p>
             </div>
             <div class="flex items-center text-web3-cyan text-sm font-medium">
-              <span>了解更多</span>
+              <span>Read more</span>
               <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
               </svg>
@@ -202,13 +202,13 @@
                   <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
                 </svg>
               </div>
-              <h3 class="text-2xl font-bold text-white mb-3">智慧分潤機制</h3>
+              <h3 class="text-2xl font-bold text-white mb-3">Smart Revenue Sharing </h3>
               <p class="text-white/70 leading-relaxed">
-                基於 Clarity 智慧合約的透明收益分配系統，讓工作室成員獲得公平報酬，所有分配規則公開透明且不可篡改。
+                A transparent revenue distribution system based on Clarity Smart Contracts, ensuring fair compensation for studio members, with all distribution rules public
               </p>
             </div>
             <div class="flex items-center text-web3-cyan text-sm font-medium">
-              <span>了解更多</span>
+              <span>Read more</span>
               <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
               </svg>
@@ -218,18 +218,18 @@
           <!-- 特色卡片 3 -->
           <div class="card-web3 p-8 group hover:scale-105 transition-all duration-500" style="animation-delay: 0.4s;">
             <div class="relative mb-6">
-              <div class="w-16 h-16 bg-gradient-to-br from-web3-gold to-web3-pink rounded-2xl flex items-center justify-center mb-4 group-hover:shadow-glow transition-all duration-300">
+              <div class="w-16 h-16 bg-gradient-to-br from-web3-cyan to-web3-blue rounded-2xl flex items-center justify-center mb-4 group-hover:shadow-glow transition-all duration-300">
                 <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
                 </svg>
               </div>
-              <h3 class="text-2xl font-bold text-white mb-3">真正的去中心化</h3>
+              <h3 class="text-2xl font-bold text-white mb-3">True Decentralization</h3>
               <p class="text-white/70 leading-relaxed">
-                建立在 Bitcoin L2 Stacks 上，創作者完全掌控自己的收益和數據，無需依賴中心化平台，真正實現創作自由。
+                Built on Bitcoin L2 Stacks, creators maintain full control over their revenue and data, eliminating reliance on centralized platforms and truly realizing creative freedom.
               </p>
             </div>
             <div class="flex items-center text-web3-cyan text-sm font-medium">
-              <span>了解更多</span>
+              <span>Read more</span>
               <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
               </svg>
@@ -237,52 +237,17 @@
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- 熱門創作者區TTTTTT -->
-    
-    <!-- CTA 區域 -->
-    <section class="py-24 px-4 relative">
-      <div class="max-w-4xl mx-auto text-center">
-        <div class="card-web3 p-12 relative overflow-hidden">
-          <!-- 背景裝飾 -->
-          <div class="absolute inset-0 bg-gradient-to-br from-web3-purple/20 to-web3-cyan/20"></div>
-          
-          <div class="relative z-10">
-            <h2 class="text-4xl md:text-5xl font-display font-bold text-gradient-web3 mb-6">
-              準備好加入革命了嗎？
-            </h2>
-            <p class="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-              開始您的 Creator-Fi 之旅，讓每一份創作都獲得應有的價值與回報
-            </p>
-            <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-              <button 
-                @click="switchToCreator"
-                class="btn-web3 text-lg px-8 py-4 rounded-2xl min-w-[200px]"
-              >
-                立即開始創作
-              </button>
-              <button 
-                @click="goToExplore"
-                class="btn-glass text-lg px-8 py-4 rounded-2xl min-w-[200px]"
-              >
-                探索內容
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    </section>    
 
     <!-- 測試工作流程區 -->
     <section class="py-20 px-4 relative" v-if="testCreatorAddress">
       <div class="max-w-6xl mx-auto">
         <div class="text-center mb-16">
           <h2 class="text-3xl md:text-4xl font-display font-bold text-gradient-web3 mb-4">
-            收益分潤測試流程
+            Revenue Sharing Testing Process
           </h2>
           <p class="text-white/70 text-lg max-w-2xl mx-auto">
-            使用不同錢包地址購買您的 NFT，測試收益分潤機制是否正常運作
+            Use different wallet addresses to purchase your NFT and test that the revenue sharing mechanism functions correctly.
           </p>
         </div>
 
@@ -292,9 +257,9 @@
             <div class="w-12 h-12 bg-gradient-to-br from-web3-cyan to-web3-blue rounded-xl flex items-center justify-center mx-auto mb-4">
               <span class="text-white font-bold text-xl">1</span>
             </div>
-            <h3 class="text-xl font-bold text-white mb-3">切換到測試錢包</h3>
+            <h3 class="text-xl font-bold text-white mb-3">Switch to Test Wallet</h3>
             <p class="text-white/70 text-sm">
-              使用 Leather 錢包切換到另一個測試地址，或創建新的測試錢包
+              Using the Leather wallet, switch to a different test address, or create a new test wallet
             </p>
           </div>
 
@@ -303,20 +268,20 @@
             <div class="w-12 h-12 bg-gradient-to-br from-web3-purple to-web3-pink rounded-xl flex items-center justify-center mx-auto mb-4">
               <span class="text-white font-bold text-xl">2</span>
             </div>
-            <h3 class="text-xl font-bold text-white mb-3">購買您的 NFT</h3>
+            <h3 class="text-xl font-bold text-white mb-3">Purchase Your NFT</h3>
             <p class="text-white/70 text-sm">
-              點擊上方「測試購買 NFT」按鈕，使用測試錢包購買您自己的 NFT 季度
+              Click the "Test Purchase NFT" button above and use the test wallet to purchase your own NFT Quarter/Tier.
             </p>
           </div>
 
           <!-- 步驟 3 -->
           <div class="card-web3 p-6 text-center">
-            <div class="w-12 h-12 bg-gradient-to-br from-web3-gold to-web3-orange rounded-xl flex items-center justify-center mx-auto mb-4">
-              <span class="text-white font-bold text-xl">3</span>
-            </div>
-            <h3 class="text-xl font-bold text-white mb-3">驗證分潤結果</h3>
+            <div class="w-12 h-12 bg-gradient-to-br from-web3-cyan to-web3-green rounded-xl flex items-center justify-center mx-auto mb-4">
+    <span class="text-white font-bold text-xl">3</span>
+</div>
+            <h3 class="text-xl font-bold text-white mb-3">Verify Revenue Distribution</h3>
             <p class="text-white/70 text-sm">
-              檢查您的創作者錢包和工作室成員錢包，確認收益已按設定的比例自動分配
+              Check your creator wallet and studio member wallets to confirm that the revenue has been automatically distributed according to the set proportion.
             </p>
           </div>
         </div>
@@ -329,7 +294,7 @@
             <svg class="w-5 h-5 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            開始測試收益分潤
+            Start Revenue Sharing Test  
           </button>
         </div>
       </div>
