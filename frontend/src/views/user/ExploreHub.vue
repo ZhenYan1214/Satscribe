@@ -435,43 +435,32 @@ export default {
     // Enhanced mock articles with more realistic data  
     const allArticles = ref([])
     
-    // 動態加載真實的 NFT 文章
+    // 加載固定的第四季度 NFT 文章
     const loadRealNFTArticle = async () => {
-      console.log('🔍 正在加載真實的 NFT 文章...')
+      console.log('🔍 加載固定的第四季度 NFT 文章...')
       
-      // 檢查是否有真實的創作者和NFT數據
-      let realCreatorAddress = null
-      let hasRealNFT = false
+      // 使用固定的創作者地址和季度數據
+      const realCreatorAddress = 'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ'
+      const realSeasonId = 20254
+      const nftPrice = 10 // 固定顯示10 STX
+      const nftSupply = { current: 0, max: 9999 }
       
-      // 如果用戶已連接錢包，檢查是否有創建的NFT
-      if (walletStore.isConnected) {
-        try {
-          const seasonInfo = await contractsStore.getSeasonInfo(walletStore.userAddress, 20254, false)
-          if (seasonInfo && seasonInfo.price) {
-            realCreatorAddress = walletStore.userAddress
-            hasRealNFT = true
-            console.log('✅ 找到真實創作者NFT:', realCreatorAddress)
-          }
-        } catch (error) {
-          console.log('📍 當前用戶沒有創建NFT，使用默認演示')
-        }
-      }
+      console.log('✅ 使用固定數據:', {
+        creatorAddress: realCreatorAddress,
+        seasonId: realSeasonId,
+        price: nftPrice,
+        supply: nftSupply
+      })
       
-      // 如果沒有找到真實NFT，使用演示地址
-      if (!hasRealNFT) {
-        realCreatorAddress = 'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ'
-        console.log('🎯 使用演示創作者地址:', realCreatorAddress)
-      }
-      
-      // 創建真實的NFT文章
-      const realNFTArticle = {
-        id: 'demo-nft-real-creator',
-        title: '🎨 解鎖 2025 創作之旅 - VIP 會員限量招募',
-        excerpt: '加入我的 VIP 會員，獲得獨家創作內容、幕後花絮和早期作品預覽權限。限量發售，終身會員權益！',
+      // 創建第四季度NFT文章
+      const q4NFTArticle = {
+        id: 'q4-2025-nft',
+        title: '🎨 2025第四季 VIP 會員限量招募',
+        excerpt: '加入我的第四季 VIP 會員，獲得獨家創作內容、幕後花絮和早期作品預覽權限。限量發售，季度會員權益！',
         category: '創作者經濟',
         author: {
           id: realCreatorAddress,
-          name: hasRealNFT ? '你的創作' : 'zhenyan',
+          name: 'zhenyan',
           avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face',
           subscribers: 1250,
           verified: true
@@ -483,21 +472,18 @@ export default {
         comments: 12,
         views: 328,
         earnings: 0, // 剛發布，還沒收益
-        tags: ['NFT', 'VIP會員', '創作者經濟', '限量'],
+        tags: ['NFT', '第四季', 'VIP會員', '創作者經濟'],
         // NFT 相關信息
         hasNFT: true,
-        nftSeasonId: 20254,
-        nftPrice: 10,
-        nftSupply: {
-          current: 0,
-          max: 9999
-        },
-        isLatestNFT: true // 標記為最新NFT
+        nftSeasonId: realSeasonId,
+        nftPrice: nftPrice,
+        nftSupply: nftSupply,
+        isLatestNFT: true
       }
       
-      // 將真實NFT文章添加到列表開頭
-      allArticles.value.unshift(realNFTArticle)
-      console.log('✅ 真實NFT文章已添加到探索列表')
+      // 將NFT文章添加到列表開頭
+      allArticles.value.unshift(q4NFTArticle)
+      console.log('✅ 第四季度NFT文章已添加到探索列表')
     }
     
     // 初始化其他演示文章
