@@ -713,42 +713,84 @@ export default {
         return
       }
       
+      isLoading.value = true
+      
       try {
-        // 直接測試季度20254是否存在
-        console.log('🔍 直接測試季度20254是否存在...')
-        try {
-          const season20254 = await contractsStore.getSeasonInfo(walletStore.userAddress, 20254, true)
-          console.log('✅ 季度20254查詢結果:', season20254)
-        } catch (testError) {
-          console.log('❌ 季度20254查詢失敗:', testError)
-        }
-        
-        // 測試其他可能的季度ID
-        const testSeasonIds = [1, 2, 3, 4, 5, 20241, 20242, 20243, 20244, 20251, 20252, 20253, 20254]
-        console.log('🔍 測試所有可能的季度ID...')
-        for (const seasonId of testSeasonIds) {
-          try {
-            const seasonInfo = await contractsStore.getSeasonInfo(walletStore.userAddress, seasonId, true)
-            if (seasonInfo) {
-              console.log(`✅ 找到季度 ${seasonId}:`, seasonInfo)
-            }
-          } catch (err) {
-            // 靜默處理，只記錄找到的
-          }
-        }
-        
-        // 清除相關緩存
-        console.log('🧹 清除緩存...')
+        // 清除所有緩存確保從鏈上獲取最新數據
+        console.log('🧹 清除所有緩存...')
         contractsStore.clearCache('season', walletStore.userAddress)
         contractsStore.clearCache('creator', walletStore.userAddress)
         
-        // 重新載入數據
-        console.log('📥 重新載入 NFT 數據...')
-        await loadSubscriptions()
+        // 清空當前訂閱列表
+        subscriptions.value = []
         
-        console.log('✅ NFT 數據刷新完成')
+        // 掃描所有可能的季度ID，從鏈上獲取真實數據
+        const testSeasonIds = [1, 2, 3, 4, 5, 20241, 20242, 20243, 20244, 20251, 20252, 20253, 20254]
+        console.log('🔍 從鏈上掃描所有可能的季度ID...')
+        
+        const foundSeasons = []
+        
+        for (const seasonId of testSeasonIds) {
+          try {
+            console.log(`🔍 檢查季度 ${seasonId}...`)
+            const seasonInfo = await contractsStore.getSeasonInfo(walletStore.userAddress, seasonId, true)
+            
+            if (seasonInfo && seasonInfo.exists) {
+              console.log(`✅ 找到季度 ${seasonId}:`, seasonInfo)
+              foundSeasons.push({
+                seasonId,
+                ...seasonInfo
+              })
+            }
+          } catch (err) {
+            console.log(`❌ 季度 ${seasonId} 不存在或查詢失敗`)
+          }
+        }
+        
+        console.log(`🎯 總共找到 ${foundSeasons.length} 個真實季度:`, foundSeasons)
+        
+        // 將找到的真實季度轉換為訂閱格式
+        const realSubscriptions = foundSeasons.map(season => ({
+          id: `season-${season.seasonId}`,
+          title: `VIP 訂閱 - 季度 ${season.seasonId}`,
+          description: season.description || `季度 ${season.seasonId} VIP 會員權限`,
+          price: season.priceSTX || (season.price ? season.price / 1000000 : 10),
+          currency: 'STX',
+          subscribers: season.pricing?.currentSupply || 0,
+          maxSupply: season.pricing?.maxSupply || 9999,
+          earnings: (season.pricing?.currentSupply || 0) * (season.priceSTX || 10),
+          status: season.isActive ? 'active' : 'paused',
+          quarter: season.seasonId,
+          imageUrl: season.imageUri || '/src/assets/test/nft-default.svg',
+          benefits: [
+            '獨家內容存取',
+            '社群互動權限', 
+            '早期作品預覽',
+            '創作者互動機會'
+          ],
+          createdAt: season.createdAt || new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          // 真實鏈上數據標記
+          isRealNFT: true,
+          chainData: season
+        }))
+        
+        // 更新訂閱列表
+        subscriptions.value = realSubscriptions
+        console.log(`✅ 已載入 ${realSubscriptions.length} 個真實 NFT 訂閱`)
+        
+        // 如果沒有找到任何 NFT，顯示提示
+        if (realSubscriptions.length === 0) {
+          console.log('💡 沒有找到任何 NFT，請先創建一個')
+        }
+        
+        console.log('✅ NFT 數據刷新完成 - 全部來自鏈上真實數據')
+        
       } catch (error) {
         console.error('❌ 刷新 NFT 數據失敗:', error)
+        alert(`刷新數據失敗: ${error.message || error}`)
+      } finally {
+        isLoading.value = false
       }
     }
     
@@ -852,51 +894,98 @@ export default {
           enableRevenueSplit: nftForm.value.enableRevenueSplit
         }
 
-        console.log('創建 NFT 數據:', nftData)
+        console.log('🚀 開始創建 NFT...', nftData)
         
         // 先檢查當前季度
+        let targetSeasonId = null
         try {
           const currentQuarter = await contractsStore.getCurrentQuarter()
-          console.log('當前季度查詢結果:', currentQuarter)
+          console.log('📅 當前季度查詢結果:', currentQuarter)
+          targetSeasonId = currentQuarter
           
           // 檢查是否已經有這個季度的 season
-          const existingSeasonResult = await contractsStore.getSeasonInfo(walletStore.userAddress, currentQuarter || 4)
-          console.log('現有季度資料:', existingSeasonResult)
+          try {
+            const existingSeasonResult = await contractsStore.getSeasonInfo(walletStore.userAddress, targetSeasonId, true)
+            if (existingSeasonResult && existingSeasonResult.exists) {
+              console.log('⚠️ 季度', targetSeasonId, '已存在，無法重複創建')
+              alert(`季度 ${targetSeasonId} 已經存在，無法重複創建`)
+              return
+            }
+          } catch (checkError) {
+            console.log('🔍 季度不存在，可以創建')
+          }
           
         } catch (quarterError) {
-          console.log('季度查詢失敗:', quarterError)
+          console.log('❌ 季度查詢失敗，使用默認季度:', quarterError)
+          targetSeasonId = 20254 // 使用固定季度ID
         }
         
-        // 嘗試使用 create-season-auto
+        console.log('🎯 目標季度ID:', targetSeasonId)
+        
+        // 創建 NFT Season 並等待交易完成
+        let txResult = null
         try {
-          await contractsStore.createSeasonAuto({
-            price: nftData.price * 1000000,
+          console.log('🔄 使用 create-season-auto 方法...')
+          txResult = await contractsStore.createSeasonAuto({
+            price: nftData.price, // 不在這裡轉換，讓stores處理
             imageUri: nftData.imageUri,
             description: nftData.description,
             enableRevenueSplit: nftData.enableRevenueSplit
           })
-          console.log('create-season-auto 成功')
+          console.log('✅ create-season-auto 成功，交易ID:', txResult?.txId)
         } catch (autoError) {
-          console.log('create-season-auto 失敗，嘗試舊版方法:', autoError)
+          console.log('❌ create-season-auto 失敗，嘗試舊版方法:', autoError)
           
           // 回退到舊版方法
           const seasonData = {
-            seasonId: 5, // 使用Q1 2025 避免衝突
-            price: nftData.price * 1000000,
+            seasonId: targetSeasonId,
+            price: nftData.price, // 不在這裡轉換，讓stores處理
             maxSupply: 9999,
             expiryDate: Math.floor(Date.now() / 1000) + (90 * 24 * 60 * 60), // 90天後
             tier: 'VIP',
             enableRevenueSplit: nftData.enableRevenueSplit
           }
-          await contractsStore.createSeason(seasonData)
+          txResult = await contractsStore.createSeason(seasonData)
+          console.log('✅ create-season 成功，交易ID:', txResult?.txId)
         }
         
-        // 成功後清除緩存並重新載入數據
+        // 如果有交易ID，等待交易確認
+        if (txResult?.txId) {
+          console.log('⏳ 等待交易確認...', txResult.txId)
+          
+          // 等待 3 秒讓交易有時間上鏈
+          await new Promise(resolve => setTimeout(resolve, 3000))
+          
+          // 清除緩存確保從鏈上獲取最新數據
+          console.log('🧹 清除所有相關緩存...')
+          contractsStore.clearCache('season', walletStore.userAddress)
+          contractsStore.clearCache('creator', walletStore.userAddress)
+          
+          // 驗證創建是否成功
+          try {
+            const verifyResult = await contractsStore.getSeasonInfo(walletStore.userAddress, targetSeasonId, true)
+            console.log('✅ 創建驗證結果:', verifyResult)
+            
+            if (verifyResult && verifyResult.exists) {
+              console.log('🎉 NFT Season 創建成功並已上鏈!')
+            } else {
+              console.log('⚠️ 創建可能失敗，從鏈上未找到數據')
+            }
+          } catch (verifyError) {
+            console.log('❌ 無法驗證創建結果:', verifyError)
+          }
+        }
+        
+        // 重新載入數據
+        console.log('🔄 重新載入 NFT 數據...')
         await refreshNFTData()
+        
         closeModal()
+        alert('NFT 創建請求已提交！請等待鏈上確認後刷新頁面查看結果。')
         
       } catch (error) {
-        console.error('創建 NFT 失敗:', error)
+        console.error('❌ 創建 NFT 失敗:', error)
+        alert(`創建 NFT 失敗: ${error.message || error}`)
       }
     }
     
