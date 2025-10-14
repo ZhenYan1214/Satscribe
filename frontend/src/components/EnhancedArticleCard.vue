@@ -154,6 +154,18 @@
             <span>{{ article.earnings }} STX</span>
           </div>
         </div>
+        
+        <!-- Tags (Grid View) -->
+        <div v-if="article.tags && article.tags.length > 0" class="flex flex-wrap gap-2 mt-4">
+          <span 
+            v-for="tag in article.tags.slice(0, 3)" 
+            :key="tag"
+            class="px-3 py-1 bg-web3-primary/10 text-web3-primary text-xs rounded-full font-medium border border-web3-primary/20 hover:bg-web3-primary/20 transition-colors duration-200 cursor-pointer"
+          >
+            #{{ tag }}
+          </span>
+          <span v-if="article.tags.length > 3" class="text-web3-gray-400 text-xs py-1 px-2">+{{ article.tags.length - 3 }}</span>
+        </div>
       </div>
     </div>
     
@@ -285,26 +297,23 @@
             </div>
           </div>
         </div>
+        
+        <!-- Tags (List View) -->
+        <div v-if="article.tags && article.tags.length > 0" class="flex flex-wrap gap-2 mt-4">
+          <span 
+            v-for="tag in article.tags.slice(0, 3)" 
+            :key="tag"
+            class="px-3 py-1 bg-web3-primary/10 text-web3-primary text-xs rounded-full font-medium border border-web3-primary/20 hover:bg-web3-primary/20 transition-colors duration-200 cursor-pointer"
+          >
+            #{{ tag }}
+          </span>
+          <span v-if="article.tags.length > 3" class="text-web3-gray-400 text-xs py-1 px-2">+{{ article.tags.length - 3 }}</span>
+        </div>
       </div>
     </div>
     
-    <!-- Tags (Both Views) -->
-    <div v-if="article.tags && article.tags.length > 0" 
-         :class="[
-           'flex flex-wrap gap-2 mt-4',
-           viewMode === 'grid' ? 'px-6 pb-6' : 'px-6'
-         ]">
-      <span 
-        v-for="tag in article.tags.slice(0, 3)" 
-        :key="tag"
-        class="px-3 py-1 bg-web3-primary/10 text-web3-primary text-xs rounded-full font-medium border border-web3-primary/20 hover:bg-web3-primary/20 transition-colors duration-200 cursor-pointer"
-      >
-        #{{ tag }}
-      </span>
-      <span v-if="article.tags.length > 3" class="text-web3-gray-400 text-xs py-1 px-2">
-        +{{ article.tags.length - 3 }}
-      </span>
-    </div>
+    
+    
   </article>
 </template>
 
