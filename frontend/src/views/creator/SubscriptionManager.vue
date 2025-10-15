@@ -557,7 +557,7 @@ export default {
     const creatorInfo = computed(() => {
       return {
         name: '您',
-        avatar: '/default-avatar.png',
+        avatar: '/default-avatar.svg',
         verified: true
       }
     })
