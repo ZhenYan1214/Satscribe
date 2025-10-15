@@ -36,7 +36,7 @@
         <div class="flex-1">
           <div class="flex items-center space-x-3 mb-4">
             <img 
-              :src="creatorInfo?.avatar_uri || '/default-avatar.png'" 
+              :src="creatorInfo?.avatar_uri || '/default-avatar.svg'" 
               :alt="creatorInfo?.name"
               class="w-12 h-12 rounded-full border-2 border-web3-purple"
             />

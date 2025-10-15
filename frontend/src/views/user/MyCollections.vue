@@ -208,7 +208,7 @@
             <!-- 創作者信息 -->
             <div class="flex items-center space-x-3 mb-3">
               <img 
-                :src="nft.creatorAvatar || '/default-avatar.png'" 
+                :src="nft.creatorAvatar || '/default-avatar.svg'" 
                 :alt="nft.creatorName"
                 class="w-8 h-8 rounded-full border-2 border-web3-purple/50"
               />

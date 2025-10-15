@@ -44,7 +44,7 @@
         <!-- 創作者信息 -->
         <div class="flex items-center space-x-3 mb-4">
           <img 
-            :src="creatorInfo.avatar || '/default-avatar.png'" 
+            :src="creatorInfo.avatar || '/default-avatar.svg'" 
             :alt="creatorInfo.name"
             class="w-8 h-8 rounded-full border-2 border-web3-purple/50"
           />
@@ -150,7 +150,7 @@ export default {
       required: true,
       default: () => ({
         name: '創作者',
-        avatar: '/default-avatar.png',
+        avatar: '/default-avatar.svg',
         verified: false
       })
     },

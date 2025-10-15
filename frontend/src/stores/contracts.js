@@ -1015,15 +1015,22 @@ export const useContractsStore = defineStore('contracts', () => {
     if (!imageUri) {
       console.log(`🖼️ 為季度 ${seasonId} 應用圖片 fallback 策略`)
       
-      // 嘗試使用特定季度的測試圖片
-      const seasonTestImage = `/src/assets/test/nft-season-${seasonId}.svg`
-      console.log(`🎯 嘗試使用季度測試圖片: ${seasonTestImage}`)
-      imageUri = seasonTestImage
-      
-      // 如果沒有特定季度圖片，使用默認NFT圖片
-      if (!imageUri) {
-        imageUri = '/src/assets/test/nft-default.svg'
-        console.log(`🛡️ 使用默認NFT圖片: ${imageUri}`)
+      // 在生產環境中使用正確的靜態資源路徑
+      try {
+        // 嘗試使用特定季度的測試圖片
+        const seasonTestImage = new URL(`../assets/test/nft-season-${seasonId}.svg`, import.meta.url).href
+        console.log(`🎯 嘗試使用季度測試圖片: ${seasonTestImage}`)
+        imageUri = seasonTestImage
+      } catch (error) {
+        console.log(`❌ 季度 ${seasonId} 專用圖片不存在，使用默認圖片`)
+        try {
+          // 使用默認NFT圖片
+          imageUri = new URL('../assets/test/nft-default.svg', import.meta.url).href
+          console.log(`🛡️ 使用默認NFT圖片: ${imageUri}`)
+        } catch (fallbackError) {
+          console.log(`❌ 默認圖片也載入失敗，使用佔位符`)
+          imageUri = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"%3E%3Crect width="400" height="400" fill="%23f0f0f0"/%3E%3Ctext x="200" y="200" text-anchor="middle" dy=".3em" font-family="Arial" font-size="20" fill="%23999"%3ENFT%3C/text%3E%3C/svg%3E'
+        }
       }
     }
     
