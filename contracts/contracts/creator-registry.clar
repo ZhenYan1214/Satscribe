@@ -33,7 +33,6 @@
   { creator: principal }
   {
     subscription-price: uint,
-    lightning-enabled: bool,
     auto-payout: bool,
     content-tiers: (list 5 (string-ascii 20)),
     announcement: (string-ascii 300)
@@ -45,7 +44,6 @@
   { creator: principal }
   {
     total-nft-sales: uint,
-    total-lightning-tips: uint,
     active-subscribers: uint,
     content-count: uint,
     last-activity: uint
@@ -90,7 +88,6 @@
         { creator: creator }
         {
           subscription-price: u1000000, ;; Default 1 STX (micro STX)
-          lightning-enabled: false,
           auto-payout: true,
           content-tiers: (list "free" "premium"),
           announcement: ""
@@ -102,7 +99,6 @@
         { creator: creator }
         {
           total-nft-sales: u0,
-          total-lightning-tips: u0,
           active-subscribers: u0,
           content-count: u0,
           last-activity: stacks-block-height
@@ -152,7 +148,6 @@
 ;; Update creator settings
 (define-public (update-settings
   (subscription-price uint)
-  (lightning-enabled bool)
   (auto-payout bool)
   (announcement (string-ascii 300)))
   (let
@@ -170,7 +165,6 @@
             { creator: creator }
             (merge current-settings {
               subscription-price: subscription-price,
-              lightning-enabled: lightning-enabled,
               auto-payout: auto-payout,
               announcement: announcement
             })
@@ -186,14 +180,12 @@
 (define-public (update-stats
   (creator principal)
   (nft-sale-amount uint)
-  (lightning-tip-amount uint)
   (subscriber-change int)
   (content-change int))
   (let
     ((current-stats (default-to 
       {
         total-nft-sales: u0,
-        total-lightning-tips: u0,
         active-subscribers: u0,
         content-count: u0,
         last-activity: u0
@@ -206,7 +198,6 @@
         { creator: creator }
         {
           total-nft-sales: (+ (get total-nft-sales current-stats) nft-sale-amount),
-          total-lightning-tips: (+ (get total-lightning-tips current-stats) lightning-tip-amount),
           active-subscribers: (if (>= subscriber-change 0)
                                 (+ (get active-subscribers current-stats) (to-uint subscriber-change))
                                 (if (>= (get active-subscribers current-stats) (to-uint (* subscriber-change -1)))
@@ -225,7 +216,7 @@
       (map-set creator-profiles
         { creator: creator }
         (merge current-profile {
-          total-revenue: (+ (get total-revenue current-profile) nft-sale-amount lightning-tip-amount),
+          total-revenue: (+ (get total-revenue current-profile) nft-sale-amount),
           total-subscribers: (get active-subscribers (unwrap! (map-get? creator-stats { creator: creator }) err-not-found))
         })
       )

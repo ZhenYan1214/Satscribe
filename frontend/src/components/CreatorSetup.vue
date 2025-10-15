@@ -20,45 +20,8 @@
     <div v-if="currentStep === 1" class="card-web3 p-8">
       <h2 class="text-2xl font-bold text-white mb-6">步驟 1: 註冊創作者資料</h2>
       
-      <!-- 檢查中提示 -->
-      <div v-if="isCheckingRegistration" class="bg-web3-purple/10 border border-web3-purple/30 rounded-2xl p-6 mb-6">
-        <div class="flex items-center space-x-3">
-          <div class="w-6 h-6 border-2 border-web3-purple border-t-transparent rounded-full animate-spin"></div>
-          <span class="text-white">正在檢查註冊狀態...</span>
-        </div>
-      </div>
-      
-      <!-- 已註冊提示 -->
-      <div v-else-if="alreadyRegistered" class="bg-web3-green/10 border border-web3-green/30 rounded-2xl p-6 mb-6">
-        <div class="flex items-start space-x-4">
-          <div class="w-12 h-12 bg-web3-green/20 rounded-full flex items-center justify-center flex-shrink-0">
-            <svg class="w-6 h-6 text-web3-green" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="text-lg font-bold text-web3-green mb-2">您已經是註冊創作者了！</h3>
-            <p class="text-white/80 mb-4">
-              您的錢包地址已經在我們的創作者註冊表中。您可以直接進入創作者儀表板開始使用。
-            </p>
-            <button
-              @click="router.push('/creator/dashboard')"
-              class="btn-web3 mr-4"
-            >
-              進入創作者儀表板
-            </button>
-            <button
-              @click="router.push('/')"
-              class="btn-glass"
-            >
-              返回首頁
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 註冊表單 (只在未註冊時顯示) -->
-      <form v-else @submit.prevent="registerCreator" class="space-y-6">
+      <!-- 註冊表單 -->
+      <form @submit.prevent="registerCreator" class="space-y-6">
         <div>
           <label class="block text-white font-medium mb-2">創作者名稱</label>
           <input
@@ -429,8 +392,6 @@ export default {
     
     const currentStep = ref(1)
     const showAdvancedSetup = ref(false)
-    const isCheckingRegistration = ref(false)
-    const alreadyRegistered = ref(false)
     
     const steps = ref([
       { id: 1, title: '創作者資料' },
@@ -512,18 +473,18 @@ export default {
     // 註冊創作者
     const registerCreator = async () => {
       try {
-        // 先檢查是否已經註冊
-        const isRegistered = await checkCreatorRegistration()
-        if (isRegistered) {
-          alert('您已經註冊過創作者了！即將跳轉到創作者儀表板。')
-          router.push('/creator/dashboard')
-          return
-        }
+        console.log('🚀 開始註冊創作者流程...')
+        console.log('📝 表單數據:', creatorForm.value)
         
-        await contractsStore.registerCreator(creatorForm.value)
+        console.log('📞 調用合約註冊功能...')
+        const result = await contractsStore.registerCreator(creatorForm.value)
+        console.log('✅ 註冊成功:', result)
+        
+        alert('🎉 創作者註冊成功！歡迎加入 Satscribe！')
         currentStep.value = 2
       } catch (error) {
-        console.error('註冊失敗:', error)
+        console.error('❌ 註冊失敗:', error)
+        alert('註冊失敗：' + error.message)
       }
     }
     
@@ -556,6 +517,9 @@ export default {
     // 設定分潤
     const setupRevenueSplit = async () => {
       try {
+        console.log('🚀 開始設定分潤...')
+        console.log('👥 團隊成員數據:', teamMembers.value)
+        
         // 驗證所有錢包地址
         for (let i = 0; i < teamMembers.value.length; i++) {
           const member = teamMembers.value[i]
@@ -587,11 +551,14 @@ export default {
           role: member.role
         }))
         
-        await contractsStore.setupRevenueSplit(members)
-        alert('分潤設定成功！')
+        console.log('📞 調用合約設定分潤...')
+        const result = await contractsStore.setupRevenueSplit(members)
+        console.log('✅ 分潤設定成功:', result)
+        
+        alert('🎉 分潤設定成功！您的團隊收益將按設定比例自動分配。')
         // 設定完成後保持在當前頁面
       } catch (error) {
-        console.error('分潤設定失敗:', error)
+        console.error('❌ 分潤設定失敗:', error)
         alert('分潤設定失敗：' + error.message)
       }
     }
@@ -624,8 +591,17 @@ export default {
     // 創建季度
     const createFirstSeason = async () => {
       try {
+        console.log('🚀 開始創建第一個季度...')
+        console.log('📋 季度表單數據:', seasonForm.value)
+        
+        // 計算當前季度ID
+        const now = new Date()
+        const currentYear = now.getFullYear()
+        const currentQuarter = Math.ceil((now.getMonth() + 1) / 3)
+        const seasonId = currentYear * 10 + currentQuarter
+        
         const seasonData = {
-          seasonId: 1,
+          seasonId: seasonId,
           price: seasonForm.value.price,
           maxSupply: seasonForm.value.maxSupply,
           expiryDate: Math.floor(Date.now() / 1000) + (seasonForm.value.validityDays * 24 * 60 * 60),
@@ -633,11 +609,17 @@ export default {
           enableRevenueSplit: seasonForm.value.enableRevenueSplit
         }
         
-        await contractsStore.createSeason(seasonData)
-        alert('季度創建成功！')
+        console.log('📞 調用合約創建季度...')
+        console.log('📊 季度數據:', seasonData)
+        
+        const result = await contractsStore.createSeason(seasonData)
+        console.log('✅ 季度創建成功:', result)
+        
+        alert(`🎉 季度創建成功！季度ID: ${seasonId} (${currentYear}年第${currentQuarter}季度)`)
         finishSetup()
       } catch (error) {
-        console.error('季度創建失敗:', error)
+        console.error('❌ 季度創建失敗:', error)
+        alert('季度創建失敗：' + error.message)
       }
     }
     
@@ -659,8 +641,6 @@ export default {
     
     // 組件掛載時載入數據
     onMounted(async () => {
-      // 檢查創作者註冊狀態
-      await checkCreatorRegistration()
       loadExistingData()
     })
     
@@ -672,8 +652,6 @@ export default {
       seasonForm,
       totalPercentage,
       contractsStore,
-      isCheckingRegistration,
-      alreadyRegistered,
       
       registerCreator,
       addMember,
@@ -686,7 +664,6 @@ export default {
       validatePrice,
       showAdvancedSetup,
       loadExistingData,
-      checkCreatorRegistration,
       handleAvatarUploadSuccess,
       handleAvatarUploadError,
       router

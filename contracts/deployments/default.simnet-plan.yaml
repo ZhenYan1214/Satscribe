@@ -63,17 +63,17 @@ plan:
     - id: 0
       transactions:
         - emulated-contract-publish:
-            contract-name: creator-registry-v6
+            contract-name: creator-registry-v10
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: "contracts\\creator-registry.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: revenue-splitter-v6
+            contract-name: revenue-splitter-v10
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: "contracts\\revenue-splitter.clar"
             clarity-version: 3
         - emulated-contract-publish:
-            contract-name: subscription-nft-v6
+            contract-name: subscription-nft-v10
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
             path: "contracts\\subscription-nft.clar"
             clarity-version: 3

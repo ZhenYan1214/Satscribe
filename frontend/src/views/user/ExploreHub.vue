@@ -766,7 +766,7 @@ export default {
     
     // NFT 購買處理
     const handleNFTPurchase = async (nftData) => {
-      console.log('🛒 處理 NFT 購買:', nftData)
+      console.log('🛒 處理 NFT 購買 (固定參數測試):', nftData)
       
       try {
         // 檢查錢包連接狀態
@@ -775,19 +775,25 @@ export default {
           return
         }
         
-        // 使用文章中設定的創作者地址
-        const creatorAddress = nftData.creatorAddress
-        console.log('📍 使用創作者地址:', creatorAddress)
+        // 🎯 固定參數設定
+        const FIXED_CREATOR = 'ST1VDQ1YQX5AXPS5ZXWJW8T1NGSKEDEXX8AWWN5YB'
+        const FIXED_SEASON_ID = 20254
+        const FIXED_METADATA_URI = 'https://api.satscribe.com/nft/metadata'
         
-        // 🔍 診斷季度狀態
-        console.log('🔍 開始診斷季度20254狀態...')
+        console.log('🎯 使用固定測試參數:')
+        console.log('📍 創作者地址:', FIXED_CREATOR)
+        console.log('📍 季度ID:', FIXED_SEASON_ID) 
+        console.log('📍 Metadata URI:', FIXED_METADATA_URI)
+        
+        // 🔍 診斷季度狀態 (使用固定參數)
+        console.log('🔍 開始診斷固定季度狀態...')
         try {
-          const seasonInfo = await contractsStore.getSeasonInfo(creatorAddress, nftData.nftSeasonId, true)
+          const seasonInfo = await contractsStore.getSeasonInfo(FIXED_CREATOR, FIXED_SEASON_ID, true)
           console.log('📊 季度詳細信息:', seasonInfo)
           
           if (!seasonInfo || !seasonInfo.price) {
             // 季度不存在，提供創建選項
-            const shouldCreate = confirm(`❌ 季度 ${nftData.nftSeasonId} 不存在！\n\n這是因為創作者 (${nftData.article.author.name}) 還沒有創建這個季度的 NFT。\n\n解決方案：\n1. 切換到創作者錢包 (${creatorAddress})\n2. 在創作者儀表板創建季度 ${nftData.nftSeasonId} 的 NFT\n3. 然後再切換回購買者錢包進行購買\n\n是否要查看創建指南？`)
+            const shouldCreate = confirm(`❌ 固定測試季度 ${FIXED_SEASON_ID} 不存在！\n\n這是因為創作者 (${FIXED_CREATOR}) 還沒有創建這個季度的 NFT。\n\n解決方案：\n1. 切換到創作者錢包 (${FIXED_CREATOR})\n2. 在創作者儀表板創建季度 ${FIXED_SEASON_ID} 的 NFT\n3. 然後再切換回購買者錢包進行購買\n\n是否要查看創建指南？`)
             
             if (shouldCreate) {
               // 打開創建指南
@@ -806,14 +812,14 @@ export default {
           
           // 檢查用戶餘額
           const userBalance = await walletStore.getSTXBalance()
-          const requiredSTX = seasonInfo.priceSTX || (seasonInfo.price ? seasonInfo.price / 1000000 : nftData.price)
+          const requiredSTX = seasonInfo.priceSTX || (seasonInfo.price ? seasonInfo.price / 1000000 : 10) // 預設10 STX
           console.log('💰 餘額檢查:')
           console.log('- 用戶餘額:', userBalance, 'STX')
           console.log('- 需要金額:', requiredSTX, 'STX')
           console.log('- 餘額足夠:', userBalance >= requiredSTX)
           
           if (userBalance < requiredSTX) {
-            alert(`❌ 餘額不足！\n\n需要: ${requiredSTX} STX\n當前: ${userBalance} STX\n\n請注意：此NFT的實際價格可能是 ${requiredSTX} STX 而不是 ${nftData.price} STX`)
+            alert(`❌ 餘額不足！\n\n需要: ${requiredSTX} STX\n當前: ${userBalance} STX\n\n請確保錢包有足夠的 STX 進行測試購買`)
             return
           }
           
@@ -824,34 +830,35 @@ export default {
         }
         
         // 檢查是否為創作者本人  
-        if (walletStore.userAddress === creatorAddress) {
+        if (walletStore.userAddress === FIXED_CREATOR) {
           alert('不能購買自己創建的 NFT，請使用其他錢包地址測試購買功能')
           return
         }
         
-        const confirmed = confirm(`確定要購買 ${nftData.article.title} 的 VIP NFT 嗎？\n\n價格: ${nftData.price} STX\n創作者: ${nftData.article.author.name}\n季度: 2025年第4季\n\n購買後您將成為 VIP 會員！`)
+        // 重要提醒：Deny Mode
+        const confirmed = confirm(`🎯 固定參數 NFT 購買測試\n\n⚠️ 重要提醒：請開啟 Hiro 錢包的 Deny Mode！\n\n固定參數：\n• 創作者: ${FIXED_CREATOR}\n• 季度ID: ${FIXED_SEASON_ID}\n• Metadata: ${FIXED_METADATA_URI}\n\n確定要進行測試購買嗎？\n\n⚠️ 請確保已開啟 Deny Mode！`)
         
         if (!confirmed) {
           return
         }
         
-        console.log('📞 調用合約購買 NFT...')
-        console.log('參數:', {
-          creatorAddress: creatorAddress,
-          seasonId: nftData.nftSeasonId,
-          price: nftData.price
+        console.log('📞 調用合約購買 NFT (固定參數)...')
+        console.log('🎯 最終參數:', {
+          creatorAddress: FIXED_CREATOR,
+          seasonId: FIXED_SEASON_ID,
+          metadataUri: FIXED_METADATA_URI
         })
         
-        // 調用合約購買NFT
+        // 調用合約購買NFT (使用固定參數)
         const result = await contractsStore.purchaseNFT(
-          creatorAddress, // 使用修正後的創作者地址
-          nftData.nftSeasonId,    // 季度ID
-          `nft-${nftData.nftSeasonId}-${Date.now()}` // metadata URI
+          FIXED_CREATOR,      // 固定創作者地址
+          FIXED_SEASON_ID,    // 固定季度ID
+          FIXED_METADATA_URI  // 固定 metadata URI
         )
         
         console.log('✅ NFT 購買成功:', result)
         
-        alert(`🎉 NFT 購買成功！\n\n交易 ID: ${result.txId}\n\n您已成為 ${nftData.article.author.name} 的 VIP 會員！\n季度: 2025年第4季\n\n請在「我的收藏」中查看您的 NFT！`)
+        alert(`🎉 固定參數 NFT 購買測試成功！\n\n交易 ID: ${result.txId}\n\n測試參數：\n• 創作者: ${FIXED_CREATOR}\n• 季度ID: ${FIXED_SEASON_ID}\n• Metadata: ${FIXED_METADATA_URI}\n\n✅ mint-subscription 函數調用成功！\n💰 收益已按分潤設定自動分配！\n\n請在「我的收藏」中查看您的 NFT！`)
         
         // 更新文章數據（增加供應量）
         const article = allArticles.value.find(a => a.id === nftData.article.id)
