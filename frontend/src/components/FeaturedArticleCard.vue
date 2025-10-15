@@ -21,7 +21,7 @@
               <svg class="w-4 h-4 text-web3-amber" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
               </svg>
-              <span class="text-web3-amber font-semibold text-sm">精選文章</span>
+              <span class="text-web3-amber font-semibold text-sm">Featured Articles</span>
             </div>
           </div>
           
@@ -67,7 +67,7 @@
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   </svg>
-                  <span class="font-medium">{{ article.readTime }} 分鐘閱讀</span>
+                  <span class="font-medium">{{ article.readTime }} minutes read</span>
                 </div>
                 <p class="text-white/60 text-sm">{{ formatDate(article.publishedAt) }}</p>
               </div>
@@ -96,7 +96,7 @@
                 </svg>
                 <span class="text-2xl font-bold text-white">{{ formatNumber(article.likes) }}</span>
               </div>
-              <p class="text-web3-gray-400 text-sm">喜愛</p>
+              <p class="text-web3-gray-400 text-sm">Like</p>
             </div>
             
             <div class="text-center p-4 bg-web3-dark/30 rounded-xl border border-web3-gray-700/50">
@@ -106,7 +106,7 @@
                 </svg>
                 <span class="text-2xl font-bold text-white">{{ formatNumber(article.comments) }}</span>
               </div>
-              <p class="text-web3-gray-400 text-sm">討論</p>
+              <p class="text-web3-gray-400 text-sm">Discussion</p>
             </div>
             
             <div class="text-center p-4 bg-web3-dark/30 rounded-xl border border-web3-gray-700/50">
@@ -117,7 +117,7 @@
                 </svg>
                 <span class="text-2xl font-bold text-white">{{ formatNumber(article.views) }}</span>
               </div>
-              <p class="text-web3-gray-400 text-sm">閱讀</p>
+              <p class="text-web3-gray-400 text-sm">Read</p>
             </div>
             
             <div class="text-center p-4 bg-web3-amber/10 rounded-xl border border-web3-amber/30">
@@ -127,7 +127,7 @@
                 </svg>
                 <span class="text-2xl font-bold text-web3-amber">{{ article.earnings }}</span>
               </div>
-              <p class="text-web3-amber text-sm font-medium">STX 收益</p>
+              <p class="text-web3-amber text-sm font-medium">STX Revenue</p>
             </div>
           </div>
 
@@ -142,7 +142,7 @@
                 #{{ tag }}
               </span>
               <span v-if="article.tags.length > 4" class="text-web3-gray-400 text-sm py-1.5 px-2">
-                +{{ article.tags.length - 4 }} 更多
+                +{{ article.tags.length - 4 }} more
               </span>
             </div>
           </div>
@@ -151,7 +151,7 @@
           <div class="flex items-center space-x-4">
             <button class="flex-1 btn-web3 py-4 rounded-xl font-semibold text-base relative group overflow-hidden">
               <span class="relative z-10 flex items-center justify-center space-x-2">
-                <span>立即閱讀</span>
+                <span>Read Now</span>
                 <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
@@ -197,9 +197,9 @@ export default {
       const diffTime = Math.abs(now - articleDate)
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
       
-      if (diffDays === 1) return '昨天'
-      if (diffDays < 7) return `${diffDays} 天前`
-      if (diffDays < 30) return `${Math.ceil(diffDays / 7)} 週前`
+      if (diffDays === 1) return 'Yesterday'
+      if (diffDays < 7) return `${diffDays} day ago`
+      if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`
       return articleDate.toLocaleDateString('zh-TW')
     },
     

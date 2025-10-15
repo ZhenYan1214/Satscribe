@@ -158,7 +158,7 @@
       <!-- 快速操作 -->
       <div>
         <div class="card-web3 p-6">
-          <h2 class="text-2xl font-bold text-white mb-6">快速操作</h2>
+          <h2 class="text-2xl font-bold text-white mb-6">Quick Actions</h2>
           
           <div class="space-y-4">
             <!-- 發布內容 -->
@@ -174,8 +174,8 @@
                   </svg>
                 </div>
                 <div>
-                  <p class="text-white font-medium">發布內容</p>
-                  <p class="text-white/60 text-sm">創建新的內容</p>
+                  <p class="text-white font-medium">Publish Content</p>
+                  <p class="text-white/60 text-sm">Create New Content</p>
                 </div>
               </div>
             </button>
@@ -193,8 +193,8 @@
                   </svg>
                 </div>
                 <div>
-                  <p class="text-white font-medium">創建訂閱章</p>
-                  <p class="text-white/60 text-sm">發布新的NFT</p>
+                  <p class="text-white font-medium">Create Subscription Badge</p>
+                  <p class="text-white/60 text-sm">Publish New NFT</p>
                 </div>
               </div>
             </button>
@@ -231,8 +231,8 @@
                   </svg>
                 </div>
                 <div>
-                  <p class="text-white font-medium">數據分析</p>
-                  <p class="text-white/60 text-sm">查看詳細統計</p>
+                  <p class="text-white font-medium">Data Analysis</p>
+                  <p class="text-white/60 text-sm">View Detailed Statistics</p>
                 </div>
               </div>
             </button>
@@ -246,11 +246,12 @@
       <!-- 收益趨勢 -->
       <div class="card-web3 p-6 animate-slide-up" style="animation-delay: 2.1s">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-white">收益趨勢</h2>
+          <h2 class="text-2xl font-bold text-white">Revenue Trends</h2>
           <select class="bg-glass-dark border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
-            <option>最近7天</option>
-            <option>最近30天</option>
-            <option>最近90天</option>
+            <option>Last 7 days</option>
+            <option>Last 30 days</option>
+            <option>Last 90 days</option>
+
           </select>
         </div>
         
@@ -262,8 +263,8 @@
                 <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
               </svg>
             </div>
-            <p class="text-white/60 text-sm">圖表組件載入中</p>
-            <p class="text-white/40 text-xs mt-1">即將整合 Chart.js</p>
+            <p class="text-white/60 text-sm">Chart component loading</p>
+            <p class="text-white/40 text-xs mt-1">Integration coming soon Chart.js</p>
           </div>
         </div>
         
@@ -271,15 +272,15 @@
         <div class="grid grid-cols-3 gap-4">
           <div class="text-center">
             <p class="text-2xl font-bold text-web3-cyan">45.2 STX</p>
-            <p class="text-white/60 text-sm">本週收益</p>
+            <p class="text-white/60 text-sm">Earnings This Week</p>
           </div>
           <div class="text-center">
             <p class="text-2xl font-bold text-web3-green">+18.5%</p>
-            <p class="text-white/60 text-sm">成長率</p>
+            <p class="text-white/60 text-sm">Growth Rate</p>
           </div>
           <div class="text-center">
             <p class="text-2xl font-bold text-web3-gold">156 STX</p>
-            <p class="text-white/60 text-sm">總收益</p>
+            <p class="text-white/60 text-sm">total revenue</p>
           </div>
         </div>
       </div>
@@ -287,14 +288,14 @@
       <!-- 分潤配置狀態 -->
       <div class="card-web3 p-6 animate-slide-up" style="animation-delay: 2.2s">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-white">分潤設定</h2>
+          <h2 class="text-2xl font-bold text-white">Revenue Split Setting</h2>
           <span 
             :class="[
               'px-3 py-1 rounded-full text-sm font-medium',
               revenueSplitConfigured ? 'bg-web3-green/20 text-web3-green border border-web3-green/30' : 'bg-web3-gold/20 text-web3-gold border border-web3-gold/30'
             ]"
           >
-            {{ revenueSplitConfigured ? '已配置' : '待配置' }}
+            {{ revenueSplitConfigured ? 'Configured' : 'Not Configured' }}
           </span>
         </div>
         
@@ -306,15 +307,15 @@
               </svg>
             </div>
             <div class="flex-1">
-              <h3 class="text-web3-gold font-medium mb-2">需要配置分潤設定</h3>
+              <h3 class="text-web3-gold font-medium mb-2">Need to configure revenue split</h3>
               <p class="text-web3-gold/80 text-sm mb-3">
-                設定您的工作室成員分潤比例，確保收益公平透明分配。
+                Set the revenue split ratio for your studio members to ensure fair and transparent distribution of income.
               </p>
               <button 
                 @click="$router.push('/creator/revenue')"
                 class="btn-web3 text-sm px-4 py-2 rounded-lg"
               >
-                立即配置
+                Configure Now
               </button>
             </div>
           </div>
@@ -322,22 +323,22 @@
         
         <div v-else class="space-y-4">
           <div class="flex items-center justify-between text-sm">
-            <span class="text-white/70">NFT 分潤</span>
-            <span class="text-web3-green font-medium">已啟用</span>
+            <span class="text-white/70">NFT Revenue Split</span>
+            <span class="text-web3-green font-medium">Enabled</span>
           </div>
           <div class="flex items-center justify-between text-sm">
-            <span class="text-white/70">Lightning 分潤</span>
-            <span class="text-web3-silver font-medium">未啟用</span>
+            <span class="text-white/70">Lightning Revenue Split</span>
+            <span class="text-web3-silver font-medium">Not Enabled</span>
           </div>
           <div class="flex items-center justify-between text-sm">
-            <span class="text-white/70">成員數量</span>
-            <span class="text-white font-medium">3 位成員</span>
+            <span class="text-white/70">Member Count</span>
+            <span class="text-white font-medium">3 Members</span>
           </div>
           <button 
             @click="$router.push('/creator/revenue')"
             class="btn-glass w-full text-sm py-2 rounded-lg mt-4"
           >
-            管理分潤設定
+            Manage Revenue Split
           </button>
         </div>
       </div>
@@ -372,10 +373,10 @@ export default {
       try {
         // 簡化檢查，直接允許訪問
         isCreator.value = true
-        console.log('✅ 快速檢查完成，載入儀表板')
+        console.log('✅ Quick check completed, loading dashboard')
         await loadDashboardData()
       } catch (error) {
-        console.log('快速檢查失敗，使用默認狀態')
+        console.log('Quick check failed, using default state')
         isCreator.value = true
       } finally {
         loading.value = false
@@ -396,7 +397,7 @@ export default {
     const loadDashboardData = async () => {
       try {
         if (walletStore.isConnected && walletStore.userAddress) {
-          console.log('📊 快速載入儀表板數據...', walletStore.userAddress)
+          console.log('📊 Quick loading dashboard data...', walletStore.userAddress)
           
           // 簡化載入邏輯，只載入必要數據
           // 設置基本統計數據

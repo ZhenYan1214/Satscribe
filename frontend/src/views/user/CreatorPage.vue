@@ -6,12 +6,12 @@
         <div class="flex items-start space-x-6">
           <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full"></div>
           <div class="flex-1">
-            <h1 class="text-3xl font-bold mb-2">{{ creator.name || '加载中...' }}</h1>
+            <h1 class="text-3xl font-bold mb-2">{{ creator.name || 'Loading...' }}</h1>
             <p class="text-gray-600 mb-4">{{ creator.bio || '暂无简介' }}</p>
             <div class="flex items-center space-x-6 text-sm text-gray-500">
-              <span>{{ creator.subscribers || 0 }} 订阅者</span>
+              <span>{{ creator.subscribers || 0 }} subscribers</span>
               <span>{{ creator.category || '未分类' }}</span>
-              <span v-if="creator.verified" class="text-blue-600">✓ 已验证</span>
+              <span v-if="creator.verified" class="text-blue-600">✓ validated</span>
             </div>
           </div>
           <div class="text-right">
@@ -20,14 +20,15 @@
               class="btn-primary mb-2"
               :disabled="!walletConnected || isLoading || availableSeasons.length === 0 || hasValidSubscription"
             >
-              <span v-if="isLoading">購買中...</span>
-              <span v-else-if="hasValidSubscription">已擁有此 NFT</span>
-              <span v-else-if="availableSeasons.length === 0">暫無可購買項目</span>
-              <span v-else>購買 {{ creator.price || 1 }} STX</span>
+            <span v-if="isLoading">Purchasing...</span>
+            <span v-else-if="hasValidSubscription">You already own this NFT</span>
+            <span v-else-if="availableSeasons.length === 0">No items available for purchase</span>
+            <span v-else>Purchase {{ creator.price || 1 }} STX</span>
+
             </button>
             <p class="text-sm text-gray-500">
-              <span v-if="availableSeasons.length > 0">第 {{ currentSeason }} 期 NFT</span>
-              <span v-else>此創作者暫未發布任何 NFT</span>
+              <span v-if="availableSeasons.length > 0">Season {{ currentSeason }} NFT</span>
+              <span v-else>This creator has not released any NFTs yet</span>
             </p>
           </div>
         </div>
@@ -38,7 +39,7 @@
         <!-- 主要内容 -->
         <div class="lg:col-span-2">
           <div class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-xl font-semibold mb-4">最新内容</h2>
+            <h2 class="text-xl font-semibold mb-4">Latest Content</h2>
             
             <div v-if="contents.length > 0" class="space-y-6">
               <div 
@@ -54,20 +55,20 @@
                     <svg class="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
                     </svg>
-                    <span class="text-yellow-800 font-medium">会员专属内容</span>
+                    <span class="text-yellow-800 font-medium">Members-only Content</span>
                   </div>
-                  <p class="text-yellow-700 text-sm mt-1">购买订阅章后可查看完整内容</p>
+                  <p class="text-yellow-700 text-sm mt-1">Full content available after purchasing a subscription badge</p>
                 </div>
                 
                 <div class="flex items-center justify-between text-sm text-gray-500 mt-3">
                   <span>{{ content.publishDate }}</span>
-                  <span v-if="content.isPremium" class="bg-gold-100 text-gold-800 px-2 py-1 rounded">会员专属</span>
+                  <span v-if="content.isPremium" class="bg-gold-100 text-gold-800 px-2 py-1 rounded">Members-only</span>
                 </div>
               </div>
             </div>
             
             <div v-else class="text-center py-12">
-              <p class="text-gray-500">该创作者还没有发布内容</p>
+              <p class="text-gray-500">This creator has not published any content yet</p>
             </div>
           </div>
         </div>
@@ -76,7 +77,7 @@
         <div class="space-y-6">
           <!-- 可用 NFT 季度 -->
           <div class="bg-white rounded-lg shadow-sm p-6">
-            <h3 class="text-lg font-semibold mb-4">可購買的 NFT</h3>
+            <h3 class="text-lg font-semibold mb-4">Available for purchase NFT</h3>
             
             <div v-if="availableSeasons.length > 0" class="space-y-4">
               <div 
@@ -92,12 +93,12 @@
               >
                 <div class="flex items-center justify-between">
                   <div>
-                    <h4 class="font-medium">第 {{ season.seasonId }} 期</h4>
-                    <p class="text-sm text-gray-500">最大供應: {{ season.maxSupply }}</p>
+                    <h4 class="font-medium">Season {{ season.seasonId }}</h4>
+                    <p class="text-sm text-gray-500">Max supply: {{ season.maxSupply }}</p>
                   </div>
                   <div class="text-right">
                     <p class="text-lg font-bold text-blue-600">{{ season.price }} STX</p>
-                    <p class="text-xs text-gray-400">已售: {{ season.currentSupply }}</p>
+                    <p class="text-xs text-gray-400">Sold: {{ season.currentSupply }}</p>
                   </div>
                 </div>
               </div>
@@ -107,9 +108,10 @@
                 class="btn-primary w-full"
                 :disabled="!walletConnected || isLoading || hasValidSubscription"
               >
-                <span v-if="isLoading">購買中...</span>
-                <span v-else-if="hasValidSubscription">已擁有此 NFT</span>
-                <span v-else>立即購買</span>
+              <span v-if="isLoading">Purchasing...</span>
+              <span v-else-if="hasValidSubscription">You already own this NFT</span>
+              <span v-else>Buy Now</span>
+
               </button>
             </div>
             
@@ -120,24 +122,24 @@
                   <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                 </svg>
               </div>
-              <p class="text-gray-500">此創作者尚未發布任何 NFT</p>
+              <p class="text-gray-500">This creator has not published anything yet NFT</p>
             </div>
           </div>
 
           <!-- 统计信息 -->
           <div class="bg-white rounded-lg shadow-sm p-6">
-            <h3 class="text-lg font-semibold mb-4">统计信息</h3>
+            <h3 class="text-lg font-semibold mb-4">Statistics</h3>
             <div class="space-y-3">
               <div class="flex justify-between">
-                <span class="text-gray-600">总订阅者</span>
+                <span class="text-gray-600">Total Subscribers</span>
                 <span class="font-medium">{{ creator.subscribers || 0 }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600">内容数量</span>
+                <span class="text-gray-600">Number of Contents</span>
                 <span class="font-medium">{{ contents.length }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-600">加入时间</span>
+                <span class="text-gray-600">Join Date</span>
                 <span class="font-medium">{{ formatDate(creator.registrationDate) }}</span>
               </div>
             </div>
@@ -178,24 +180,24 @@ export default {
     
     const subscribeToCreator = async () => {
       if (!walletConnected.value) {
-        alert('请先连接钱包')
+        alert('Please connect your wallet first')
         return
       }
       
       isLoading.value = true
       try {
-        console.log('開始購買 NFT:', props.address, currentSeason.value)
+        console.log('Start Purchase NFT:', props.address, currentSeason.value)
         const result = await contractsStore.purchaseNFT(
           walletStore.userAddress,
           props.address,
           currentSeason.value
         )
-        console.log('購買成功:', result)
-        alert('購買成功！收益已按分潤設定自動分配！')
-        await loadCreatorData() // 重新載入數據
+        console.log('Purchase successful:', result)
+        alert('Purchase successful! Revenue has been automatically distributed according to the sharing rules!')
+        await loadCreatorData() // Reload data
       } catch (error) {
-        console.error('購買失敗:', error)
-        alert('購買失敗: ' + error.message)
+          console.error('Purchase failed:', error)
+        alert('Purchase failed: ' + error.message)
       } finally {
         isLoading.value = false
       }
@@ -203,24 +205,24 @@ export default {
     
     const loadCreatorData = async () => {
       try {
-        console.log('載入創作者資料:', props.address)
+        console.log('Load creator data:', props.address)
         
         // 載入創作者基本資訊
         const creatorInfo = await contractsStore.getCreatorInfo(props.address, true)
         if (creatorInfo) {
           creator.value = {
-            name: creatorInfo.name || '創作者',
-            bio: creatorInfo.description || '歡迎來到我的創作空間',
-            category: creatorInfo.category || '創作',
+            name: creatorInfo.name || 'Creator',
+            bio: creatorInfo.description || 'Welcome to my creative space',
+            category: creatorInfo.category || 'Create',
             subscribers: 0, // TODO: 計算實際訂閱者數量
             verified: true,
             registrationDate: new Date()
           }
         } else {
           creator.value = {
-            name: '未註冊創作者',
-            bio: '此地址尚未註冊為創作者',
-            category: '未知',
+            name: 'Unregistered Creator',
+            bio: 'This address has not been registered as a creator',
+            category: 'Unknown',
             subscribers: 0,
             verified: false,
             registrationDate: null
@@ -242,7 +244,7 @@ export default {
               })
             }
           } catch (seasonError) {
-            console.log(`季度 ${seasonId} 不存在`)
+            console.log(`Seasons ${seasonId} not exist`)
           }
         }
         
@@ -255,8 +257,8 @@ export default {
         // 清空內容，因為我們專注於 NFT 訂閱
         contents.value = []
         
-        console.log('創作者資料載入完成:', creator.value)
-        console.log('可用季度:', availableSeasons.value)
+        console.log('Creator data loaded successfully:', creator.value)
+        console.log('Available Seasons:', availableSeasons.value)
         
         // 檢查用戶是否已有有效訂閱
         if (walletConnected.value && availableSeasons.value.length > 0) {

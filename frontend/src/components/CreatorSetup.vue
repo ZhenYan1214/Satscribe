@@ -23,22 +23,22 @@
       <!-- 註冊表單 -->
       <form @submit.prevent="registerCreator" class="space-y-6">
         <div>
-          <label class="block text-white font-medium mb-2">創作者名稱</label>
+          <label class="block text-white font-medium mb-2">Creator Name</label>
           <input
             v-model="creatorForm.name"
             type="text"
             class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white"
-            placeholder="請輸入您的創作者名稱"
+            placeholder="Please enter your creator name"
             required
           />
         </div>
         
         <div>
-          <label class="block text-white font-medium mb-2">個人介紹</label>
+          <label class="block text-white font-medium mb-2">Personal Introduction</label>
           <textarea
             v-model="creatorForm.bio"
             class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white h-32"
-            placeholder="介紹您的創作內容和風格"
+            placeholder="Introduce your creative content and style"
             required
           ></textarea>
         </div>
@@ -51,20 +51,21 @@
         />
         
         <div>
-          <label class="block text-white font-medium mb-2">創作類別</label>
+          <label class="block text-white font-medium mb-2">Creation Category</label>
           <select
             v-model="creatorForm.category"
             class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white"
             required
           >
-            <option value="">請選擇類別</option>
-            <option value="digital-art">數位藝術</option>
-            <option value="music">音樂</option>
-            <option value="writing">寫作</option>
-            <option value="photography">攝影</option>
-            <option value="programming">程式開發</option>
-            <option value="education">教學</option>
-            <option value="other">其他</option>
+            <option value="">Please select a category</option>
+            <option value="digital-art">Digital Art</option>
+            <option value="music">Music</option>
+            <option value="writing">Writing</option>
+            <option value="photography">Photography</option>
+            <option value="programming">Programming</option>
+            <option value="education">Education</option>
+            <option value="other">Other</option>
+
           </select>
         </div>
         
@@ -73,14 +74,15 @@
           :disabled="contractsStore.isLoading"
           class="btn-web3 w-full py-3 rounded-xl"
         >
-          {{ contractsStore.isLoading ? '註冊中...' : '註冊創作者' }}
+        {{ contractsStore.isLoading ? 'Registering...' : 'Register as Creator' }}
+
         </button>
       </form>
     </div>
     
     <!-- 步驟 2: 完成和可選功能 -->
     <div v-if="currentStep === 2" class="card-web3 p-8">
-      <h2 class="text-2xl font-bold text-white mb-6">🎉 創作者註冊完成！</h2>
+      <h2 class="text-2xl font-bold text-white mb-6">🎉 creator registration completed!</h2>
       
       <!-- 成功提示 -->
       <div class="bg-gradient-to-r from-web3-green/10 to-web3-cyan/10 border border-web3-green/30 rounded-2xl p-6 mb-8">
@@ -91,15 +93,15 @@
             </svg>
           </div>
           <div class="flex-1">
-            <h3 class="text-lg font-bold text-web3-green mb-2">歡迎加入 Satscribe！</h3>
+            <h3 class="text-lg font-bold text-web3-green mb-2">welcome to Satscribe！</h3>
             <p class="text-white/80 mb-4">
-              您的創作者帳戶已成功建立。現在您可以開始發布內容，或者先設置一些進階功能。
+              Your creator account has been successfully created. Now you can start publishing content, or set up some advanced features first.
             </p>
           </div>
         </div>
       </div>
 
-      <h3 class="text-xl font-bold text-white mb-6">您現在可以：</h3>
+      <h3 class="text-xl font-bold text-white mb-6">You can now:</h3>
 
       <!-- 快速操作選項 -->
       <div class="grid md:grid-cols-2 gap-6 mb-8">
@@ -111,14 +113,14 @@
                 <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
               </svg>
             </div>
-            <h4 class="text-lg font-bold text-white">立即開始創作</h4>
+            <h4 class="text-lg font-bold text-white">Immediately start creating</h4>
           </div>
-          <p class="text-white/70 mb-4">直接進入創作者儀表板，開始發布內容和管理您的創作事業。</p>
+          <p class="text-white/70 mb-4">Directly enter the creator dashboard to start publishing content and managing your creative career.</p>
           <button
             @click="$router.push('/creator/dashboard')"
             class="btn-web3 w-full"
           >
-            進入儀表板
+            Enter the dashboard
           </button>
         </div>
 
@@ -130,14 +132,14 @@
                 <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106.886-.54 2.042-.061 2.287.947.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
               </svg>
             </div>
-            <h4 class="text-lg font-bold text-white">設置進階功能</h4>
+            <h4 class="text-lg font-bold text-white">Set up advanced features</h4>
           </div>
-          <p class="text-white/70 mb-4">先設置收益分潤和訂閱季度，讓您的創作事業更專業化。</p>
+          <p class="text-white/70 mb-4">Set up revenue sharing and subscription quarters to make your creative career more professional.</p>
           <button
             @click="showAdvancedSetup = true"
             class="btn-glass w-full"
           >
-            進階設置
+            Advanced setup
           </button>
         </div>
       </div>
@@ -152,22 +154,22 @@
             <svg class="w-6 h-6 text-web3-purple mr-3" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
             </svg>
-            團隊收益分潤 (可選)
+            Team revenue sharing (optional)
           </h2>
           <button
             @click="skipRevenueSplit"
             class="text-white/60 hover:text-white text-sm"
           >
-            暫時跳過
+            Skip for now
           </button>
         </div>
         
         <div class="bg-web3-purple/5 border border-web3-purple/20 rounded-2xl p-6 mb-6">
           <p class="text-white/80 mb-4">
-            如果您有團隊成員共同創作，可以設置自動收益分配。NFT銷售收入會按照您設定的比例自動分配給每個成員。
+            If you have team members working together, you can set up automatic revenue allocation. NFT sales income will be automatically allocated to each member according to the ratio you set.
           </p>
           <div class="text-web3-cyan text-sm">
-            💡 您隨時可以在「分潤設置」頁面進行配置
+            💡 You can configure at any time on the "Revenue Setting" page
           </div>
         </div>
       
@@ -176,13 +178,13 @@
                class="flex items-center space-x-4 p-4 bg-glass-dark rounded-xl">
             <input
               v-model="member.name"
-              placeholder="成員名稱"
+              placeholder="Member name"
               class="flex-1 p-2 bg-gray-800/80 border border-white/20 rounded-lg text-white placeholder-gray-400"
             />
             <div class="flex-2 relative">
               <input
                 v-model="member.walletAddress"
-                placeholder="錢包地址 (ST...)"
+                placeholder="Wallet address (ST...)"
                 :class="[
                   'w-full p-2 bg-gray-800/80 border rounded-lg text-white font-mono text-sm placeholder-gray-400',
                   member.walletAddress && validateAddress(member.walletAddress) 
@@ -209,11 +211,11 @@
               v-model="member.role"
               class="p-2 bg-gray-800/80 border border-white/20 rounded-lg text-white"
             >
-              <option value="creator">主創</option>
-              <option value="editor">編輯</option>
-              <option value="artist">美術</option>
-              <option value="developer">開發</option>
-              <option value="investor">投資人</option>
+              <option value="creator">Main creator</option>
+              <option value="editor">Editor</option>
+              <option value="artist">Artist</option>
+              <option value="developer">Developer</option>
+              <option value="investor">Investor</option>
             </select>
             <button
               @click="removeMember(index)"
@@ -230,17 +232,17 @@
             @click="addMember"
             class="btn-glass px-4 py-2 rounded-lg"
           >
-            + 添加成員
+            + Add member
           </button>
           
           <div class="text-right">
             <div class="text-white">
-              總計: <span :class="totalPercentage === 100 ? 'text-web3-green' : 'text-red-400'">
+              Total: <span :class="totalPercentage === 100 ? 'text-web3-green' : 'text-red-400'">
                 {{ totalPercentage }}%
               </span>
             </div>
             <div v-if="totalPercentage !== 100" class="text-red-400 text-sm">
-              必須等於 100%
+              Must be equal to 100%
             </div>
           </div>
         </div>
@@ -250,7 +252,7 @@
           :disabled="totalPercentage !== 100 || contractsStore.isLoading"
           class="btn-web3 w-full py-3 rounded-xl"
         >
-          {{ contractsStore.isLoading ? '設定中...' : '保存分潤設定' }}
+          {{ contractsStore.isLoading ? 'Setting...' : 'Save revenue setting' }}
         </button>
       </div>
 
@@ -261,29 +263,29 @@
             <svg class="w-6 h-6 text-web3-cyan mr-3" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
             </svg>
-            創建第一個訂閱季度 (可選)
+            Create the first subscription quarter (optional)
           </h2>
           <button
             @click="finishSetup"
             class="text-white/60 hover:text-white text-sm"
           >
-            暫時跳過
+            Skip for now
           </button>
         </div>
         
         <div class="bg-web3-cyan/5 border border-web3-cyan/20 rounded-2xl p-6 mb-6">
           <p class="text-white/80 mb-4">
-            創建您的第一個訂閱季度 NFT，讓粉絲可以購買並獲得專屬內容存取權。
+            Create your first subscription quarter NFT, so fans can purchase and gain exclusive content access.
           </p>
           <div class="text-web3-purple text-sm">
-            💡 您隨時可以在「訂閱管理」頁面創建更多季度
+            💡 You can create more quarters on the "Subscription Management" page at any time
           </div>
         </div>
 
         <form @submit.prevent="createFirstSeason" class="space-y-6">
           <div class="grid grid-cols-2 gap-6">
             <div>
-              <label class="block text-white font-medium mb-2">季度價格 (STX)</label>
+              <label class="block text-white font-medium mb-2">Quarter price (STX)</label>
               <input
                 v-model.number="seasonForm.price"
                 type="text"
@@ -297,7 +299,7 @@
             </div>
             
             <div>
-              <label class="block text-white font-medium mb-2">發行數量</label>
+              <label class="block text-white font-medium mb-2">Issuance quantity</label>
               <input
                 v-model.number="seasonForm.maxSupply"
                 type="number"
@@ -310,20 +312,20 @@
           </div>
           
           <div>
-            <label class="block text-white font-medium mb-2">會員等級</label>
+            <label class="block text-white font-medium mb-2">Member level</label>
             <select
               v-model="seasonForm.tier"
               class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white"
               required
             >
-              <option value="basic">基礎會員</option>
-              <option value="premium">高級會員</option>
-              <option value="vip">VIP 會員</option>
+              <option value="basic">  Basic member</option>
+              <option value="premium">Premium member</option>
+              <option value="vip">VIP member</option>
             </select>
           </div>
           
           <div>
-            <label class="block text-white font-medium mb-2">有效期限 (天)</label>
+            <label class="block text-white font-medium mb-2">Validity period (days)</label>
             <input
               v-model.number="seasonForm.validityDays"
               type="number"
@@ -342,7 +344,7 @@
               class="w-5 h-5"
             />
             <label for="revenue-split-season" class="text-white">
-              啟用自動分潤（購買時自動分配給團隊成員）
+              Enable automatic revenue sharing (automatically allocated to team members when purchased)
             </label>
           </div>
           
@@ -352,14 +354,14 @@
               :disabled="contractsStore.isLoading"
               class="btn-web3 flex-1 py-3 rounded-xl"
             >
-              {{ contractsStore.isLoading ? '創建中...' : '創建季度' }}
+              {{ contractsStore.isLoading ? 'Creating...' : 'Create quarter' }}
             </button>
             <button
               type="button"
               @click="finishSetup"
               class="btn-glass px-6 py-3 rounded-xl"
             >
-              稍後設定
+              Set later
             </button>
           </div>
         </form>
@@ -394,8 +396,8 @@ export default {
     const showAdvancedSetup = ref(false)
     
     const steps = ref([
-      { id: 1, title: '創作者資料' },
-      { id: 2, title: '完成' }
+      { id: 1, title: 'Creator Profile' },
+      { id: 2, title: 'Completed' }
     ])
     
     // 創作者表單
@@ -409,7 +411,7 @@ export default {
     // 團隊成員
     const teamMembers = ref([
       {
-        name: '我自己',
+        name: 'Myself',
         walletAddress: '',
         percentage: 100,
         role: 'creator'
@@ -441,13 +443,13 @@ export default {
     
     // 處理頭像上傳成功
     const handleAvatarUploadSuccess = (uploadData) => {
-      console.log('頭像上傳成功:', uploadData)
+      console.log('Avatar upload success:', uploadData)
       // creatorForm.avatarUri 會自動通過 v-model 更新
     }
     
     // 處理頭像上傳錯誤
     const handleAvatarUploadError = (error) => {
-      console.error('頭像上傳失敗:', error)
+      console.error('Avatar upload failed:', error)
       // 錯誤已經在 AvatarUploader 組件中處理和顯示
     }
     
@@ -463,7 +465,7 @@ export default {
         alreadyRegistered.value = isRegistered
         return isRegistered
       } catch (error) {
-        console.error('檢查註冊狀態失敗:', error)
+        console.error('Check registration status failed:', error)
         return false
       } finally {
         isCheckingRegistration.value = false
@@ -473,18 +475,18 @@ export default {
     // 註冊創作者
     const registerCreator = async () => {
       try {
-        console.log('🚀 開始註冊創作者流程...')
-        console.log('📝 表單數據:', creatorForm.value)
+        console.log('🚀 Start creator registration process...')
+        console.log('📝 Form Data:', creatorForm.value)
         
-        console.log('📞 調用合約註冊功能...')
+        console.log('📞 Call contract registration function...')
         const result = await contractsStore.registerCreator(creatorForm.value)
-        console.log('✅ 註冊成功:', result)
+        console.log('✅ Registration Successful:', result)
         
-        alert('🎉 創作者註冊成功！歡迎加入 Satscribe！')
+          alert('🎉 Creator registration successful! Welcome to Satscribe!')
         currentStep.value = 2
       } catch (error) {
-        console.error('❌ 註冊失敗:', error)
-        alert('註冊失敗：' + error.message)
+        console.error('❌ Registration failed:', error)
+        alert('Registration failed: ' + error.message)
       }
     }
     
@@ -517,31 +519,31 @@ export default {
     // 設定分潤
     const setupRevenueSplit = async () => {
       try {
-        console.log('🚀 開始設定分潤...')
-        console.log('👥 團隊成員數據:', teamMembers.value)
+        console.log('🚀 Start setting revenue...')
+        console.log('👥 Team member data:', teamMembers.value)
         
         // 驗證所有錢包地址
         for (let i = 0; i < teamMembers.value.length; i++) {
           const member = teamMembers.value[i]
           if (!validateAddress(member.walletAddress)) {
-            alert(`第 ${i + 1} 個成員的錢包地址格式不正確，請確認地址以 ST 開頭並且格式正確`)
+            alert(`The wallet address format of the ${i + 1}th member is incorrect, please confirm the address starts with ST and is formatted correctly`)
             return
           }
           
           if (member.percentage <= 0 || member.percentage > 100) {
-            alert(`第 ${i + 1} 個成員的分潤比例必須在 1-100% 之間`)
+            alert(`The revenue percentage of the ${i + 1}th member must be between 1-100%`)
             return
           }
           
           if (!member.name || member.name.trim() === '') {
-            alert(`第 ${i + 1} 個成員的姓名不能為空`)
+            alert(`The name of the ${i + 1}th member cannot be empty`)
             return
           }
         }
         
         // 檢查總比例
         if (totalPercentage.value !== 100) {
-          alert('分潤比例總和必須等於 100%')
+          alert('The total revenue percentage must be equal to 100%')
           return
         }
         
@@ -551,15 +553,15 @@ export default {
           role: member.role
         }))
         
-        console.log('📞 調用合約設定分潤...')
+        console.log('📞 Call contract setting revenue...')
         const result = await contractsStore.setupRevenueSplit(members)
-        console.log('✅ 分潤設定成功:', result)
+        console.log('✅ Revenue setting successful:', result)
         
-        alert('🎉 分潤設定成功！您的團隊收益將按設定比例自動分配。')
+        alert('🎉 Revenue setting successful! Your team income will be automatically allocated according to the set ratio.')
         // 設定完成後保持在當前頁面
       } catch (error) {
-        console.error('❌ 分潤設定失敗:', error)
-        alert('分潤設定失敗：' + error.message)
+        console.error('❌ Revenue setting failed:', error)
+        alert('Revenue setting failed: ' + error.message)
       }
     }
     
@@ -591,7 +593,7 @@ export default {
     // 創建季度
     const createFirstSeason = async () => {
       try {
-        console.log('🚀 開始創建第一個季度...')
+        console.log('🚀 Start creating the first quarter...')
         console.log('📋 季度表單數據:', seasonForm.value)
         
         // 計算當前季度ID
@@ -609,17 +611,17 @@ export default {
           enableRevenueSplit: seasonForm.value.enableRevenueSplit
         }
         
-        console.log('📞 調用合約創建季度...')
-        console.log('📊 季度數據:', seasonData)
+        console.log('📞 Call contract creating quarter...')
+        console.log('📊 Quarter data:', seasonData)
         
         const result = await contractsStore.createSeason(seasonData)
-        console.log('✅ 季度創建成功:', result)
+        console.log('✅ Quarter creation successful:', result)
         
-        alert(`🎉 季度創建成功！季度ID: ${seasonId} (${currentYear}年第${currentQuarter}季度)`)
+        alert(`🎉 Quarter creation successful! Quarter ID: ${seasonId} (${currentYear}年第${currentQuarter}季度)`)
         finishSetup()
       } catch (error) {
-        console.error('❌ 季度創建失敗:', error)
-        alert('季度創建失敗：' + error.message)
+        console.error('❌ Quarter creation failed:', error)
+        alert('Quarter creation failed: ' + error.message)
       }
     }
     
@@ -630,11 +632,11 @@ export default {
           // 強制從區塊鏈重新載入分潤設定
           const revenueSplit = await contractsStore.getRevenueSplit(walletStore.userAddress, true)
           if (revenueSplit && revenueSplit.value) {
-            console.log('載入現有分潤設定:', revenueSplit)
+            console.log('Load existing revenue setting:', revenueSplit)
             // 這裡可以更新 teamMembers 來反映鏈上的最新數據
           }
         } catch (error) {
-          console.log('載入現有資料失敗:', error)
+          console.log('Load existing data failed:', error)
         }
       }
     }

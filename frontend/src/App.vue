@@ -88,7 +88,7 @@
       <div v-if="isLoading" class="fixed inset-0 z-50 flex items-center justify-center bg-web3-dark/80 backdrop-blur-sm">
         <div class="text-center">
           <div class="w-16 h-16 border-4 border-web3-purple/30 border-t-web3-purple rounded-full animate-spin mx-auto mb-4"></div>
-          <p class="text-white/80">載入中...</p>
+          <p class="text-white/80">Load...</p>
         </div>
       </div>
     </transition>

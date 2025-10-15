@@ -31,7 +31,7 @@
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            <span>{{ article.readTime }}分鐘</span>
+            <span>{{ article.readTime }}minutes</span>
           </div>
         </div>
         
@@ -108,7 +108,7 @@
                 </svg>
               </div>
               <div>
-                <h4 class="text-white font-semibold text-sm">VIP 會員 NFT</h4>
+                <h4 class="text-white font-semibold text-sm">VIP member NFT</h4>
                 <p class="text-web3-cyan text-xs">{{ article.nftPrice }} STX • {{ article.nftSupply.current }}/{{ article.nftSupply.max }}</p>
               </div>
             </div>
@@ -116,12 +116,12 @@
               @click.stop="handleNFTPurchase(article)"
               class="bg-gradient-to-r from-web3-purple to-web3-cyan hover:from-web3-purple/80 hover:to-web3-cyan/80 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-web3-purple/25"
             >
-              購買訂閱權
+            Purchase subscription
             </button>
           </div>
           <!-- NFT 權益說明 -->
           <div class="mt-3 text-xs text-web3-gray-300">
-            💎 終身會員權益 • 🎨 獨家內容 • 🚀 早期預覽
+            💎 Lifetime Membership Benefits • 🎨 Exclusive Content • 🚀 Early Access
           </div>
         </div>
 
@@ -351,11 +351,11 @@ export default {
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
       
       if (diffHours < 24) {
-        return `${diffHours}小時前`
+        return `${diffHours}hours ago`
       } else if (diffDays < 7) {
-        return `${diffDays}天前`
+        return `${diffDays}days ago`
       } else if (diffDays < 30) {
-        return `${Math.ceil(diffDays / 7)}週前`
+        return `${Math.ceil(diffDays / 7)}weeks ago`
       } else {
         return articleDate.toLocaleDateString('zh-TW')
       }

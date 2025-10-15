@@ -25,7 +25,7 @@
           <img 
             v-if="previewUrl || modelValue"
             :src="previewUrl || modelValue"
-            :alt="'頭像預覽'"
+            :alt="'Avatar Preview'"
             class="w-full h-full object-cover"
           />
           
@@ -46,7 +46,7 @@
                 <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
               </svg>
               <div class="text-xs font-medium">
-                {{ previewUrl || modelValue ? '更換' : '上傳' }}
+                {{ previewUrl || modelValue ? 'Change' : 'Upload' }}
               </div>
             </div>
           </div>
@@ -74,7 +74,7 @@
       <!-- 上傳提示文字 -->
       <div class="mt-4 text-center">
         <p class="text-white/80 text-sm mb-2">
-          點擊{{ getTypeConfig().description }}或拖拽圖片到此處上傳
+          click{{ getTypeConfig().description }}Or drag and drop an image here to upload
         </p>
         <p class="text-white/60 text-xs">
           {{ getTypeConfig().hint }}
@@ -92,7 +92,7 @@
           <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
           </svg>
-          選擇圖片
+          Choose Image
         </button>
         
         <button
@@ -106,7 +106,7 @@
             <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"/>
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
           </svg>
-          移除
+          remove
         </button>
       </div>
     </div>
@@ -222,20 +222,20 @@ export default {
         avatar: {
           maxSize: 5 * 1024 * 1024, // 5MB
           allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
-          description: '頭像',
-          hint: '支援 JPG、PNG 格式，最大 5MB'
+          description: 'Avatar',
+          hint: 'support JPG、PNG format, max 5MB'
         },
         nft: {
           maxSize: 50 * 1024 * 1024, // 50MB
           allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
-          description: 'NFT 圖片',
-          hint: '支援 JPG、PNG、GIF、WebP、SVG 格式，最大 50MB'
+          description: 'NFT picture',
+          hint: 'support JPG、PNG、GIF、WebP、SVG format, max 50MB'
         },
         general: {
           maxSize: 10 * 1024 * 1024, // 10MB
           allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'],
-          description: '圖片',
-          hint: '支援 JPG、PNG、GIF、WebP 格式，最大 10MB'
+          description: 'picture',
+          hint: 'support JPG、PNG、GIF、WebP format, max 10MB'
         }
       }
       return configs[props.type] || configs.general
@@ -247,13 +247,13 @@ export default {
       const maxSize = props.maxSize || config.maxSize
       
       if (!config.allowedTypes.includes(file.type)) {
-        showError(`不支援的文件格式！${config.hint}`)
+        showError(`not supported file format!${config.hint}`)
         return false
       }
       
       if (file.size > maxSize) {
         const maxSizeMB = Math.round(maxSize / 1024 / 1024)
-        showError(`文件過大！請上傳小於 ${maxSizeMB}MB 的${config.description}。`)
+        showError(`file too large!please upload less than ${maxSizeMB}MB of ${config.description}.`)
         return false
       }
       
@@ -289,22 +289,22 @@ export default {
               previewUrl.value = response.data.imageUrl
               emit('update:modelValue', response.data.imageUrl)
               emit('upload-success', response.data)
-              showSuccess('頭像上傳成功！')
+              showSuccess('Avatar uploaded successfully!')
             } else {
-              showError(response.error || '上傳失敗')
+              showError(response.error || 'upload failed')
               emit('upload-error', response.error)
             }
           } else {
-            showError('上傳失敗，請稍後再試')
-            emit('upload-error', '網路錯誤')
+            showError('upload failed, please try again later')
+            emit('upload-error', 'internet error')
           }
           isUploading.value = false
         })
         
         // 處理上傳錯誤
         xhr.addEventListener('error', () => {
-          showError('上傳失敗，請檢查網路連接')
-          emit('upload-error', '網路錯誤')
+          showError('upload failed, please check your internet connection')
+          emit('upload-error', 'internet error')
           isUploading.value = false
         })
         
@@ -323,8 +323,8 @@ export default {
         xhr.send(formData)
         
       } catch (error) {
-        console.error('上傳錯誤:', error)
-        showError('上傳失敗：' + error.message)
+        console.error('upload error:', error)
+        showError('upload failed:' + error.message)
         emit('upload-error', error.message)
         isUploading.value = false
       }
@@ -368,7 +368,7 @@ export default {
       previewUrl.value = ''
       emit('update:modelValue', '')
       clearMessages()
-      showSuccess('頭像已移除')
+      showSuccess('Avatar removed')
     }
     
     return {

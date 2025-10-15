@@ -457,7 +457,7 @@ export default {
       // 創建 zhenyan 的 NFT 文章
       const nftArticle = {
         id: `nft-${realCreatorAddress}-${seasonId}`,
-        title: `🎨 ${creatorName} - 2025年第4季 VIP 會員章`,
+        title: `🎨 ${creatorName} - 2025 Q4 VIP Membership Badge`,
         excerpt: `Join ${creatorName}'s VIP membership to access exclusive content, behind-the-scenes footage, and early preview rights. Limited edition, quarterly membership benefits!`,
         category: 'Creator Economy',
         author: {
@@ -849,31 +849,31 @@ export default {
                     <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v1.586l8.707 8.707a1 1 0 001.414 0L20.828 6.5a1 1 0 000-1.414L12.707.293a1 1 0 00-1.414 0L2.586 8.5A2 2 0 002 10v8a2 2 0 002 2h16a2 2 0 002-2V4a2 2 0 00-2-2H4z" clip-rule="evenodd"/>
                   </svg>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-2">🎉 加入 VIP 會員</h3>
-                <p class="text-gray-400">即將解鎖專屬內容和權益</p>
+                <h3 class="text-2xl font-bold text-white mb-2">🎉 Join VIP Membership</h3>
+                <p class="text-gray-400">Exclusive content and benefits unlocking soon</p>
               </div>
               
               <!-- 權益列表 -->
               <div class="bg-gray-800/50 rounded-xl p-4 mb-6">
-                <h4 class="text-white font-medium mb-3">您將獲得：</h4>
+                <h4 class="text-white font-medium mb-3">You will receive:</h4>
                 <div class="space-y-2">
                   <div class="flex items-center text-sm">
                     <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                     </svg>
-                    <span class="text-gray-300">專屬內容無限制存取</span>
+                    <span class="text-gray-300">Unlimited access to exclusive content</span>
                   </div>
                   <div class="flex items-center text-sm">
                     <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                     </svg>
-                    <span class="text-gray-300">創作者社群互動權限</span>
+                    <span class="text-gray-300">Creator community interaction access</span>
                   </div>
                   <div class="flex items-center text-sm">
                     <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                     </svg>
-                    <span class="text-gray-300">獨家 NFT 收藏徽章</span>
+                    <span class="text-gray-300">Exclusive NFT collectible badge</span>
                   </div>
                 </div>
               </div>
@@ -881,16 +881,16 @@ export default {
               <!-- 價格信息 -->
               <div class="text-center mb-6">
                 <div class="text-3xl font-bold text-purple-400">${nftData.price} STX</div>
-                <div class="text-gray-400 text-sm">一次購買，終身權益</div>
+                <div class="text-gray-400 text-sm">One-time purchase, lifetime benefits</div>
               </div>
               
               <!-- 按鈕組 -->
               <div class="flex gap-3">
                 <button id="cancel-btn" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-xl font-medium transition-colors">
-                  取消
+                  Cancel
                 </button>
                 <button id="confirm-btn" class="flex-1 bg-gradient-to-r from-purple-600 to-cyan-600 text-white py-3 rounded-xl font-medium hover:opacity-90 transition-opacity">
-                  確認購買
+                  Confirm Purchase
                 </button>
               </div>
             </div>
@@ -935,7 +935,7 @@ export default {
           FIXED_METADATA_URI  // 固定 metadata URI
         )
         
-        console.log('✅ NFT 購買成功:', result)
+        console.log('✅ NFT Purchase successful:', result)
         
         // 更具吸引力的成功提示
         const successModal = document.createElement('div')
