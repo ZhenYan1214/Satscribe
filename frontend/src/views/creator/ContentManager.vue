@@ -2,9 +2,22 @@
   <div class="content-manager min-h-screen p-6 max-w-7xl mx-auto">
     <!-- 頁面標題 -->
     <div class="flex justify-between items-center mb-8">
-      <div>
-        <h1 class="text-4xl font-bold text-gradient-web3 mb-2">內容管理中心</h1>
-        <p class="text-white/70 text-lg">創建、管理您的專屬內容，建立粉絲社群</p>
+      <div class="flex items-center space-x-4">
+        <!-- 返回按鈕 -->
+        <button 
+          @click="router.push('/creator/dashboard')"
+          class="btn-glass p-3 rounded-xl hover:bg-white/10 transition-all flex items-center"
+          title="返回創作者儀表板"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        
+        <div>
+          <h1 class="text-4xl font-bold text-gradient-web3 mb-2">Content Management Center</h1>
+          <p class="text-white/70 text-lg">Create and manage your exclusive content, build fan communities</p>
+        </div>
       </div>
       <button 
         @click="showCreateModal = true" 
@@ -13,7 +26,7 @@
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
           <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
         </svg>
-        <span>創建內容</span>
+        <span>Create Content</span>
       </button>
     </div>
 
@@ -452,11 +465,13 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useWalletStore } from '@/stores/wallet'
 
 export default {
   name: 'ContentManager',
   setup() {
+    const router = useRouter()
     const walletStore = useWalletStore()
     const contents = ref([])
     const showCreateModal = ref(false)
@@ -654,6 +669,7 @@ export default {
     })
     
     return {
+      router,
       contents,
       showCreateModal,
       showPreviewModal,

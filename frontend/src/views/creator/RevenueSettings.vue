@@ -3,9 +3,22 @@
     <!-- 頁面標題 -->
     <div class="mb-8">
       <div class="flex items-center justify-between mb-6">
-        <div>
-          <h1 class="text-4xl font-display font-bold text-gradient-web3 mb-2">收益分配設定</h1>
-          <p class="text-white/70">設定工作室成員的收益分配比例，讓每個貢獻者都能獲得公平報酬</p>
+        <div class="flex items-center space-x-4">
+          <!-- 返回按鈕 -->
+          <button 
+            @click="router.push('/creator/dashboard')"
+            class="btn-glass p-3 rounded-xl hover:bg-white/10 transition-all flex items-center"
+            title="返回創作者儀表板"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+          
+          <div>
+            <h1 class="text-4xl font-display font-bold text-gradient-web3 mb-2">Revenue Split Settings</h1>
+            <p class="text-white/70">Configure revenue sharing ratios for studio members, ensuring fair compensation for every contributor</p>
+          </div>
         </div>
         <div class="glass-purple px-4 py-2 rounded-xl">
           <div class="flex items-center space-x-2">
@@ -16,105 +29,6 @@
       </div>
     </div>
 
-    <!-- 當前配置狀態卡片 -->
-    <div class="card-web3 p-6 mb-8 animate-fade-in">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold text-white flex items-center">
-          <svg class="w-6 h-6 text-web3-purple mr-3" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
-          配置狀態
-        </h2>
-        <div :class="[
-          'px-4 py-2 rounded-full text-sm font-bold border',
-          isConfigured 
-            ? 'bg-web3-green/20 text-web3-green border-web3-green/30' 
-            : 'bg-yellow-500/20 text-yellow-400 border-yellow-400/30'
-        ]">
-          {{ isConfigured ? '✓ 已完成配置' : '⚠ 待設定' }}
-        </div>
-      </div>
-      
-      <!-- 未配置狀態 -->
-      <div v-if="!isConfigured" class="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-2xl p-6 mb-6">
-        <div class="flex items-start space-x-4">
-          <div class="w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-            <svg class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="text-lg font-bold text-yellow-400 mb-2">尚未設定分潤配置</h3>
-            <p class="text-yellow-200/80 mb-4">
-              請添加工作室成員並設置分潤比例，所有NFT銷售收益將按照您設定的比例自動分配給團隊成員。
-            </p>
-            <button @click="addMember" class="btn-web3 text-sm px-4 py-2">
-              立即開始設定
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 已配置狀態 -->
-      <div v-else class="grid md:grid-cols-2 gap-6">
-        <!-- NFT 銷售分潤 -->
-        <div class="bg-gradient-to-br from-web3-purple/10 to-web3-cyan/10 rounded-2xl p-6 border border-web3-purple/30">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center">
-              <div class="w-10 h-10 bg-web3-purple/20 rounded-xl flex items-center justify-center mr-3">
-                <svg class="w-5 h-5 text-web3-purple" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4z"/>
-                  <path fill-rule="evenodd" d="M3 8a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
-                </svg>
-              </div>
-              <div>
-                <h3 class="font-bold text-white">NFT 銷售分潤</h3>
-                <p class="text-white/60 text-sm">訂閱章銷售收益分配</p>
-              </div>
-            </div>
-            <div :class="[
-              'w-3 h-3 rounded-full',
-              nftEnabled ? 'bg-web3-green shadow-glow' : 'bg-gray-500'
-            ]"></div>
-          </div>
-          <p :class="[
-            'text-sm font-medium',
-            nftEnabled ? 'text-web3-green' : 'text-gray-400'
-          ]">
-            {{ nftEnabled ? '✓ 已啟用自動分潤' : '✗ 未啟用' }}
-          </p>
-        </div>
-
-        <!-- Lightning 打賞分潤 - 暫時隱藏 -->
-        <!-- 
-        <div class="bg-gradient-to-br from-web3-cyan/10 to-web3-green/10 rounded-2xl p-6 border border-web3-cyan/30">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center">
-              <div class="w-10 h-10 bg-web3-cyan/20 rounded-xl flex items-center justify-center mr-3">
-                <svg class="w-5 h-5 text-web3-cyan" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
-                </svg>
-              </div>
-              <div>
-                <h3 class="font-bold text-white">Lightning 打賞分潤</h3>
-                <p class="text-white/60 text-sm">即時打賞收益分配</p>
-              </div>
-            </div>
-            <div :class="[
-              'w-3 h-3 rounded-full',
-              lightningEnabled ? 'bg-web3-green shadow-glow' : 'bg-gray-500'
-            ]"></div>
-          </div>
-          <p :class="[
-            'text-sm font-medium',
-            lightningEnabled ? 'text-web3-green' : 'text-gray-400'
-          ]">
-            {{ lightningEnabled ? '✓ 已啟用自動分潤' : '✗ 暫未啟用' }}
-          </p>
-        </div>
-        -->
-      </div>
-    </div>
 
     <!-- 工作室成員管理 -->
     <div class="card-web3 p-6 mb-8 animate-fade-in" style="animation-delay: 0.1s">
@@ -441,12 +355,14 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useWalletStore } from '@/stores/wallet'
 import { useContractsStore } from '@/stores/contracts'
 
 export default {
   name: 'RevenueSettings',
   setup() {
+    const router = useRouter()
     const walletStore = useWalletStore()
     const contractsStore = useContractsStore()
     
@@ -617,6 +533,7 @@ export default {
     })
     
     return {
+      router,
       members,
       nftEnabled,
       lightningEnabled,

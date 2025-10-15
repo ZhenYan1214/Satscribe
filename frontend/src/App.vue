@@ -31,11 +31,11 @@
           <!-- 中央導航 -->
           <div class="hidden md:flex items-center space-x-8">
             <router-link to="/explore" class="text-white/80 hover:text-white font-medium transition-colors duration-200 relative group">
-              探索
+              Explore
               <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-web3-purple to-web3-cyan group-hover:w-full transition-all duration-300"></span>
             </router-link>
             <router-link to="/my-collections" class="text-white/80 hover:text-white font-medium transition-colors duration-200 relative group">
-              我的收藏
+              My Collections
               <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-web3-purple to-web3-cyan group-hover:w-full transition-all duration-300"></span>
             </router-link>
           </div>
@@ -47,7 +47,7 @@
               @click="toggleUserMode" 
               class="btn-glass text-sm px-4 py-2 relative overflow-hidden group"
             >
-              <span class="relative z-10">{{ isCreatorMode ? '使用者模式' : '創作者模式' }}</span>
+              <span class="relative z-10">{{ isCreatorMode ? 'User Mode' : 'Creator Mode' }}</span>
               <div class="absolute inset-0 bg-gradient-to-r from-web3-purple/20 to-web3-cyan/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
             </button>
             
@@ -61,7 +61,7 @@
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
                 </svg>
-                <span>連接錢包</span>
+                <span>Connect Wallet</span>
               </span>
               <div class="absolute inset-0 bg-gradient-to-r from-web3-cyan to-web3-purple opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>

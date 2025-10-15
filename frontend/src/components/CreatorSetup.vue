@@ -1,6 +1,6 @@
 <template>
   <div class="creator-setup max-w-4xl mx-auto p-6">
-    <h1 class="text-3xl font-bold text-gradient-web3 mb-8">創作者設定</h1>
+    <h1 class="text-3xl font-bold text-gradient-web3 mb-8">Creator Setup</h1>
     
     <!-- 步驟指示器 -->
     <div class="flex justify-between items-center mb-8">
@@ -18,7 +18,7 @@
     
     <!-- 步驟 1: 註冊創作者 -->
     <div v-if="currentStep === 1" class="card-web3 p-8">
-      <h2 class="text-2xl font-bold text-white mb-6">步驟 1: 註冊創作者資料</h2>
+      <h2 class="text-2xl font-bold text-white mb-6">Step 1: Register Creator Profile</h2>
       
       <!-- 註冊表單 -->
       <form @submit.prevent="registerCreator" class="space-y-6">

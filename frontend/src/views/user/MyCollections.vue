@@ -3,8 +3,8 @@
     <!-- 頁面標題 -->
     <div class="flex justify-between items-center mb-8">
       <div>
-        <h1 class="text-4xl font-bold text-gradient-web3 mb-2">我的數位收藏館</h1>
-        <p class="text-white/70 text-lg">珍藏您的支持記錄，每一枚 NFT 都見證了您對創作者的支持</p>
+        <h1 class="text-4xl font-bold text-gradient-web3 mb-2">My Digital Collection</h1>
+        <p class="text-white/70 text-lg">Treasure your support records - every NFT is a testament to your support for creators</p>
       </div>
       <div class="flex items-center space-x-4">
         <!-- 視圖切換 -->
@@ -21,7 +21,7 @@
             <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v1.586l8.707 8.707a1 1 0 001.414 0L20.828 6.5a1 1 0 000-1.414L12.707.293a1 1 0 00-1.414 0L2.586 8.5A2 2 0 002 10v8a2 2 0 002 2h16a2 2 0 002-2V4a2 2 0 00-2-2H4z" clip-rule="evenodd"/>
             </svg>
-            畫廊模式
+            Gallery Mode
           </button>
           <button 
             @click="viewMode = 'timeline'"
@@ -35,7 +35,7 @@
             <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
             </svg>
-            時間軸
+            Timeline
           </button>
         </div>
         
@@ -44,10 +44,10 @@
           v-model="sortBy"
           class="bg-glass-dark border border-white/20 rounded-xl px-4 py-2 text-white text-sm focus:border-web3-purple focus:outline-none"
         >
-          <option value="newest">最新收藏</option>
-          <option value="oldest">最早收藏</option>
-          <option value="creator">創作者</option>
-          <option value="value">價值</option>
+          <option value="newest">Newest Collection</option>
+          <option value="oldest">Oldest Collection</option>
+          <option value="creator">Creator</option>
+          <option value="value">Value</option>
         </select>
       </div>
     </div>
@@ -58,7 +58,7 @@
       <div class="card-web3 p-6 hover:scale-105 transition-transform">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-white/70 text-sm mb-1">總收藏</p>
+            <p class="text-white/70 text-sm mb-1">Total Collection</p>
             <p class="text-3xl font-bold text-white">{{ collections.length }}</p>
           </div>
           <div class="w-12 h-12 bg-web3-purple/20 rounded-2xl flex items-center justify-center">
@@ -69,7 +69,7 @@
         </div>
         <div class="mt-3 flex items-center text-sm">
           <span class="text-web3-green">+{{ recentCollections }}</span>
-          <span class="text-white/50 ml-1">本月新增</span>
+          <span class="text-white/50 ml-1">added this month</span>
         </div>
       </div>
 
@@ -77,7 +77,7 @@
       <div class="card-web3 p-6 hover:scale-105 transition-transform">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-white/70 text-sm mb-1">支持創作者</p>
+            <p class="text-white/70 text-sm mb-1">Supported Creators</p>
             <p class="text-3xl font-bold text-white">{{ uniqueCreators }}</p>
           </div>
           <div class="w-12 h-12 bg-web3-cyan/20 rounded-2xl flex items-center justify-center">
@@ -87,8 +87,8 @@
           </div>
         </div>
         <div class="mt-3 flex items-center text-sm">
-          <span class="text-white/50">跨越 </span>
-          <span class="text-web3-cyan ml-1">{{ uniqueQuarters }} 個季度</span>
+          <span class="text-white/50">across </span>
+          <span class="text-web3-cyan ml-1">{{ uniqueQuarters }} quarters</span>
         </div>
       </div>
 
@@ -96,7 +96,7 @@
       <div class="card-web3 p-6 hover:scale-105 transition-transform">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-white/70 text-sm mb-1">總支出</p>
+            <p class="text-white/70 text-sm mb-1">Total Spent</p>
             <p class="text-3xl font-bold text-white">{{ totalSpent }}</p>
             <p class="text-sm text-web3-gold">STX</p>
           </div>
@@ -255,7 +255,7 @@
               <span class="text-white text-sm font-bold">{{ year }}</span>
             </div>
             {{ year }} 年的收藏
-            <span class="text-white/50 text-base font-normal ml-2">({{ group.length }} 件)</span>
+            <span class="text-white/50 text-base font-normal ml-2">({{ group.length }} items)</span>
           </h3>
           
           <div class="relative">
@@ -306,13 +306,13 @@
                       
                       <!-- 支持描述 -->
                       <p class="text-white/70 text-sm mb-3">
-                        您成為了 {{ nft.creatorName }} 的第 {{ nft.seasonId }} 季 VIP 會員，支持他們的創作事業
+                        You became a Q{{ nft.seasonId }} VIP member of {{ nft.creatorName }}, supporting their creative work
                       </p>
                       
                       <!-- 標籤 -->
                       <div class="flex items-center space-x-2">
                         <span class="bg-web3-purple/20 text-web3-purple px-2 py-1 rounded-full text-xs">Q{{ nft.seasonId }}</span>
-                        <span class="bg-web3-gold/20 text-web3-gold px-2 py-1 rounded-full text-xs">VIP會員</span>
+                        <span class="bg-web3-gold/20 text-web3-gold px-2 py-1 rounded-full text-xs">VIP Member</span>
                         <span v-if="nft.rarity" class="bg-web3-cyan/20 text-web3-cyan px-2 py-1 rounded-full text-xs">{{ nft.rarity }}</span>
                       </div>
                     </div>
@@ -332,7 +332,7 @@
         <div class="flex justify-between items-center p-6 border-b border-white/10">
           <div>
             <h3 class="text-2xl font-bold text-gradient-web3">{{ selectedNFT.name }}</h3>
-            <p class="text-white/70 text-sm mt-1">by {{ selectedNFT.creatorName }} • 支持於 {{ formatDate(selectedNFT.purchaseDate) }}</p>
+            <p class="text-white/70 text-sm mt-1">by {{ selectedNFT.creatorName }} • Supported on {{ formatDate(selectedNFT.purchaseDate) }}</p>
           </div>
           <button @click="selectedNFT = null" class="text-white/60 hover:text-white transition-colors">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -361,7 +361,7 @@
               
               <!-- 社交分享 -->
               <div class="flex items-center space-x-3">
-                <span class="text-white/70 text-sm">分享您的收藏：</span>
+                <span class="text-white/70 text-sm">Share your collection:</span>
                 <button class="btn-glass p-2 rounded-lg">
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/>
@@ -379,65 +379,65 @@
             <div class="space-y-6">
               <!-- 基本信息 -->
               <div>
-                <h4 class="text-lg font-bold text-white mb-4">收藏詳情</h4>
+                <h4 class="text-lg font-bold text-white mb-4">Collection Details</h4>
                 <div class="space-y-3">
                   <div class="flex justify-between">
-                    <span class="text-white/70">創作者</span>
+                    <span class="text-white/70">Creator</span>
                     <span class="text-white font-medium">{{ selectedNFT.creatorName }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span class="text-white/70">季度</span>
-                    <span class="text-web3-purple font-medium">第 {{ selectedNFT.seasonId }} 季</span>
+                    <span class="text-white/70">Season</span>
+                    <span class="text-web3-purple font-medium">Q{{ selectedNFT.seasonId }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span class="text-white/70">支付金額</span>
+                    <span class="text-white/70">Payment Amount</span>
                     <span class="text-web3-gold font-bold">{{ selectedNFT.price }} STX</span>
                   </div>
                   <div class="flex justify-between">
-                    <span class="text-white/70">支持日期</span>
+                    <span class="text-white/70">Support Date</span>
                     <span class="text-white">{{ formatDate(selectedNFT.purchaseDate) }}</span>
                   </div>
                   <div class="flex justify-between">
-                    <span class="text-white/70">支持天數</span>
-                    <span class="text-web3-cyan">{{ getDaysSupported(selectedNFT.purchaseDate) }} 天</span>
+                    <span class="text-white/70">Support Days</span>
+                    <span class="text-web3-cyan">{{ getDaysSupported(selectedNFT.purchaseDate) }} days</span>
                   </div>
                 </div>
               </div>
               
               <!-- 專屬權益 -->
               <div>
-                <h4 class="text-lg font-bold text-white mb-4">會員權益</h4>
+                <h4 class="text-lg font-bold text-white mb-4">Member Benefits</h4>
                 <div class="space-y-2">
                   <div class="flex items-center text-web3-green text-sm">
                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                     </svg>
-                    專屬內容存取權
+                    Exclusive Content Access
                   </div>
                   <div class="flex items-center text-web3-green text-sm">
                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                     </svg>
-                    優先留言和互動
+                    Priority Comments & Interactions
                   </div>
                   <div class="flex items-center text-web3-green text-sm">
                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                     </svg>
-                    VIP 會員專屬活動
+                    VIP Member Exclusive Events
                   </div>
                   <div class="flex items-center text-web3-green text-sm">
                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                     </svg>
-                    永久收藏紀念價值
+                    Permanent Collection Memorial Value
                   </div>
                 </div>
               </div>
               
               <!-- 收藏意義 -->
               <div class="bg-gradient-to-r from-web3-purple/10 to-web3-cyan/10 rounded-2xl p-4 border border-web3-purple/30">
-                <h4 class="text-lg font-bold text-white mb-2">收藏意義</h4>
+                <h4 class="text-lg font-bold text-white mb-2">Collection Significance</h4>
                 <p class="text-white/80 text-sm">
                   這枚 NFT 見證了您對 {{ selectedNFT.creatorName }} 的支持，代表您在第 {{ selectedNFT.seasonId }} 季成為了他們的 VIP 會員。
                   每一次支持都是創作者成長路上的重要動力，您的這份心意已永久記錄在區塊鏈上。

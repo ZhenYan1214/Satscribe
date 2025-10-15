@@ -286,64 +286,9 @@
           </div>
         </div>
 
-        <div class="text-center mt-12">
-          <button 
-            @click="testPurchaseFlow"
-            class="btn-web3 text-lg px-10 py-4 rounded-2xl"
-          >
-            <svg class="w-5 h-5 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            Start Revenue Sharing Test  
-          </button>
-        </div>
       </div>
     </section>
     
-    <!-- 開發者工具面板 (僅在開發環境顯示) -->
-    <section v-if="walletStore.isConnected" class="py-8 px-4 bg-red-900/20 border-t border-red-500/30">
-      <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-4">
-          <h3 class="text-lg font-bold text-red-400">🛠️ 開發者工具</h3>
-          <p class="text-red-300 text-sm">測試創作者註冊狀態檢查功能</p>
-        </div>
-        
-        <div class="grid md:grid-cols-3 gap-4">
-          <button 
-            @click="clearLocalRegistration"
-            class="bg-red-600/20 hover:bg-red-600/30 border border-red-500/50 rounded-lg p-4 text-red-300 hover:text-red-200 transition-colors"
-          >
-            <div class="font-medium mb-1">清除註冊狀態</div>
-            <div class="text-xs">清除本地註冊記錄</div>
-          </button>
-          
-          <button 
-            @click="checkRegistrationStatus"
-            class="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/50 rounded-lg p-4 text-blue-300 hover:text-blue-200 transition-colors"
-          >
-            <div class="font-medium mb-1">檢查註冊狀態</div>
-            <div class="text-xs">手動檢查註冊狀態</div>
-          </button>
-          
-          <button 
-            @click="switchToCreator"
-            class="bg-green-600/20 hover:bg-green-600/30 border border-green-500/50 rounded-lg p-4 text-green-300 hover:text-green-200 transition-colors"
-          >
-            <div class="font-medium mb-1">測試註冊流程</div>
-            <div class="text-xs">測試完整註冊檢查</div>
-          </button>
-        </div>
-        
-        <div class="mt-4 text-center">
-          <p class="text-white/60 text-xs">
-            當前地址: {{ walletStore.userAddress }}
-          </p>
-          <p class="text-white/60 text-xs">
-            網路: {{ walletStore.networkType }}
-          </p>
-        </div>
-      </div>
-    </section>
   </div>
 </template>
 
@@ -372,30 +317,6 @@ export default {
     // 添加一個測試用的創作者地址（用戶自己的地址）
     const testCreatorAddress = ref('')
     
-    // 開發者工具
-    const clearLocalRegistration = () => {
-      if (walletStore.userAddress) {
-        walletStore.setLocalRegistrationStatus(walletStore.userAddress, false)
-        alert('已清除本地註冊狀態，請重新載入頁面測試')
-        location.reload()
-      }
-    }
-    
-    const checkRegistrationStatus = async () => {
-      if (!walletStore.isConnected) {
-        alert('請先連接錢包')
-        return
-      }
-      
-      try {
-        console.log('🔍 手動檢查註冊狀態...')
-        const isRegistered = await walletStore.isRegisteredCreator()
-        alert(`註冊狀態檢查結果：${isRegistered ? '已註冊' : '未註冊'}`)
-      } catch (error) {
-        console.error('檢查失敗:', error)
-        alert('檢查失敗，請查看控制台日誌')
-      }
-    }
     
     const switchToCreator = async () => {
       // 檢查錢包是否連接
@@ -474,19 +395,6 @@ export default {
       }
     }
     
-    const testPurchaseFlow = () => {
-      if (!walletStore.isConnected) {
-        alert('請先連接錢包進行測試')
-        return
-      }
-      
-      // 導向用戶自己的創作者頁面進行測試
-      if (testCreatorAddress.value) {
-        router.push(`/creator/${testCreatorAddress.value}`)
-      } else {
-        alert('請先註冊為創作者，然後重新載入頁面')
-      }
-    }
     
     // 載入平台統計數據
     const loadPlatformStats = async () => {
@@ -536,11 +444,7 @@ export default {
       goToCreator,
       goToExplore,
       loadCreators,
-      testPurchaseFlow,
       
-      // 開發者工具
-      clearLocalRegistration,
-      checkRegistrationStatus,
       
       // Store
       walletStore

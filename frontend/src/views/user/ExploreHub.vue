@@ -15,7 +15,7 @@
               <input 
                 v-model="searchQuery"
                 type="text" 
-                placeholder="搜尋文章、創作者或主題..."
+                placeholder="Search articles, creators or topics..."
                 class="block w-full pl-12 pr-12 py-3.5 bg-web3-slate/30 border border-web3-gray-600/50 rounded-2xl text-white placeholder-web3-gray-400 focus:outline-none focus:ring-2 focus:ring-web3-primary/50 focus:border-web3-primary/60 focus:bg-web3-slate/50 hover:bg-web3-slate/40 transition-all duration-300 text-sm shadow-lg"
                 @keyup.enter="performSearch"
               >
@@ -44,7 +44,7 @@
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"/>
               </svg>
-              <span>篩選</span>
+              <span>Filters</span>
             </button>
 
             <!-- Sort Dropdown -->
@@ -53,10 +53,10 @@
                 v-model="sortBy"
                 class="appearance-none bg-web3-slate/40 border border-web3-gray-600/30 rounded-xl px-5 py-3 pr-10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-web3-primary/50 focus:border-web3-primary/60 hover:bg-web3-slate/60 transition-all duration-300 shadow-lg cursor-pointer"
               >
-                <option value="trending">熱門趨勢</option>
-                <option value="latest">最新發布</option>
-                <option value="popular">最多互動</option>
-                <option value="revenue">收益最高</option>
+                <option value="trending">Trending</option>
+                <option value="latest">Latest</option>
+                <option value="popular">Most Popular</option>
+                <option value="revenue">Highest Revenue</option>
               </select>
               <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                 <svg class="w-4 h-4 text-web3-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,7 +106,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <!-- Category Filter -->
               <div>
-                <label class="block text-sm font-semibold text-white mb-3">分類</label>
+                <label class="block text-sm font-semibold text-white mb-3">Category</label>
                 <div class="flex flex-wrap gap-2">
                   <button 
                     v-for="category in categories" 
@@ -126,30 +126,30 @@
 
               <!-- Time Range -->
               <div>
-                <label class="block text-sm font-medium text-web3-gray-300 mb-2">時間範圍</label>
+                <label class="block text-sm font-medium text-web3-gray-300 mb-2">Time Range</label>
                 <select 
                   v-model="timeRange"
                   class="w-full bg-web3-gray-700 border border-web3-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-web3-primary/50"
                 >
-                  <option value="all">全部時間</option>
-                  <option value="today">今天</option>
-                  <option value="week">本週</option>
-                  <option value="month">本月</option>
-                  <option value="year">今年</option>
+                  <option value="all">All Time</option>
+                  <option value="today">Today</option>
+                  <option value="week">This Week</option>
+                  <option value="month">This Month</option>
+                  <option value="year">This Year</option>
                 </select>
               </div>
 
               <!-- Reading Time -->
               <div>
-                <label class="block text-sm font-medium text-web3-gray-300 mb-2">閱讀時長</label>
+                <label class="block text-sm font-medium text-web3-gray-300 mb-2">Reading Time</label>
                 <select 
                   v-model="readingTime"
                   class="w-full bg-web3-gray-700 border border-web3-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-web3-primary/50"
                 >
-                  <option value="all">任何長度</option>
-                  <option value="short">短篇 (< 5分鐘)</option>
-                  <option value="medium">中篇 (5-15分鐘)</option>
-                  <option value="long">長篇 (> 15分鐘)</option>
+                  <option value="all">Any Length</option>
+                  <option value="short">Short (< 5 min)</option>
+                  <option value="medium">Medium (5-15 min)</option>
+                  <option value="long">Long (> 15 min)</option>
                 </select>
               </div>
             </div>
@@ -160,7 +160,7 @@
                 @click="clearFilters"
                 class="text-sm text-web3-gray-400 hover:text-white transition-colors duration-200"
               >
-                清除所有篩選
+                Clear All Filters
               </button>
             </div>
           </div>
@@ -174,10 +174,10 @@
       <div class="mb-10">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div class="space-y-2">
-            <h1 class="text-4xl font-bold bg-gradient-to-r from-white to-web3-gray-300 bg-clip-text text-transparent">探索內容</h1>
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-white to-web3-gray-300 bg-clip-text text-transparent">Explore Content</h1>
             <p class="text-web3-gray-400 text-lg">
-              找到 <span class="text-web3-primary font-semibold">{{ filteredArticles.length }}</span> 篇文章
-              <span v-if="searchQuery"> · 關於「<span class="text-white font-medium">{{ searchQuery }}</span>」</span>
+              Found <span class="text-web3-primary font-semibold">{{ filteredArticles.length }}</span> articles
+              <span v-if="searchQuery"> · About "<span class="text-white font-medium">{{ searchQuery }}</span>"</span>
             </p>
           </div>
           
@@ -185,17 +185,17 @@
           <div class="hidden sm:flex items-center space-x-8">
             <div class="text-center group">
               <div class="text-2xl font-bold text-web3-primary group-hover:scale-105 transition-transform duration-300">{{ stats.totalArticles }}</div>
-              <div class="text-web3-gray-400 text-sm font-medium">總文章</div>
+              <div class="text-web3-gray-400 text-sm font-medium">Total Articles</div>
             </div>
             <div class="w-px h-10 bg-web3-gray-600/50"></div>
             <div class="text-center group">
               <div class="text-2xl font-bold text-web3-accent group-hover:scale-105 transition-transform duration-300">{{ stats.totalCreators }}</div>
-              <div class="text-web3-gray-400 text-sm font-medium">創作者</div>
+              <div class="text-web3-gray-400 text-sm font-medium">Creators</div>
             </div>
             <div class="w-px h-10 bg-web3-gray-600/50"></div>
             <div class="text-center group">
               <div class="text-2xl font-bold text-web3-amber group-hover:scale-105 transition-transform duration-300">{{ stats.totalViews }}</div>
-              <div class="text-web3-gray-400 text-sm font-medium">總閱讀</div>
+              <div class="text-web3-gray-400 text-sm font-medium">Total Views</div>
             </div>
           </div>
         </div>
@@ -204,9 +204,9 @@
       <!-- Featured Article Section -->
       <section v-if="featuredArticle && !searchQuery" class="mb-12">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-white">編輯精選</h2>
+          <h2 class="text-2xl font-bold text-white">Editor's Choice</h2>
           <span class="px-3 py-1 bg-web3-amber/20 text-web3-amber text-sm font-medium rounded-full">
-            精選推薦
+            Featured
           </span>
         </div>
         
@@ -224,7 +224,7 @@
             <svg class="w-6 h-6 mr-3 text-web3-primary" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
             </svg>
-            熱門話題
+            Trending Topics
           </h3>
           <div class="flex flex-wrap gap-3">
             <button 
@@ -245,17 +245,17 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h3 class="text-2xl font-bold text-white mb-2">
-              {{ searchQuery ? '搜尋結果' : '最新內容' }}
+              {{ searchQuery ? 'Search Results' : 'Latest Content' }}
             </h3>
             <p class="text-web3-gray-400 text-sm">
-              {{ viewMode === 'grid' ? '網格' : '列表' }}檢視 · {{ sortBy === 'trending' ? '熱門排序' : sortBy === 'latest' ? '最新排序' : sortBy === 'popular' ? '熱門排序' : '收益排序' }}
+              {{ viewMode === 'grid' ? 'Grid' : 'List' }} view · {{ sortBy === 'trending' ? 'Trending' : sortBy === 'latest' ? 'Latest' : sortBy === 'popular' ? 'Popular' : 'Revenue' }} sort
             </p>
           </div>
           
           <!-- Loading indicator -->
           <div v-if="isLoading" class="flex items-center space-x-3 text-web3-gray-400">
             <div class="w-5 h-5 border-2 border-web3-gray-600 border-t-web3-primary rounded-full animate-spin"></div>
-            <span class="text-sm font-medium">載入中...</span>
+            <span class="text-sm font-medium">Loading...</span>
           </div>
         </div>
 
@@ -266,13 +266,13 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
           </div>
-          <h4 class="text-2xl font-bold text-white mb-3">找不到相關內容</h4>
-          <p class="text-web3-gray-400 text-lg mb-8 max-w-md mx-auto">試著調整您的搜尋條件或篩選器，或探索其他熱門內容</p>
+          <h4 class="text-2xl font-bold text-white mb-3">No Content Found</h4>
+          <p class="text-web3-gray-400 text-lg mb-8 max-w-md mx-auto">Try adjusting your search criteria or filters, or explore other trending content</p>
           <button 
             @click="clearSearch"
             class="btn-web3 px-8 py-3 text-sm font-medium"
           >
-            清除搜尋
+            Clear Search
           </button>
         </div>
 
@@ -307,8 +307,8 @@
                 : 'bg-web3-slate/40 hover:bg-web3-primary/20 border border-web3-gray-600/40 hover:border-web3-primary/50 text-white hover:text-web3-primary hover:shadow-web3-primary/20'
             ]"
           >
-            <span v-if="!isLoadingMore" class="relative z-10">載入更多內容</span>
-            <span v-else class="relative z-10">載入中...</span>
+            <span v-if="!isLoadingMore" class="relative z-10">Load More Content</span>
+            <span v-else class="relative z-10">Loading...</span>
             <svg v-if="!isLoadingMore" class="w-5 h-5 group-hover:translate-y-1 transition-transform duration-300 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
             </svg>
@@ -325,7 +325,7 @@
             <svg class="w-7 h-7 mr-4 text-web3-accent" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            <h3 class="text-2xl font-bold text-white">本週熱門創作者</h3>
+            <h3 class="text-2xl font-bold text-white">Trending Creators This Week</h3>
           </div>
           <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <creator-spotlight-card 
@@ -343,7 +343,7 @@
               to="/creators" 
               class="text-web3-primary hover:text-web3-secondary font-medium text-sm transition-colors duration-200"
             >
-              查看所有創作者 →
+              View All Creators →
             </router-link>
           </div>
         </div>
@@ -388,20 +388,20 @@ export default {
     
     // Data
     const categories = ref([
-      { id: 'all', label: '全部' },
-      { id: 'blockchain', label: '區塊鏈' },
-      { id: 'art', label: '數位藝術' },
-      { id: 'music', label: '音樂' },
-      { id: 'tech', label: '技術' },
-      { id: 'photography', label: '攝影' },
-      { id: 'writing', label: '寫作' },
-      { id: 'video', label: '影片' },
-      { id: 'design', label: '設計' }
+      { id: 'all', label: 'All' },
+      { id: 'blockchain', label: 'Blockchain' },
+      { id: 'art', label: 'Digital Art' },
+      { id: 'music', label: 'Music' },
+      { id: 'tech', label: 'Technology' },
+      { id: 'photography', label: 'Photography' },
+      { id: 'writing', label: 'Writing' },
+      { id: 'video', label: 'Video' },
+      { id: 'design', label: 'Design' }
     ])
 
     const trendingTopics = ref([
-      'Web3', 'NFT藝術', 'DeFi', '元宇宙', '智慧合約', 
-      '數位創作', '區塊鏈開發', '去中心化', '創作者經濟', 'DAO治理'
+      'Web3', 'NFT Art', 'DeFi', 'Metaverse', 'Smart Contracts', 
+      'Digital Creation', 'Blockchain Development', 'Decentralization', 'Creator Economy', 'DAO Governance'
     ])
     
     const stats = ref({
@@ -412,9 +412,9 @@ export default {
 
     const featuredArticle = ref({
       id: 'featured-1',
-      title: 'Web3 創作者經濟的革命性變化：從傳統平台走向去中心化未來',
-      excerpt: '深入探討 Web3 技術如何徹底改變創作者經濟生態，分析區塊鏈、NFT 和 DeFi 如何為創作者帶來前所未有的價值創造機會。',
-      category: '區塊鏈趨勢',
+      title: 'Revolutionary Changes in Web3 Creator Economy: From Traditional Platforms to Decentralized Future',
+      excerpt: 'In-depth exploration of how Web3 technology completely transforms the creator economy ecosystem, analyzing how blockchain, NFTs, and DeFi bring unprecedented value creation opportunities for creators.',
+      category: 'Blockchain Trends',
       author: {
         id: 'author-1',
         name: 'Alice Chen',
@@ -429,7 +429,7 @@ export default {
       comments: 89,
       views: 8420,
       earnings: 156.7,
-      tags: ['Web3', '創作者經濟', '區塊鏈', 'NFT', 'DeFi']
+      tags: ['Web3', 'Creator Economy', 'Blockchain', 'NFT', 'DeFi']
     })
     
     // Enhanced mock articles with more realistic data  
@@ -437,7 +437,7 @@ export default {
     
     // 加載預設的 zhenyan 創作者 NFT 文章
     const loadRealNFTArticle = async () => {
-      console.log('🎨 加載預設 zhenyan 創作者 NFT...')
+      console.log('🎨 Loading default zhenyan creator NFT...')
       
       // 使用固定的預設數據，但保持可以購買的功能
       const realCreatorAddress = 'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ' // 真實的創作者地址
@@ -446,7 +446,7 @@ export default {
       const nftPrice = 10 // 固定10STX價格
       const nftSupply = { current: 0, max: 9999 } // 預設供應量
       
-      console.log('📝 使用預設數據:', {
+      console.log('📝 Using default data:', {
         creatorAddress: realCreatorAddress,
         creatorName,
         seasonId,
@@ -458,8 +458,8 @@ export default {
       const nftArticle = {
         id: `nft-${realCreatorAddress}-${seasonId}`,
         title: `🎨 ${creatorName} - 2025年第4季 VIP 會員章`,
-        excerpt: `加入 ${creatorName} 的 VIP 會員，獲得獨家創作內容、幕後花絮和早期作品預覽權限。限量發售，季度會員權益！`,
-        category: '創作者經濟',
+        excerpt: `Join ${creatorName}'s VIP membership to access exclusive content, behind-the-scenes footage, and early preview rights. Limited edition, quarterly membership benefits!`,
+        category: 'Creator Economy',
         author: {
           id: realCreatorAddress,
           name: creatorName,
@@ -467,14 +467,14 @@ export default {
           subscribers: 1250,
           verified: true
         },
-        image: '/src/assets/test/demo-article.svg',
+        image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&q=80',
         publishedAt: new Date(Date.now() - 15 * 1000), // 15秒前
         readTime: 3,
         likes: 47,
         comments: 12,
         views: 328,
         earnings: 0, // 剛發布，還沒收益
-        tags: ['NFT', '第4季', 'VIP會員', '創作者經濟'],
+        tags: ['NFT', 'Q4', 'VIP Membership', 'Creator Economy'],
         // NFT 相關信息
         hasNFT: true,
         nftSeasonId: seasonId,
@@ -487,7 +487,7 @@ export default {
       
       // 將 NFT 文章添加到列表開頭
       allArticles.value.unshift(nftArticle)
-      console.log('✅ zhenyan 的 NFT 文章已添加到探索列表')
+      console.log('✅ zhenyan NFT article added to explore list')
     }
     
     // 初始化其他演示文章
@@ -495,9 +495,9 @@ export default {
       const otherArticles = [
         {
         id: 'article-1',
-        title: 'NFT 藝術市場深度分析：2024年趨勢與投資機會',
-        excerpt: '全面解析當前 NFT 藝術市場的發展狀況，探討藝術家如何在數位時代創造可持續的收益模式。',
-        category: '數位藝術',
+        title: 'Deep Analysis of NFT Art Market: 2024 Trends & Investment Opportunities',
+        excerpt: 'Comprehensive analysis of current NFT art market developments, exploring how artists can create sustainable revenue models in the digital age.',
+        category: 'Digital Art',
         author: {
           id: 'author-2',
           name: 'David Kim',
@@ -512,13 +512,13 @@ export default {
         comments: 156,
         views: 12340,
         earnings: 89.3,
-        tags: ['NFT', '藝術', '市場分析', '投資']
+        tags: ['NFT', 'Art', 'Market Analysis', 'Investment']
       },
       {
         id: 'article-2',
-        title: '音樂 NFT 的創新應用：重塑音樂產業價值鏈',
-        excerpt: '探索音樂創作者如何透過 NFT 技術建立直接的粉絲經濟，創造新的收益來源和互動方式。',
-        category: '音樂',
+        title: 'Innovative Applications of Music NFTs: Reshaping the Music Industry Value Chain',
+        excerpt: 'Exploring how music creators can build direct fan economies through NFT technology, creating new revenue streams and interaction methods.',
+        category: 'Music',
         author: {
           id: 'author-3',
           name: 'Sarah Johnson',
@@ -533,13 +533,13 @@ export default {
         comments: 203,
         views: 18920,
         earnings: 134.8,
-        tags: ['音樂', 'NFT', '粉絲經濟', '創新']
+        tags: ['Music', 'NFT', 'Fan Economy', 'Innovation']
       },
       {
         id: 'article-3',
-        title: 'Solidity 智慧合約安全最佳實踐指南',
-        excerpt: '詳細介紹智慧合約開發中的安全考量，包含常見漏洞、防範措施和程式碼審計方法。',
-        category: '技術',
+        title: 'Solidity Smart Contract Security Best Practices Guide',
+        excerpt: 'Detailed introduction to security considerations in smart contract development, including common vulnerabilities, prevention measures, and code audit methods.',
+        category: 'Technology',
         author: {
           id: 'author-4',
           name: 'Michael Zhang',
@@ -554,13 +554,13 @@ export default {
         comments: 378,
         views: 28450,
         earnings: 245.6,
-        tags: ['Solidity', '智慧合約', '安全', '開發']
+        tags: ['Solidity', 'Smart Contracts', 'Security', 'Development']
       },
       {
         id: 'article-4',
-        title: 'Web3 攝影：區塊鏈時代的視覺創作新典範',
-        excerpt: '攝影師如何在去中心化的世界中保護作品版權，建立可追溯的創作歷程和收益模式。',
-        category: '攝影',
+        title: 'Web3 Photography: New Paradigm for Visual Creation in the Blockchain Era',
+        excerpt: 'How photographers can protect copyright in a decentralized world, establishing traceable creative processes and revenue models.',
+        category: 'Photography',
         author: {
           id: 'author-5',
           name: 'Emma Wilson',
@@ -575,38 +575,38 @@ export default {
         comments: 92,
         views: 9680,
         earnings: 67.4,
-        tags: ['攝影', 'Web3', '版權', '創作']
+        tags: ['Photography', 'Web3', 'Copyright', 'Creation']
       }
       ]
       
       // 將其他文章添加到列表
       allArticles.value.push(...otherArticles)
-      console.log('✅ 其他演示文章已添加')
+      console.log('✅ Other demo articles added')
     }
     
     const trendingCreators = ref([
       {
         id: 'creator-1',
         name: 'Alice Chen',
-        category: '區塊鏈趨勢',
+        category: 'Blockchain Trends',
         subscribers: 12400,
         articles: 23,
         totalEarnings: 156.7,
         avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
         verified: true,
-        recentActivity: '2小時前',
+        recentActivity: '2 hours ago',
         trend: '+12%'
       },
       {
         id: 'creator-2',
         name: 'David Kim',
-        category: '數位藝術',
+        category: 'Digital Art',
         subscribers: 8900,
         articles: 31,
         totalEarnings: 234.8,
         avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
         verified: true,
-        recentActivity: '4小時前',
+        recentActivity: '4 hours ago',
         trend: '+8%'
       }
     ])
@@ -620,12 +620,12 @@ export default {
         filtered = filtered.filter(article => 
           selectedCategories.value.some(cat => {
             const categoryMap = {
-              'blockchain': '區塊鏈趨勢',
-              'art': '數位藝術',
-              'music': '音樂',
-              'tech': '技術',
-              'photography': '攝影',
-              'writing': '寫作'
+              'blockchain': 'Blockchain Trends',
+              'art': 'Digital Art',
+              'music': 'Music',
+              'tech': 'Technology',
+              'photography': 'Photography',
+              'writing': 'Writing'
             }
             return article.category === categoryMap[cat] || article.category === cat
           })
@@ -709,7 +709,7 @@ export default {
     // Methods
     const performSearch = () => {
       currentPage.value = 1
-      console.log('搜尋:', searchQuery.value)
+      console.log('Search:', searchQuery.value)
     }
     
     const searchTopic = (topic) => {
@@ -750,7 +750,7 @@ export default {
         await new Promise(resolve => setTimeout(resolve, 1000))
         currentPage.value += 1
       } catch (error) {
-        console.error('載入更多文章失敗:', error)
+        console.error('Failed to load more articles:', error)
       } finally {
         isLoadingMore.value = false
       }
@@ -835,8 +835,87 @@ export default {
           return
         }
         
-        // 重要提醒：Deny Mode
-        const confirmed = confirm(`🎯 固定參數 NFT 購買測試\n\n⚠️ 重要提醒：請開啟 Hiro 錢包的 Deny Mode！\n\n固定參數：\n• 創作者: ${FIXED_CREATOR}\n• 季度ID: ${FIXED_SEASON_ID}\n• Metadata: ${FIXED_METADATA_URI}\n\n確定要進行測試購買嗎？\n\n⚠️ 請確保已開啟 Deny Mode！`)
+        // 創建吸引人的購買確認對話框
+        const confirmModal = await new Promise((resolve) => {
+          const modal = document.createElement('div')
+          modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4'
+          
+          modal.innerHTML = `
+            <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl max-w-lg w-full p-6 border border-purple-500/30">
+              <!-- 標題 -->
+              <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-8 h-8 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v1.586l8.707 8.707a1 1 0 001.414 0L20.828 6.5a1 1 0 000-1.414L12.707.293a1 1 0 00-1.414 0L2.586 8.5A2 2 0 002 10v8a2 2 0 002 2h16a2 2 0 002-2V4a2 2 0 00-2-2H4z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-white mb-2">🎉 加入 VIP 會員</h3>
+                <p class="text-gray-400">即將解鎖專屬內容和權益</p>
+              </div>
+              
+              <!-- 權益列表 -->
+              <div class="bg-gray-800/50 rounded-xl p-4 mb-6">
+                <h4 class="text-white font-medium mb-3">您將獲得：</h4>
+                <div class="space-y-2">
+                  <div class="flex items-center text-sm">
+                    <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-300">專屬內容無限制存取</span>
+                  </div>
+                  <div class="flex items-center text-sm">
+                    <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-300">創作者社群互動權限</span>
+                  </div>
+                  <div class="flex items-center text-sm">
+                    <svg class="w-4 h-4 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-gray-300">獨家 NFT 收藏徽章</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 價格信息 -->
+              <div class="text-center mb-6">
+                <div class="text-3xl font-bold text-purple-400">${nftData.price} STX</div>
+                <div class="text-gray-400 text-sm">一次購買，終身權益</div>
+              </div>
+              
+              <!-- 按鈕組 -->
+              <div class="flex gap-3">
+                <button id="cancel-btn" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-xl font-medium transition-colors">
+                  取消
+                </button>
+                <button id="confirm-btn" class="flex-1 bg-gradient-to-r from-purple-600 to-cyan-600 text-white py-3 rounded-xl font-medium hover:opacity-90 transition-opacity">
+                  確認購買
+                </button>
+              </div>
+            </div>
+          `
+          
+          document.body.appendChild(modal)
+          
+          // 綁定事件
+          modal.querySelector('#confirm-btn').onclick = () => {
+            modal.remove()
+            resolve(true)
+          }
+          modal.querySelector('#cancel-btn').onclick = () => {
+            modal.remove()
+            resolve(false)
+          }
+          modal.onclick = (e) => {
+            if (e.target === modal) {
+              modal.remove()
+              resolve(false)
+            }
+          }
+        })
+        
+        const confirmed = await confirmModal
         
         if (!confirmed) {
           return
@@ -858,7 +937,54 @@ export default {
         
         console.log('✅ NFT 購買成功:', result)
         
-        alert(`🎉 固定參數 NFT 購買測試成功！\n\n交易 ID: ${result.txId}\n\n測試參數：\n• 創作者: ${FIXED_CREATOR}\n• 季度ID: ${FIXED_SEASON_ID}\n• Metadata: ${FIXED_METADATA_URI}\n\n✅ mint-subscription 函數調用成功！\n💰 收益已按分潤設定自動分配！\n\n請在「我的收藏」中查看您的 NFT！`)
+        // 更具吸引力的成功提示
+        const successModal = document.createElement('div')
+        successModal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4'
+        successModal.onclick = () => successModal.remove()
+        
+        successModal.innerHTML = `
+          <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl max-w-md w-full p-6 border border-green-500/30" onclick="event.stopPropagation()">
+            <!-- 成功圖標 -->
+            <div class="text-center mb-6">
+              <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-10 h-10 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <h3 class="text-2xl font-bold text-white mb-2">🎉 購買成功！</h3>
+              <p class="text-green-400 font-medium">恭喜成為 VIP 會員</p>
+            </div>
+            
+            <!-- 購買詳情 -->
+            <div class="bg-gray-800/50 rounded-xl p-4 mb-6">
+              <div class="space-y-3 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-gray-400">交易 ID:</span>
+                  <span class="text-gray-300 font-mono text-xs">${result.txId.slice(0, 20)}...</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-400">NFT 類型:</span>
+                  <span class="text-white">VIP 會員章</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-400">權益:</span>
+                  <span class="text-green-400">解鎖專屬內容</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 下一步行動 -->
+            <div class="text-center">
+              <p class="text-gray-400 text-sm mb-4">💰 收益已自動分配給創作團隊</p>
+              <button onclick="this.closest('.fixed').remove(); window.location.href = '/user/collections'" 
+                      class="w-full bg-gradient-to-r from-purple-600 to-cyan-600 text-white py-3 rounded-xl font-medium hover:opacity-90 transition-opacity">
+                查看我的收藏
+              </button>
+            </div>
+          </div>
+        `
+        
+        document.body.appendChild(successModal)
         
         // 更新文章數據（增加供應量）
         const article = allArticles.value.find(a => a.id === nftData.article.id)
@@ -892,11 +1018,11 @@ export default {
     
     // Lifecycle
     onMounted(async () => {
-      console.log('探索頁面已載入')
+      console.log('Explore page loaded')
       
       // 初始化文章數據
       try {
-        console.log('🚀 初始化探索頁面文章數據')
+        console.log('🚀 Initializing explore page article data')
         
         // 先加載其他演示文章
         initOtherArticles()
@@ -904,9 +1030,9 @@ export default {
         // 加載 zhenyan 的 NFT 文章（使用預設數據）
         loadRealNFTArticle()
         
-        console.log('✅ 所有文章數據加載完成')
+        console.log('✅ All article data loaded successfully')
       } catch (error) {
-        console.error('初始化文章數據失敗:', error)
+        console.error('Failed to initialize article data:', error)
         // 如果失敗，至少保證有其他文章
         initOtherArticles()
       }
