@@ -2,9 +2,22 @@
   <div class="subscription-manager min-h-screen p-6 max-w-7xl mx-auto">
     <!-- 頁面標題和快速操作 -->
     <div class="flex justify-between items-center mb-8">
-      <div>
-        <h1 class="text-4xl font-bold text-gradient-web3 mb-2">NFT 創作工作室</h1>
-        <p class="text-white/70 text-lg">管理您的季度 NFT 收藏，追蹤表現並與粉絲互動</p>
+      <div class="flex items-center space-x-4">
+        <!-- 返回按鈕 -->
+        <button 
+          @click="router.push('/creator/dashboard')"
+          class="btn-glass p-3 rounded-xl hover:bg-white/10 transition-all flex items-center"
+          title="返回創作者儀表板"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        
+        <div>
+          <h1 class="text-4xl font-bold text-gradient-web3 mb-2">NFT Creator Studio</h1>
+          <p class="text-white/70 text-lg">Manage your seasonal NFT collections, track performance and engage with fans</p>
+        </div>
       </div>
       <div class="flex items-center space-x-4">
         <!-- 排序篩選 -->
@@ -12,10 +25,10 @@
           v-model="sortBy"
           class="bg-glass-dark border border-white/20 rounded-xl px-4 py-2 text-white text-sm focus:border-web3-purple focus:outline-none"
         >
-          <option value="newest">最新創建</option>
-          <option value="sales">銷售量</option>
-          <option value="revenue">收益</option>
-          <option value="quarter">季度</option>
+          <option value="newest">Newest</option>
+          <option value="sales">Sales</option>
+          <option value="revenue">Revenue</option>
+          <option value="quarter">Quarter</option>
         </select>
         
         <!-- 手動刷新按鈕 -->
@@ -34,20 +47,9 @@
           >
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
-          <span>刷新</span>
+          <span>Refresh</span>
         </button>
         
-        <!-- 調試按鈕 -->
-        <button 
-          @click="debugContractData" 
-          class="bg-yellow-600/20 border border-yellow-500/30 rounded-xl px-4 py-2 text-yellow-400 text-sm hover:bg-yellow-600/30 transition-all flex items-center space-x-2"
-          title="調試合約數據"
-        >
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-          </svg>
-          <span>調試</span>
-        </button>
         
         <!-- 創建 NFT 按鈕 -->
         <button 
@@ -57,7 +59,7 @@
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
           </svg>
-          <span>創建 {{ currentQuarterInfo.name }} NFT</span>
+          <span>Create {{ currentQuarterInfo.name }} NFT</span>
         </button>
       </div>
     </div>
@@ -1205,42 +1207,6 @@ export default {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
     }
     
-    // 調試合約數據
-    const debugContractData = async () => {
-      if (!walletStore.userAddress) {
-        alert('請先連接錢包')
-        return
-      }
-      
-      console.log('🔧 開始調試合約數據...')
-      console.log('📍 創作者地址:', walletStore.userAddress)
-      
-      try {
-        // 直接測試季度20254
-        console.log('1. 測試季度20254...')
-        const result = await contractsStore.debugSeasonData(walletStore.userAddress, 20254)
-        console.log('調試結果:', result)
-        
-        // 手動觸發數據刷新
-        console.log('2. 手動刷新數據...')
-        await refreshNFTData()
-        
-        // 顯示當前狀態
-        console.log('3. 當前狀態總結:')
-        console.log('   - NFT數量:', subscriptions.value.length)
-        console.log('   - 會顯示空狀態嗎?', subscriptions.value.length === 0)
-        console.log('   - 訂閱數據:', subscriptions.value)
-        
-        alert(`調試完成！
-NFT數量: ${subscriptions.value.length}
-會顯示空狀態: ${subscriptions.value.length === 0 ? '是' : '否'}
-詳細信息請查看控制台`)
-        
-      } catch (error) {
-        console.error('調試失敗:', error)
-        alert('調試失敗: ' + error.message)
-      }
-    }
     
     // 監聽錢包連接狀態變化
     watch(
@@ -1291,7 +1257,6 @@ NFT數量: ${subscriptions.value.length}
       // 方法
       loadSubscriptions,
       refreshNFTData,
-      debugContractData,
       triggerFileUpload,
       handleFileSelect,
       removeImage,
@@ -1312,7 +1277,10 @@ NFT數量: ${subscriptions.value.length}
       
       // Store
       contractsStore,
-      walletStore
+      walletStore,
+      
+      // Router
+      router
     }
   }
 }

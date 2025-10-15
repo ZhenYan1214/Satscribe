@@ -18,65 +18,50 @@ export function useBlockchainSync() {
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
   // 從區塊鏈載入所有相關數據
-  const syncFromBlockchain = async (forceRefresh = true) => {
+  const syncFromBlockchain = async (forceRefresh = false) => {
     if (!walletStore.isConnected || !walletStore.userAddress) {
-      console.log('錢包未連接，跳過數據同步')
       return
     }
 
-    console.log('開始從區塊鏈同步數據...', walletStore.userAddress)
+    // 簡化同步邏輯，減少不必要的請求
+    console.log('快速數據同步...', walletStore.userAddress)
     
     try {
-      // 序列載入以避免 API 限流問題
-      
-      // 載入創作者資訊
+      // 只載入必要的創作者資訊（使用緩存）
       try {
-        await contractsStore.getCreatorInfo(walletStore.userAddress, forceRefresh)
-        await delay(1000) // 1秒延遲
+        await contractsStore.getCreatorInfo(walletStore.userAddress, false)
       } catch (err) {
-        console.log('載入創作者資訊失敗:', err)
+        console.log('跳過創作者資訊載入')
       }
       
-      // 載入分潤設定
-      try {
-        await contractsStore.getRevenueSplit(walletStore.userAddress, forceRefresh)
-        await delay(1000) // 1秒延遲
-      } catch (err) {
-        console.log('載入分潤設定失敗:', err)
-      }
-      
-      // 只載入第一個季度，避免過多請求
-      try {
-        await contractsStore.getSeasonInfo(walletStore.userAddress, 1, forceRefresh)
-      } catch (err) {
-        console.log('載入季度 1 資訊失敗:', err)
-      }
-      
-      console.log('區塊鏈數據同步完成')
+      console.log('快速數據同步完成')
       
     } catch (error) {
-      console.error('數據同步過程中發生錯誤:', error)
+      console.log('數據同步失敗，使用緩存')
     }
   }
 
-  // 監聽用戶地址變化
+  // 監聽用戶地址變化（減少頻率）
   watch(
     () => walletStore.userAddress,
     (newAddress, oldAddress) => {
       if (newAddress && newAddress !== oldAddress) {
-        console.log('檢測到用戶地址變化，重新同步數據:', newAddress)
-        syncFromBlockchain(true)
+        console.log('檢測到用戶地址變化，快速同步:', newAddress)
+        // 使用緩存，避免重複請求
+        syncFromBlockchain(false)
       }
     },
     { immediate: false }
   )
 
-  // 組件掛載時自動同步
+  // 組件掛載時僅做最小同步
   onMounted(() => {
-    // 延遲一點時間確保錢包已經初始化
+    // 減少初始延遲，僅在必要時同步
     setTimeout(() => {
-      syncFromBlockchain(true)
-    }, 500)
+      if (walletStore.isConnected) {
+        syncFromBlockchain(false)
+      }
+    }, 100)
   })
 
   return {
