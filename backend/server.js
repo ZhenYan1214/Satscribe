@@ -11,7 +11,11 @@ const PORT = process.env.PORT || 3001;
 
 // 中間件
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: [
+    'http://localhost:3000', 
+    'http://127.0.0.1:3000',
+    'https://satscribe.vercel.app'
+  ],
   credentials: true
 }));
 app.use(express.json());
@@ -200,7 +204,7 @@ async function handleImageUpload(req, res, type) {
     
     // 構建圖片URL
     const filename = path.basename(processedPath);
-    const imageUrl = `http://localhost:${PORT}/uploads/${filename}`;
+    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${filename}`;
     
     // 獲取最終圖片信息
     const metadata = await sharp(processedPath).metadata();

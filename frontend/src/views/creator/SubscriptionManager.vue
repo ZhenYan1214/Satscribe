@@ -830,7 +830,8 @@ export default {
         const formData = new FormData()
         formData.append('image', file)
         
-        const response = await fetch('http://localhost:3001/api/upload/image', {
+        const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
+        const response = await fetch(`${API_BASE}/api/upload/image`, {
           method: 'POST',
           body: formData
         })
@@ -861,7 +862,7 @@ export default {
         let errorMessage = '上傳失敗，請重試'
         
         if (error.message.includes('Failed to fetch')) {
-          errorMessage = '無法連接到後端服務，請確認後端已啟動 (localhost:3001)'
+          errorMessage = '無法連接到後端服務，請檢查網路連接'
         } else if (error.message.includes('NetworkError')) {
           errorMessage = '網絡錯誤，請檢查連接'
         } else if (error.message !== '上傳失敗') {
