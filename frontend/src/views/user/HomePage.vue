@@ -404,26 +404,9 @@ export default {
         return
       }
       
-      try {
-        console.log('🚀 開始檢查創作者註冊狀態...')
-        // 檢查是否已經註冊為創作者
-        const isRegistered = await walletStore.isRegisteredCreator()
-        console.log('📋 註冊檢查結果:', isRegistered)
-        
-        if (isRegistered) {
-          // 已註冊，直接跳轉到創作者儀表板
-          alert('您已經是註冊創作者了！即將進入創作者儀表板。')
-          router.push('/creator/dashboard')
-        } else {
-          // 未註冊，跳轉到創作者註冊頁面
-          console.log('🆕 用戶未註冊，跳轉到註冊頁面')
-          router.push('/creator/setup')
-        }
-      } catch (error) {
-        console.error('檢查創作者註冊狀態失敗:', error)
-        // 如果檢查失敗，仍然跳轉到註冊頁面
-        router.push('/creator/setup')
-      }
+      // 直接跳轉到創作者註冊頁面，不進行預先檢查
+      console.log('🆕 跳轉到創作者註冊頁面')
+      router.push('/creator/setup')
     }
     
     const goToCreator = (address) => {

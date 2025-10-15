@@ -16,7 +16,6 @@
   { creator: principal }
   {
     members: (list 10 { wallet: principal, percentage: uint, role: (string-ascii 50) }),
-    lightning-enabled: bool,
     nft-enabled: bool,
     last-updated: uint
   }
@@ -27,7 +26,7 @@
   { creator: principal, payout-id: uint }
   {
     total-amount: uint,
-    payout-type: (string-ascii 20), ;; "nft" or "lightning"
+    payout-type: (string-ascii 20), ;; "nft"
     timestamp: uint,
     distributed: bool
   }
@@ -47,7 +46,6 @@
 ;; Set creator revenue split configuration
 (define-public (set-revenue-split 
   (members (list 10 { wallet: principal, percentage: uint, role: (string-ascii 50) }))
-  (lightning-enabled bool)
   (nft-enabled bool))
   (let
     ((creator tx-sender)
@@ -61,7 +59,6 @@
         { creator: creator }
         {
           members: members,
-          lightning-enabled: lightning-enabled,
           nft-enabled: nft-enabled,
           last-updated: stacks-block-height
         }
@@ -78,7 +75,51 @@
   (+ current-sum (get percentage member))
 )
 
-;; NFT sales revenue distribution
+;; Receive payment from buyer and distribute revenue
+(define-public (receive-payment-and-distribute (creator principal) (total-amount uint))
+  (let
+    (
+      (payout-id (get-next-payout-id))
+      (split-config (unwrap! (map-get? revenue-splits { creator: creator }) err-creator-not-found))
+    )
+    (begin
+      ;; Check if NFT split is enabled
+      (asserts! (get nft-enabled split-config) err-not-authorized)
+      
+      ;; Receive payment from buyer (tx-sender = buyer)
+      (try! (stx-transfer? total-amount tx-sender (as-contract tx-sender)))
+      
+      ;; Record pending payout
+      (map-set pending-payouts
+        { creator: creator, payout-id: payout-id }
+        {
+          total-amount: total-amount,
+          payout-type: "nft",
+          timestamp: stacks-block-height,
+          distributed: false
+        }
+      )
+      
+      ;; Execute payout from contract's balance
+      (try! (as-contract (execute-payout creator payout-id total-amount (get members split-config))))
+      
+      ;; Mark as distributed
+      (map-set pending-payouts
+        { creator: creator, payout-id: payout-id }
+        {
+          total-amount: total-amount,
+          payout-type: "nft",
+          timestamp: stacks-block-height,
+          distributed: true
+        }
+      )
+      
+      (ok payout-id)
+    )
+  )
+)
+
+;; NFT sales revenue distribution (legacy function)
 (define-public (distribute-nft-revenue (creator principal) (total-amount uint))
   (let
     (
@@ -119,46 +160,6 @@
   )
 )
 
-;; Lightning tip revenue distribution
-(define-public (distribute-lightning-revenue (creator principal) (total-amount uint))
-  (let
-    (
-      (payout-id (get-next-payout-id))
-      (split-config (unwrap! (map-get? revenue-splits { creator: creator }) err-creator-not-found))
-    )
-    (begin
-      ;; Check if Lightning split is enabled
-      (asserts! (get lightning-enabled split-config) err-not-authorized)
-      
-      ;; Record pending payout
-      (map-set pending-payouts
-        { creator: creator, payout-id: payout-id }
-        {
-          total-amount: total-amount,
-          payout-type: "lightning",
-          timestamp: stacks-block-height,
-          distributed: false
-        }
-      )
-      
-      ;; Execute payout
-      (try! (execute-payout creator payout-id total-amount (get members split-config)))
-      
-      ;; Mark as distributed
-      (map-set pending-payouts
-        { creator: creator, payout-id: payout-id }
-        {
-          total-amount: total-amount,
-          payout-type: "lightning",
-          timestamp: stacks-block-height,
-          distributed: true
-        }
-      )
-      
-      (ok payout-id)
-    )
-  )
-)
 
 ;; Execute actual revenue split payments
 (define-private (execute-payout 
@@ -181,8 +182,8 @@
       (let
         ((payout-amount (/ (* (get total success-data) (get percentage member)) u100)))
         (begin
-          ;; Transfer to member
-          (try! (as-contract (stx-transfer? payout-amount tx-sender (get wallet member))))
+          ;; Transfer to member from revenue splitter contract's own balance
+          (try! (stx-transfer? payout-amount (as-contract tx-sender) (get wallet member)))
           (ok success-data)
         )
       )

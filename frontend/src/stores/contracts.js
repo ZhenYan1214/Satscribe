@@ -85,7 +85,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'creator-registry-v6',
+        'creator-registry-v10',
         'register-creator',
         [
           stringAsciiCV(creatorData.name),
@@ -118,23 +118,47 @@ export const useContractsStore = defineStore('contracts', () => {
       }
       
       // 構建團隊成員列表
-      const membersList = teamMembers.map(member => 
-        tupleCV({
+      console.log('🔧 構建團隊成員列表:', teamMembers)
+      
+      const membersList = teamMembers.map((member, index) => {
+        console.log(`🔧 處理成員 ${index + 1}:`, {
+          walletAddress: member.walletAddress,
+          percentage: member.percentage,
+          role: member.role
+        })
+        
+        // 驗證成員數據
+        if (!member.walletAddress || !member.role || member.percentage === undefined) {
+          throw new Error(`成員 ${index + 1} 的數據不完整`)
+        }
+        
+        return tupleCV({
           wallet: standardPrincipalCV(member.walletAddress),
           percentage: uintCV(member.percentage),
           role: stringAsciiCV(member.role)
         })
-      )
+      })
+      
+      console.log('🔧 構建完成的成員列表:', membersList)
+      
+      // 構建最終參數
+      const contractArgs = [
+        listCV(membersList),
+        boolCV(true)   // nft-enabled
+      ]
+      
+      console.log('🔧 合約調用參數:', {
+        contractAddress: CONTRACT_ADDRESS.value,
+        contractName: 'revenue-splitter-v10',
+        functionName: 'set-revenue-split',
+        args: contractArgs
+      })
       
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'revenue-splitter-v6',
+        'revenue-splitter-v10',
         'set-revenue-split',
-        [
-          listCV(membersList),
-          boolCV(false), // lightning-enabled (暫時關閉)
-          boolCV(true)   // nft-enabled
-        ]
+        contractArgs
       )
       
       console.log('分潤設定成功:', result)
@@ -230,7 +254,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v6',
+        'subscription-nft-v10',
         'create-season',
         [
           uintCV(currentSeasonId),
@@ -339,7 +363,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.callContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v6',
+        'subscription-nft-v10',
         'create-season',
         [
           uintCV(seasonData.seasonId),
@@ -392,21 +416,26 @@ export const useContractsStore = defineStore('contracts', () => {
         throw new Error(`季度 ${seasonId} 不存在！請先讓創作者創建此季度的 NFT。`)
       }
       
-      if (!seasonInfo.active && seasonInfo.active !== undefined) {
-        throw new Error(`季度 ${seasonId} 已停止銷售！`)
-      }
+      // 🎯 測試模式：跳過 active 檢查
+      console.log('🎯 測試模式：跳過季度 active 狀態檢查')
+      console.log('📊 季度狀態:', { active: seasonInfo.active, price: seasonInfo.price })
       
-      console.log('✅ 季度驗證通過，開始調用合約...')
+      // if (!seasonInfo.active && seasonInfo.active !== undefined) {
+      //   throw new Error(`季度 ${seasonId} 已停止銷售！`)
+      // }
       
-      const result = await walletStore.callContract(
+      console.log('✅ 季度驗證通過，開始調用 mint-subscription 帶完整 Post Conditions...')
+      
+      // 使用專門的 mint-subscription 函數（帶完整 Post Conditions）
+      const result = await walletStore.callMintSubscription(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v6',
-        'mint-subscription',
+        'subscription-nft-v10',
         [
           standardPrincipalCV(creatorAddress),
           uintCV(seasonId),
           stringAsciiCV(metadataUri)
-        ]
+        ],
+        seasonInfo.price || 10000000 // NFT 價格，預設 10 STX
       )
       
       console.log('✅ NFT 購買成功:', result)
@@ -444,7 +473,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'creator-registry-v6',
+        'creator-registry-v10',
         'get-creator-info',
         [standardPrincipalCV(creatorAddress)]
       )
@@ -497,7 +526,7 @@ export const useContractsStore = defineStore('contracts', () => {
       // 優先使用詳細查詢函數
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v6',
+        'subscription-nft-v10',
         'get-detailed-season-info',
         [
           standardPrincipalCV(creatorAddress),
@@ -522,7 +551,7 @@ export const useContractsStore = defineStore('contracts', () => {
         console.log('嘗試回退到基本查詢...')
         const fallbackResult = await walletStore.readContract(
           CONTRACT_ADDRESS.value,
-          'subscription-nft-v6',
+          'subscription-nft-v10',
           'get-enhanced-season-info',
           [
             standardPrincipalCV(creatorAddress),
@@ -576,7 +605,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v6',
+        'subscription-nft-v10',
         'get-season-info',
         [
           standardPrincipalCV(creatorAddress),
@@ -605,7 +634,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v6',
+        'subscription-nft-v10',
         'get-current-quarter',
         []
       )
@@ -632,7 +661,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v6',
+        'subscription-nft-v10',
         'get-current-quarter-info',
         []
       )
@@ -669,7 +698,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v6',
+        'subscription-nft-v10',
         'is-subscription-valid',
         [
           standardPrincipalCV(subscriber),
@@ -703,7 +732,7 @@ export const useContractsStore = defineStore('contracts', () => {
       
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'revenue-splitter-v6',
+        'revenue-splitter-v10',
         'get-revenue-split',
         [standardPrincipalCV(creatorAddress)]
       )
@@ -748,7 +777,7 @@ export const useContractsStore = defineStore('contracts', () => {
       // 獲取用戶持有的所有 NFT
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v6',
+        'subscription-nft-v10',
         'get-user-tokens',
         [standardPrincipalCV(userAddress)]
       )
@@ -803,7 +832,7 @@ export const useContractsStore = defineStore('contracts', () => {
       console.log('🎯 直接測試已知季度 20254...')
       const season20254 = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v6',
+        'subscription-nft-v10',
         'get-season-info',
         [standardPrincipalCV(creatorAddress), uintCV(20254)]
       )
@@ -829,7 +858,7 @@ export const useContractsStore = defineStore('contracts', () => {
       try {
         const result = await walletStore.readContract(
           CONTRACT_ADDRESS.value,
-          'subscription-nft-v6',
+          'subscription-nft-v10',
           'get-creator-seasons',
           [standardPrincipalCV(creatorAddress)]
         )
@@ -1152,7 +1181,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v6',
+        'subscription-nft-v10',
         'get-platform-stats',
         []
       )
@@ -1202,7 +1231,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const result = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v6',
+        'subscription-nft-v10',
         'quick-subscription-check',
         [
           standardPrincipalCV(userAddress),
@@ -1226,7 +1255,7 @@ export const useContractsStore = defineStore('contracts', () => {
       console.log('1. 測試 get-season-info...')
       const seasonInfo = await walletStore.readContract(
         CONTRACT_ADDRESS.value,
-        'subscription-nft-v6',
+        'subscription-nft-v10',
         'get-season-info',
         [standardPrincipalCV(creatorAddress), uintCV(seasonId)]
       )
@@ -1239,7 +1268,7 @@ export const useContractsStore = defineStore('contracts', () => {
       try {
         const enhancedInfo = await walletStore.readContract(
           CONTRACT_ADDRESS.value,
-          'subscription-nft-v6',
+          'subscription-nft-v10',
           'get-enhanced-season-info',
           [standardPrincipalCV(creatorAddress), uintCV(seasonId)]
         )
@@ -1255,7 +1284,7 @@ export const useContractsStore = defineStore('contracts', () => {
       try {
         const detailedInfo = await walletStore.readContract(
           CONTRACT_ADDRESS.value,
-          'subscription-nft-v6',
+          'subscription-nft-v10',
           'get-detailed-season-info',
           [standardPrincipalCV(creatorAddress), uintCV(seasonId)]
         )

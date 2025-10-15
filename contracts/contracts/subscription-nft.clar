@@ -1,4 +1,4 @@
-;; title: subscription-nft  
+;; title: subscription-nft
 ;; version: 2.0.0
 ;; summary: Satscribe Quarterly Subscription NFT Contract (Soulbound Token)
 ;; description: Auto-quarterly non-transferable subscription tokens with commemorative value, integrated auto revenue split
@@ -217,11 +217,10 @@
       
       ;; Handle payment based on revenue split setting
       (if (get revenue-split-enabled season-info)
-        ;; Revenue split enabled: transfer to this contract, then trigger split
+        ;; Revenue split enabled: call splitter to handle payment and distribution
         (begin
-          (try! (stx-transfer? price subscriber (as-contract tx-sender)))
-          ;; Call revenue splitter contract
-          (try! (contract-call? .revenue-splitter-v6 distribute-nft-revenue creator price))
+          ;; Call revenue splitter to handle payment from buyer directly
+          (try! (contract-call? .revenue-splitter-v10 receive-payment-and-distribute creator price))
           true
         )
         ;; Revenue split disabled: transfer directly to creator
@@ -262,7 +261,7 @@
       )
       
       ;; Update creator statistics
-      (try! (contract-call? .creator-registry-v6 update-stats creator price u0 1 0))
+      (try! (contract-call? .creator-registry-v10 update-stats creator price 1 0))
       
       (ok token-id)
     )
