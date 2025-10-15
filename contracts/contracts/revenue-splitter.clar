@@ -76,6 +76,7 @@
 )
 
 ;; Receive payment from buyer and distribute revenue
+;; Note: total-amount is the creator's share after platform fee has been deducted
 (define-public (receive-payment-and-distribute (creator principal) (total-amount uint))
   (let
     (
