@@ -199,7 +199,7 @@
   )
 )
 
-;; Mint subscription NFT (updated for new structure)
+;; Mint subscription NFT (updated with platform fee collection)
 (define-public (mint-subscription (creator principal) (season-id uint) (metadata-uri (string-ascii 200)))
   (let
     (
@@ -208,6 +208,9 @@
       (season-info (unwrap! (map-get? creator-seasons { creator: creator, season-id: season-id }) err-not-found))
       (price (get price season-info))
       (quarter-end-date (get-quarter-end-date season-id))
+      ;; Calculate platform fee and creator amount
+      (platform-fee-result (unwrap! (contract-call? .platform-treasury-v11 collect-platform-fee creator subscriber price) err-not-authorized))
+      (creator-amount (get creator-amount platform-fee-result))
     )
     (begin
       ;; Basic checks
@@ -215,17 +218,18 @@
       (asserts! (get active season-info) err-not-authorized)
       (asserts! (< (get current-supply season-info) MAX-SUPPLY-PER-SEASON) err-not-authorized)
       
-      ;; Handle payment based on revenue split setting
+      ;; Handle creator payment based on revenue split setting
+      ;; Note: Platform fee has already been collected above
       (if (get revenue-split-enabled season-info)
-        ;; Revenue split enabled: call splitter to handle payment and distribution
+        ;; Revenue split enabled: call splitter with creator amount (after platform fee)
         (begin
-          ;; Call revenue splitter to handle payment from buyer directly
-          (try! (contract-call? .revenue-splitter-v10 receive-payment-and-distribute creator price))
+          ;; Call revenue splitter to handle payment distribution with reduced amount
+          (try! (contract-call? .revenue-splitter-v11 receive-payment-and-distribute creator creator-amount))
           true
         )
-        ;; Revenue split disabled: transfer directly to creator
+        ;; Revenue split disabled: transfer creator amount directly to creator
         (begin
-          (try! (stx-transfer? price subscriber creator))
+          (try! (stx-transfer? creator-amount subscriber creator))
           true
         )
       )
@@ -260,8 +264,8 @@
         (merge season-info { current-supply: (+ (get current-supply season-info) u1) })
       )
       
-      ;; Update creator statistics
-      (try! (contract-call? .creator-registry-v10 update-stats creator price 1 0))
+      ;; Update creator statistics (use creator amount, not full price)
+      (try! (contract-call? .creator-registry-v11 update-stats creator creator-amount 1 0))
       
       (ok token-id)
     )
