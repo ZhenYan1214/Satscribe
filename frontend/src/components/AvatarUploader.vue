@@ -309,10 +309,11 @@ export default {
         })
         
         // 根據類型選擇 API 端點
+        const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
         const endpoints = {
-          avatar: 'http://localhost:3001/api/upload/avatar',
-          nft: 'http://localhost:3001/api/upload/nft',
-          general: 'http://localhost:3001/api/upload/image'
+          avatar: `${API_BASE}/api/upload/avatar`,
+          nft: `${API_BASE}/api/upload/nft`,
+          general: `${API_BASE}/api/upload/image`
         }
         
         const endpoint = endpoints[props.type] || endpoints.general
