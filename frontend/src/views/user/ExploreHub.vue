@@ -776,7 +776,7 @@ export default {
         }
         
         // 🎯 固定參數設定
-        const FIXED_CREATOR = 'ST1VDQ1YQX5AXPS5ZXWJW8T1NGSKEDEXX8AWWN5YB'
+        const FIXED_CREATOR = 'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ'
         const FIXED_SEASON_ID = 20254
         const FIXED_METADATA_URI = 'https://api.satscribe.com/nft/metadata'
         
@@ -785,55 +785,10 @@ export default {
         console.log('📍 季度ID:', FIXED_SEASON_ID) 
         console.log('📍 Metadata URI:', FIXED_METADATA_URI)
         
-        // 🔍 診斷季度狀態 (使用固定參數)
-        console.log('🔍 開始診斷固定季度狀態...')
-        try {
-          const seasonInfo = await contractsStore.getSeasonInfo(FIXED_CREATOR, FIXED_SEASON_ID, true)
-          console.log('📊 季度詳細信息:', seasonInfo)
-          
-          if (!seasonInfo || !seasonInfo.price) {
-            // 季度不存在，提供創建選項
-            const shouldCreate = confirm(`❌ 固定測試季度 ${FIXED_SEASON_ID} 不存在！\n\n這是因為創作者 (${FIXED_CREATOR}) 還沒有創建這個季度的 NFT。\n\n解決方案：\n1. 切換到創作者錢包 (${FIXED_CREATOR})\n2. 在創作者儀表板創建季度 ${FIXED_SEASON_ID} 的 NFT\n3. 然後再切換回購買者錢包進行購買\n\n是否要查看創建指南？`)
-            
-            if (shouldCreate) {
-              // 打開創建指南
-              window.open('create-nft-guide.html', '_blank')
-            }
-            return
-          }
-          
-          console.log('📋 診斷結果:')
-          console.log('- Active:', seasonInfo.active || seasonInfo.isActive)
-          console.log('- Price (microSTX):', seasonInfo.price)
-          console.log('- Price (STX):', seasonInfo.priceSTX || (seasonInfo.price ? seasonInfo.price / 1000000 : 'unknown'))
-          console.log('- Current Supply:', seasonInfo.pricing?.currentSupply || seasonInfo.currentSupply)
-          console.log('- Max Supply:', seasonInfo.pricing?.maxSupply || seasonInfo.maxSupply)
-          console.log('- Revenue Split:', seasonInfo.revenueSplitEnabled || seasonInfo.revenueSpitEnabled)
-          
-          // 檢查用戶餘額
-          const userBalance = await walletStore.getSTXBalance()
-          const requiredSTX = seasonInfo.priceSTX || (seasonInfo.price ? seasonInfo.price / 1000000 : 10) // 預設10 STX
-          console.log('💰 餘額檢查:')
-          console.log('- 用戶餘額:', userBalance, 'STX')
-          console.log('- 需要金額:', requiredSTX, 'STX')
-          console.log('- 餘額足夠:', userBalance >= requiredSTX)
-          
-          if (userBalance < requiredSTX) {
-            alert(`❌ 餘額不足！\n\n需要: ${requiredSTX} STX\n當前: ${userBalance} STX\n\n請確保錢包有足夠的 STX 進行測試購買`)
-            return
-          }
-          
-        } catch (diagError) {
-          console.error('❌ 診斷失敗:', diagError)
-          alert(`診斷季度狀態失敗: ${diagError.message}`)
-          return
-        }
+        // 🎯 跳過季度檢查，直接進行購買
+        console.log('🚀 跳過季度驗證，直接發送 mint-subscription 交易...')
         
-        // 檢查是否為創作者本人  
-        if (walletStore.userAddress === FIXED_CREATOR) {
-          alert('不能購買自己創建的 NFT，請使用其他錢包地址測試購買功能')
-          return
-        }
+        // 🎯 移除所有檢查，任何錢包都可以購買
         
         // 創建吸引人的購買確認對話框
         const confirmModal = await new Promise((resolve) => {

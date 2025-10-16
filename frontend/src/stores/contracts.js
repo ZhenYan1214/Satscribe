@@ -408,23 +408,8 @@ export const useContractsStore = defineStore('contracts', () => {
       console.log('🛒 開始購買 NFT...')
       console.log('參數:', { creatorAddress, seasonId, metadataUri })
       
-      // 購買前再次驗證季度存在
-      console.log('🔍 購買前最終驗證...')
-      const seasonInfo = await getSeasonInfo(creatorAddress, seasonId, true)
-      
-      if (!seasonInfo || !seasonInfo.price) {
-        throw new Error(`季度 ${seasonId} 不存在！請先讓創作者創建此季度的 NFT。`)
-      }
-      
-      // 🎯 測試模式：跳過 active 檢查
-      console.log('🎯 測試模式：跳過季度 active 狀態檢查')
-      console.log('📊 季度狀態:', { active: seasonInfo.active, price: seasonInfo.price })
-      
-      // if (!seasonInfo.active && seasonInfo.active !== undefined) {
-      //   throw new Error(`季度 ${seasonId} 已停止銷售！`)
-      // }
-      
-      console.log('✅ 季度驗證通過，開始調用 mint-subscription 帶完整 Post Conditions...')
+      // 🎯 跳過所有驗證，直接進行購買
+      console.log('🚀 跳過季度驗證，直接調用 mint-subscription...')
       
       // 使用專門的 mint-subscription 函數（帶完整 Post Conditions）
       const result = await walletStore.callMintSubscription(
@@ -435,7 +420,7 @@ export const useContractsStore = defineStore('contracts', () => {
           uintCV(seasonId),
           stringAsciiCV(metadataUri)
         ],
-        seasonInfo.price || 10000000 // NFT 價格，預設 10 STX
+        10000000 // 固定 10 STX 價格
       )
       
       console.log('✅ NFT 購買成功:', result)
