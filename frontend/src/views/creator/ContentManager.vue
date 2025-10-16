@@ -7,7 +7,7 @@
         <button 
           @click="router.push('/creator/dashboard')"
           class="btn-glass p-3 rounded-xl hover:bg-white/10 transition-all flex items-center"
-          title="返回創作者儀表板"
+          title="Back to Creator Dashboard"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -36,7 +36,7 @@
       <div class="card-web3 p-6 hover:scale-[1.02] transition-transform">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-white/70 text-sm mb-1">總內容數</p>
+            <p class="text-white/70 text-sm mb-1">Total Number of Contents</p>
             <p class="text-3xl font-bold text-white">{{ contents.length }}</p>
           </div>
           <div class="w-12 h-12 bg-web3-purple/20 rounded-2xl flex items-center justify-center">
@@ -47,7 +47,7 @@
         </div>
         <div class="mt-3 flex items-center text-sm">
           <span class="text-web3-green">+{{ contents.filter(c => c.status === 'published').length }}</span>
-          <span class="text-white/50 ml-1">已發布</span>
+          <span class="text-white/50 ml-1">Published</span>
         </div>
       </div>
 
@@ -55,7 +55,7 @@
       <div class="card-web3 p-6 hover:scale-[1.02] transition-transform">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-white/70 text-sm mb-1">公開內容</p>
+            <p class="text-white/70 text-sm mb-1">Public Content</p>
             <p class="text-3xl font-bold text-white">{{ publicContents }}</p>
           </div>
           <div class="w-12 h-12 bg-web3-emerald/20 rounded-2xl flex items-center justify-center">
@@ -66,7 +66,7 @@
           </div>
         </div>
         <div class="mt-3 flex items-center text-sm">
-          <span class="text-white/50">開放率</span>
+          <span class="text-white/50">Open Rate</span>
           <span class="text-web3-emerald ml-1">{{ publicRate }}%</span>
         </div>
       </div>
@@ -75,7 +75,7 @@
       <div class="card-web3 p-6 hover:scale-[1.02] transition-transform">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-white/70 text-sm mb-1">會員專屬</p>
+            <p class="text-white/70 text-sm mb-1">Members-only</p>
             <p class="text-3xl font-bold text-white">{{ premiumContents }}</p>
           </div>
           <div class="w-12 h-12 bg-web3-amber/20 rounded-2xl flex items-center justify-center">
@@ -86,7 +86,7 @@
         </div>
         <div class="mt-3 flex items-center text-sm">
           <span class="text-web3-amber">🔒 </span>
-          <span class="text-white/50 ml-1">專屬價值</span>
+          <span class="text-white/50 ml-1">Exclusive Value</span>
         </div>
       </div>
 
@@ -94,7 +94,7 @@
       <div class="card-web3 p-6 hover:scale-[1.02] transition-transform">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-white/70 text-sm mb-1">總瀏覽量</p>
+            <p class="text-white/70 text-sm mb-1">Total Views</p>
             <p class="text-3xl font-bold text-white">{{ formatNumber(totalViews) }}</p>
           </div>
           <div class="w-12 h-12 bg-web3-cyan/20 rounded-2xl flex items-center justify-center">
@@ -104,8 +104,8 @@
           </div>
         </div>
         <div class="mt-3 flex items-center text-sm">
-          <span class="text-web3-cyan">平均 {{ avgViews }}</span>
-          <span class="text-white/50 ml-1">次/篇</span>
+          <span class="text-web3-cyan">Average {{ avgViews }}</span>
+          <span class="text-white/50 ml-1">Times per Article</span>
         </div>
       </div>
     </div>
@@ -123,7 +123,7 @@
               : 'bg-glass text-white/70 hover:text-white'
           ]"
         >
-          全部內容
+          All Content
         </button>
         <button 
           @click="filterType = 'public'"
@@ -134,7 +134,7 @@
               : 'bg-glass text-white/70 hover:text-white'
           ]"
         >
-          公開內容
+          Public Contents
         </button>
         <button 
           @click="filterType = 'premium'"
@@ -145,7 +145,7 @@
               : 'bg-glass text-white/70 hover:text-white'
           ]"
         >
-          會員專屬
+          Members-only
         </button>
         <button 
           @click="filterType = 'draft'"
@@ -156,7 +156,7 @@
               : 'bg-glass text-white/70 hover:text-white'
           ]"
         >
-          草稿
+          Draft
         </button>
       </div>
 
@@ -169,7 +169,7 @@
           <input 
             v-model="searchQuery"
             type="text" 
-            placeholder="搜尋內容..."
+            placeholder="Search Content..."
             class="bg-glass border border-white/20 rounded-xl pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:border-web3-purple focus:outline-none w-64"
           >
         </div>
@@ -179,10 +179,11 @@
           v-model="sortBy" 
           class="bg-glass border border-white/20 rounded-xl px-3 py-2 text-white focus:border-web3-purple focus:outline-none"
         >
-          <option value="publishDate">按發布日期</option>
-          <option value="views">按瀏覽量</option>
-          <option value="title">按標題</option>
-          <option value="type">按內容類型</option>
+          <option value="publishDate">Publish Date</option>
+          <option value="views">Views</option>
+          <option value="title">Title</option>
+          <option value="type">Content Type</option>
+
         </select>
       </div>
     </div>
@@ -205,7 +206,7 @@
                 : 'bg-web3-emerald/20 text-web3-emerald'
             ]"
           >
-            {{ content.isPremium ? '🔒 會員專屬' : '🌍 公開內容' }}
+            {{ content.isPremium ? '🔒 Members-only' : '🌍 public content' }}
           </span>
         </div>
 
@@ -219,7 +220,7 @@
                 : 'bg-web3-rose/20 text-web3-rose'
             ]"
           >
-            {{ content.status === 'published' ? '✅ 已發布' : '📝 草稿' }}
+            {{ content.status === 'published' ? '✅ Published' : '📝 Draft' }}
           </span>
         </div>
 
@@ -277,7 +278,7 @@
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
               </svg>
-              <span>編輯</span>
+              <span>Edit</span>
             </button>
             <button 
               @click="viewContent(content)"
@@ -287,7 +288,7 @@
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                 <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
               </svg>
-              <span>預覽</span>
+              <span>Preview</span>
             </button>
             <button 
               @click="deleteContent(content.id)"
@@ -314,8 +315,8 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-xl font-bold text-white mb-2">創建新內容</h3>
-            <p class="text-white/70 text-sm">分享您的創意和知識</p>
+            <h3 class="text-xl font-bold text-white mb-2">Create New Content</h3>
+            <p class="text-white/70 text-sm">Share your creativity and knowledge</p>
           </div>
         </div>
       </div>
@@ -327,7 +328,7 @@
         <!-- 模態框標題 -->
         <div class="flex justify-between items-center p-6 border-b border-white/10">
           <h3 class="text-2xl font-bold text-gradient-web3">
-            {{ editingContent ? '編輯內容' : '創建新內容' }}
+            {{ editingContent ? 'Edit Content' : 'Create New Content' }}
           </h3>
           <button @click="closeModal" class="text-white/60 hover:text-white transition-colors">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -341,78 +342,78 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- 標題 -->
             <div class="md:col-span-2">
-              <label class="block text-white font-medium mb-2">內容標題</label>
+              <label class="block text-white font-medium mb-2">Content title</label>
               <input 
                 v-model="contentForm.title"
                 type="text" 
                 required
                 class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-web3-purple focus:outline-none"
-                placeholder="輸入吸引人的標題..."
+                placeholder="Enter an engaging title..."
               >
             </div>
 
             <!-- 內容類型 -->
             <div>
-              <label class="block text-white font-medium mb-2">內容類型</label>
+              <label class="block text-white font-medium mb-2">Content Type</label>
               <select 
                 v-model="contentForm.isPremium"
                 class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white focus:border-web3-purple focus:outline-none"
               >
-                <option :value="false">🌍 公開內容 - 所有人可見</option>
-                <option :value="true">🔒 會員專屬 - 需要訂閱 NFT</option>
+                <option :value="false">🌍 Public Contents - Visible to Everyone</option>
+                <option :value="true">🔒 Members-only – Subscription Required NFT</option>
               </select>
             </div>
 
             <!-- 狀態 -->
             <div>
-              <label class="block text-white font-medium mb-2">發布狀態</label>
+              <label class="block text-white font-medium mb-2">Publish Status</label>
               <select 
                 v-model="contentForm.status"
                 class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white focus:border-web3-purple focus:outline-none"
               >
-                <option value="draft">📝 草稿 - 暫不發布</option>
-                <option value="published">✅ 發布 - 立即上線</option>
+                <option value="draft">📝 Draft – Not Published Yet</option>
+                <option value="published">✅ Publish – Go Live Now</option>
               </select>
             </div>
           </div>
 
           <!-- 預覽描述 -->
           <div>
-            <label class="block text-white font-medium mb-2">預覽描述</label>
+            <label class="block text-white font-medium mb-2">Preview Description</label>
             <input 
               v-model="contentForm.preview"
               type="text" 
               class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-web3-purple focus:outline-none"
-              placeholder="用一句話描述這篇內容的精華..."
+              placeholder="Summarize the essence of this content in one sentence..."
             >
           </div>
 
           <!-- 正文內容 -->
           <div>
-            <label class="block text-white font-medium mb-2">正文內容</label>
+            <label class="block text-white font-medium mb-2">Main Content</label>
             <textarea 
               v-model="contentForm.content"
               rows="10"
               required
               class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-web3-purple focus:outline-none resize-none"
-              placeholder="在這裡分享您的創意和知識..."
+              placeholder="Share your creativity and knowledge here..."
             ></textarea>
             <div class="text-white/50 text-sm mt-2">
-              建議內容長度: {{ contentForm.content.length }}/2000 字符
+              Suggested Content Length: {{ contentForm.content.length }}/2000 characters
             </div>
           </div>
 
           <!-- 標籤 -->
           <div>
-            <label class="block text-white font-medium mb-2">內容標籤</label>
+            <label class="block text-white font-medium mb-2">Content Tags</label>
             <input 
               v-model="contentForm.tags"
               type="text" 
               class="w-full p-3 bg-glass-dark border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-web3-purple focus:outline-none"
-              placeholder="用逗號分隔標籤，例如: 區塊鏈, 教程, NFT"
+              placeholder="Separate tags with commas, e.g.: Blockchain, Tutorial, NFT"
             >
             <div class="text-white/50 text-sm mt-2">
-              💡 好的標籤有助於粉絲發現您的內容
+              💡 Good tags help fans discover your content.
             </div>
           </div>
 
@@ -423,7 +424,7 @@
               @click="closeModal"
               class="px-6 py-3 text-white/70 bg-glass hover:bg-white/20 rounded-xl transition-all"
             >
-              取消
+              Cancel
             </button>
             <button 
               type="submit"
@@ -432,7 +433,7 @@
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
               </svg>
-              <span>{{ editingContent ? '更新內容' : (contentForm.status === 'published' ? '發布內容' : '保存草稿') }}</span>
+              <span>{{ editingContent ? 'Update content' : (contentForm.status === 'published' ? 'Publish Content' : 'Save Draft') }}</span>
             </button>
           </div>
         </form>
@@ -571,9 +572,9 @@ export default {
     }
     
     const deleteContent = (contentId) => {
-      if (confirm('確定要刪除這篇內容嗎？此操作無法復原。')) {
+      if (confirm('Are you sure you want to delete this content? This action cannot be undone.')) {
         contents.value = contents.value.filter(c => c.id !== contentId)
-        saveContentsToStorage() // 自動保存到 localStorage
+        saveContentsToStorage() // auto save to localStorage
       }
     }
     

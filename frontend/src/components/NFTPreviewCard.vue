@@ -17,7 +17,7 @@
             <svg class="w-16 h-16 mx-auto mb-3" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v1.586l8.707 8.707a1 1 0 001.414 0L20.828 6.5a1 1 0 000-1.414L12.707.293a1 1 0 00-1.414 0L2.586 8.5A2 2 0 002 10v8a2 2 0 002 2h16a2 2 0 002-2V4a2 2 0 00-2-2H4zm16 4.414L11.414 2 4.414 9H20v1.586zM18 12H6v6h12v-6z" clip-rule="evenodd"/>
             </svg>
-            <p class="text-sm">請添加 NFT 圖片</p>
+            <p class="text-sm">Please add NFT image</p>
           </div>
         </div>
         
@@ -71,7 +71,7 @@
         <div class="space-y-3">
           <!-- 價格 -->
           <div class="flex items-center justify-between">
-            <span class="text-white/60 text-sm">價格</span>
+            <span class="text-white/60 text-sm">Price</span>
             <div class="text-right">
               <div class="text-xl font-bold text-gradient-web3">
                 {{ formatPrice(nftData.price) }} STX
@@ -84,13 +84,13 @@
           
           <!-- 有效期 -->
           <div class="flex items-center justify-between">
-            <span class="text-white/60 text-sm">有效期至</span>
+            <span class="text-white/60 text-sm">Valid until</span>
             <span class="text-white text-sm">{{ nftData.endDate }}</span>
           </div>
           
           <!-- 會員等級 -->
           <div class="flex items-center justify-between">
-            <span class="text-white/60 text-sm">會員等級</span>
+            <span class="text-white/60 text-sm">Membership Level</span>
             <span class="text-web3-gold font-bold text-sm">{{ nftData.tier }}</span>
           </div>
         </div>
@@ -98,7 +98,7 @@
         <!-- 預覽標記 -->
         <div class="mt-4 pt-4 border-t border-white/10">
           <div class="text-center">
-            <span class="text-web3-purple font-medium text-sm">⚡ 即時預覽</span>
+            <span class="text-web3-purple font-medium text-sm">⚡ Live Preview</span>
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@
       <!-- 季度信息 -->
       <div class="bg-glass-dark rounded-xl p-3 border border-white/10">
         <div class="text-center">
-          <div class="text-web3-cyan text-xs mb-1">當前季度</div>
+          <div class="text-web3-cyan text-xs mb-1">Current Quarter</div>
           <div class="text-white font-bold">{{ quarterInfo.name }}</div>
           <div class="text-white/60 text-xs">{{ quarterInfo.timeRange }}</div>
         </div>
@@ -118,9 +118,9 @@
       <!-- 發行信息 -->
       <div class="bg-glass-dark rounded-xl p-3 border border-white/10">
         <div class="text-center">
-          <div class="text-web3-green text-xs mb-1">最大發行量</div>
+          <div class="text-web3-green text-xs mb-1">Maximum Supply</div>
           <div class="text-white font-bold">{{ nftData.supply }}</div>
-          <div class="text-white/60 text-xs">限量發行</div>
+          <div class="text-white/60 text-xs">Limited Edition</div>
         </div>
       </div>
     </div>

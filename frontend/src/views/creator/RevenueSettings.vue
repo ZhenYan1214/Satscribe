@@ -23,7 +23,7 @@
         <div class="glass-purple px-4 py-2 rounded-xl">
           <div class="flex items-center space-x-2">
             <div class="w-2 h-2 bg-web3-green rounded-full animate-pulse"></div>
-            <span class="text-white/90 text-sm">智能合約自動分配</span>
+            <span class="text-white/90 text-sm">Automated distribution by smart contract</span>
           </div>
         </div>
       </div>
@@ -37,9 +37,9 @@
           <svg class="w-6 h-6 text-web3-purple mr-3" fill="currentColor" viewBox="0 0 20 20">
             <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
           </svg>
-          工作室成員
+          Studio Member
           <span class="ml-3 px-2 py-1 bg-web3-purple/20 text-web3-purple text-sm rounded-full">
-            {{ members.length }} 位成員
+            {{ members.length }} members
           </span>
         </h2>
         <div class="flex space-x-3">
@@ -50,13 +50,13 @@
             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
             </svg>
-            重設為預設
+            Reset to default
           </button>
           <button @click="addMember" class="btn-web3">
             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
             </svg>
-            添加成員
+            Add member
           </button>
         </div>
       </div>
@@ -70,10 +70,10 @@
         </div>
         <h3 class="text-xl font-bold text-white mb-3">還沒有工作室成員</h3>
         <p class="text-white/60 mb-6 max-w-md mx-auto">
-          添加您的團隊成員並設置分潤比例，讓每個貢獻者都能獲得應有的報酬
+          Add your team members and set the profit-sharing ratios to ensure every contributor is rewarded fairly.
         </p>
         <button @click="addMember" class="btn-web3">
-          添加第一個成員
+          Add your first member
         </button>
       </div>
 
@@ -91,7 +91,7 @@
                 <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
                 </svg>
-                錢包地址
+                Wallet Address
               </label>
               <div class="relative">
                 <input 
@@ -120,21 +120,21 @@
                 <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                 </svg>
-                角色
+                Role
               </label>
               <select 
                 v-model="member.role"
                 class="w-full p-3 bg-gray-800/50 border border-white/20 rounded-xl text-white focus:border-web3-purple/60 focus:outline-none"
               >
-                <option value="">請選擇角色</option>
-                <option value="creator">主創作者</option>
-                <option value="editor">編輯</option>
-                <option value="artist">美術設計</option>
-                <option value="developer">技術開發</option>
-                <option value="marketing">行銷推廣</option>
-                <option value="manager">專案管理</option>
-                <option value="investor">投資人</option>
-                <option value="other">其他</option>
+                <option value="">Select Role</option>
+                <option value="creator">Creator</option>
+                <option value="editor">Editor</option>
+                <option value="artist">Artist</option>
+                <option value="developer">Developer</option>
+                <option value="marketing">Marketing</option>
+                <option value="manager">Project Manager</option>
+                <option value="investor">Investor</option>
+                <option value="other">Other</option>
               </select>
             </div>
             
@@ -144,7 +144,7 @@
                 <svg class="w-4 h-4 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm5 5a1 1 0 100-2 1 1 0 000 2zm5 0a1 1 0 100-2 1 1 0 000 2zm0 4a1 1 0 100-2 1 1 0 000 2zm-5 0a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
                 </svg>
-                分潤比例 (%)
+                Profit-sharing ratio (%)
               </label>
               <div class="relative">
                 <input 
@@ -184,7 +184,7 @@
                   <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
                 </svg>
               </div>
-              <span class="text-xl font-bold text-white">總分潤比例</span>
+              <span class="text-xl font-bold text-white">Total profit-sharing ratio</span>
             </div>
             <div class="text-right">
               <div :class="[
@@ -194,10 +194,10 @@
                 {{ totalPercentage }}%
               </div>
               <p v-if="totalPercentage !== 100" class="text-red-400 text-sm mt-1">
-                {{ totalPercentage > 100 ? '超過 100%' : '必須等於 100%' }}
+                {{ totalPercentage > 100 ? 'Exceeds 100%' : 'Must equal 100%' }}
               </p>
               <p v-else class="text-web3-green text-sm mt-1">
-                ✓ 配置正確
+                ✓ Configuration correct
               </p>
             </div>
           </div>
@@ -211,7 +211,7 @@
         <svg class="w-6 h-6 text-web3-purple mr-3" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106.886-.54 2.042-.061 2.287.947.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
         </svg>
-        NFT 訂閱分潤設置
+        NFT Subscription profit-sharing settings
       </h2>
       
       <div class="space-y-6">
@@ -226,8 +226,8 @@
                 </svg>
               </div>
               <div>
-                <h3 class="text-lg font-bold text-white mb-1">NFT 銷售分潤</h3>
-                <p class="text-white/60">訂閱章銷售收入按比例自動分配給團隊成員</p>
+                <h3 class="text-lg font-bold text-white mb-1">NFT Sales share</h3>
+                <p class="text-white/60">Subscription badge sales revenue will be automatically distributed to team members according to the set ratios.</p>
               </div>
             </div>
             
@@ -254,8 +254,8 @@
                 </svg>
               </div>
               <div>
-                <h3 class="text-lg font-bold text-white mb-1">Lightning 打賞分潤</h3>
-                <p class="text-white/60">Lightning 網路即時打賞收入按比例分配</p>
+                <h3 class="text-lg font-bold text-white mb-1">Lightning Tip sharing</h3>
+                <p class="text-white/60">Lightning Revenue from online tips is distributed proportionally</p>
               </div>
             </div>
             
@@ -286,7 +286,7 @@
           <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
           <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
         </svg>
-        預覽分潤效果
+        Preview profit-sharing
       </button>
       <button 
         @click="saveSettings"
@@ -297,7 +297,7 @@
         <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
         </svg>
-        {{ isConfigured ? '更新設定' : '保存設定' }}
+        {{ isConfigured ? 'Update Settings' : 'Save Settings' }}
       </button>
     </div>
 
@@ -305,7 +305,7 @@
     <div v-if="showPreview" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div class="card-web3 w-full max-w-md p-6 animate-scale-in">
         <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-bold text-white">💰 分潤預覽</h3>
+          <h3 class="text-xl font-bold text-white">💰 Profit-sharing Preview</h3>
           <button @click="showPreview = false" class="text-white/60 hover:text-white transition-colors">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
@@ -314,7 +314,7 @@
         </div>
 
         <div class="mb-6">
-          <label class="block text-white font-medium mb-2">收入金額 (STX)</label>
+          <label class="block text-white font-medium mb-2">Revenue Amount (STX)</label>
           <input 
             v-model.number="previewAmount"
             type="text" 
@@ -327,7 +327,7 @@
         </div>
 
         <div class="space-y-3 mb-6">
-          <h4 class="font-medium text-white mb-4">💸 分潤詳情</h4>
+          <h4 class="font-medium text-white mb-4">💸 Profit-sharing Details</h4>
           <div v-for="member in members" :key="member.wallet" 
                class="flex justify-between items-center bg-gray-800/30 rounded-xl p-3">
             <div>
@@ -346,7 +346,7 @@
           @click="showPreview = false"
           class="w-full btn-web3"
         >
-          關閉預覽
+          Close Preview
         </button>
       </div>
     </div>

@@ -79,11 +79,11 @@
             <svg class="w-5 h-5 text-web3-gold" fill="currentColor" viewBox="0 0 20 20">
               <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
             </svg>
-            <span class="text-white/80 text-sm">總收益</span>
+            <span class="text-white/80 text-sm">totalEarnings</span>
           </div>
           <div class="text-right">
             <p class="text-web3-gold font-bold text-lg">{{ creator.totalEarnings }} STX</p>
-            <p class="text-white/60 text-xs">累計收入</p>
+            <p class="text-white/60 text-xs">Cumulative Revenue</p>
           </div>
         </div>
       </div>
@@ -96,14 +96,14 @@
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
             </svg>
-            <span>關注創作者</span>
+            <span>Follow Creator</span>
           </span>
           <div class="absolute inset-0 bg-gradient-to-r from-web3-pink to-web3-purple opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </button>
         
         <!-- View Profile Button -->
         <button class="w-full btn-glass py-3 rounded-xl text-sm font-medium flex items-center justify-center space-x-2 group">
-          <span>查看作品</span>
+          <span>View Works</span>
           <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
           </svg>
