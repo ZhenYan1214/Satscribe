@@ -44,7 +44,26 @@ Fan Support: 10 STX
     └── Editor (10%): 0.99 STX
 ```
 ---
+## Economic Model
 
+### Fee Structure
+| Component | Percentage | Purpose |
+|-----------|------------|---------|
+| Platform Fee | 1% | Platform maintenance & development |
+| Creator Revenue | 99% | Net income to creator ecosystem |
+
+### Revenue Flow
+```mermaid
+graph LR
+    A[Fan Purchases NFT] --> B[Platform Collects 1% Fee]
+    B --> C[Remaining 99% Enters Split Pool]
+    C --> D[Auto-distribute by Configured Ratios]
+    D --> E[Lead Creator Wallet]
+    D --> F[Collaborator Wallets]
+    D --> G[Team Member Wallets]
+```
+
+---
 ## Technical Architecture
 
 ### Blockchain Layer (Stacks)
@@ -97,27 +116,6 @@ High-performance API Layer
 - **Automatic Expiration**: Quarter-end automatic badge invalidation
 - **Instant Revenue Split**: Purchase-triggered automatic revenue distribution
 - **Decentralized Governance**: No single point of failure, censorship-resistant
-
----
-
-## Economic Model
-
-### Fee Structure
-| Component | Percentage | Purpose |
-|-----------|------------|---------|
-| Platform Fee | 1% | Platform maintenance & development |
-| Creator Revenue | 99% | Net income to creator ecosystem |
-
-### Revenue Flow
-```mermaid
-graph LR
-    A[Fan Purchases NFT] --> B[Platform Collects 1% Fee]
-    B --> C[Remaining 99% Enters Split Pool]
-    C --> D[Auto-distribute by Configured Ratios]
-    D --> E[Lead Creator Wallet]
-    D --> F[Collaborator Wallets]
-    D --> G[Team Member Wallets]
-```
 
 ---
 
