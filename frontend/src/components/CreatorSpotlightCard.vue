@@ -56,7 +56,7 @@
             </svg>
           </div>
           <p class="text-white font-bold text-lg">{{ formatNumber(creator.subscribers) }}</p>
-          <p class="text-white/60 text-xs">訂閱者</p>
+          <p class="text-white/60 text-xs">Subscriber</p>
         </div>
         
         <!-- Articles -->
