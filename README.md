@@ -52,7 +52,7 @@ Fan Support: 10 STX
 - **Auto-expiration**: Automatic invalidation at quarter end ensuring time-bound access
 
 ### Intelligent Revenue Splitting
-- **Dynamic Configuration**: Real-time adjustment of team profit-sharing ratios
+- **Dynamic Configuration**: Real-time adjustment of team profit-sharing ratios  
 - **Instant Execution**: Automated revenue distribution without manual intervention
 - **Complete Transparency**: All splitting records permanently recorded on-chain
 - **Multi-member Support**: Up to 10 team members per revenue split configuration
@@ -182,32 +182,6 @@ satscribe/
 │   └── tests/              # Contract test suites
 └── README.md
 ```
-
----
-
-## API Documentation
-
-### Image Upload
-```http
-POST /api/upload/avatar
-POST /api/upload/nft
-Content-Type: multipart/form-data
-```
-
-### NFT Metadata Generation
-```http
-POST /api/nft/metadata
-Content-Type: application/json
-
-{
-  "name": "2024 Q4 VIP Subscription Badge",
-  "description": "Access to exclusive creator content",
-  "imageUrl": "https://api.satscribe.com/uploads/nft.jpg",
-  "creator": "ST1ABC...",
-  "season": 4
-}
-```
-
 ---
 
 ## Testing
@@ -232,52 +206,6 @@ npm run test:e2e
 - **Contract Address**: `ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ`
 - **Network**: Stacks Testnet
 - **Wallet**: Leather Wallet
-
-### Mainnet Deployment (Planned)
-- **Network**: Stacks Mainnet
-- **Domain**: satscribe.com
-
----
-
-## Security Considerations
-
-### Smart Contract Security
-- **Soulbound Implementation**: Prevents unauthorized NFT transfers
-- **Overflow Protection**: SafeMath implementation for all arithmetic operations
-- **Access Control**: Role-based permissions for administrative functions
-
-### Data Protection
-- **Image Sanitization**: Automatic malware scanning for uploaded content
-- **Input Validation**: Comprehensive sanitization of all user inputs
-- **Rate Limiting**: API endpoint protection against abuse
-
----
-
-## Competition Information
-
-### Built For
-- **Category**: Creator Economy / DeFi / NFT Infrastructure
-- **Team**: [Team Name]
-- **Submission Date**: [Date]
-
-### Key Differentiators
-1. **First Soulbound Creator NFT Platform** on Stacks blockchain
-2. **Automated Revenue Splitting** with mathematical precision
-3. **Zero-Trust Architecture** eliminating human governance risks
-4. **Production-Ready Implementation** with comprehensive test coverage
-
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-## Contact & Support
-
-- **GitHub Repository**: [https://github.com/your-username/satscribe](https://github.com/your-username/satscribe)
-- **Issue Tracking**: [GitHub Issues](https://github.com/your-username/satscribe/issues)
 
 ---
 
