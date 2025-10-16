@@ -1,4 +1,4 @@
-// V6 合約整合測試和診斷腳本
+// V11 合約整合測試和診斷腳本
 // 用於驗證前端是否能正確讀取鏈上數據並診斷 NFT 購買問題
 
 import { StacksTestnet } from '@stacks/network'
@@ -9,7 +9,7 @@ const CONTRACT_ADDRESS = 'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ'
 
 // 測試創作者註冊合約
 async function testCreatorRegistry() {
-  console.log('🔍 測試創作者註冊合約 v6...')
+  console.log('🔍 測試創作者註冊合約 v11...')
   
   try {
     // 測試實際的創作者地址
@@ -18,38 +18,38 @@ async function testCreatorRegistry() {
     const result = await callReadOnlyFunction({
       network,
       contractAddress: CONTRACT_ADDRESS,
-      contractName: 'creator-registry-v6',
+      contractName: 'creator-registry-v11',
       functionName: 'is-registered-creator',
       functionArgs: [standardPrincipalCV(testAddress)],
       senderAddress: testAddress
     })
     
-    console.log('✅ 創作者註冊合約 v6 正常，返回結果:', result)
+    console.log('✅ 創作者註冊合約 v11 正常，返回結果:', result)
     return true
   } catch (error) {
-    console.error('❌ 創作者註冊合約 v6 測試失敗:', error.message)
+    console.error('❌ 創作者註冊合約 v11 測試失敗:', error.message)
     return false
   }
 }
 
 // 測試 NFT 合約
 async function testNFTContract() {
-  console.log('🔍 測試 NFT 合約 v6...')
+  console.log('🔍 測試 NFT 合約 v11...')
   
   try {
     const result = await callReadOnlyFunction({
       network,
       contractAddress: CONTRACT_ADDRESS,
-      contractName: 'subscription-nft-v6',
+      contractName: 'subscription-nft-v11',
       functionName: 'get-current-quarter',
       functionArgs: [],
       senderAddress: CONTRACT_ADDRESS
     })
     
-    console.log('✅ NFT 合約 v6 正常，當前季度:', result)
+    console.log('✅ NFT 合約 v11 正常，當前季度:', result)
     return true
   } catch (error) {
-    console.error('❌ NFT 合約 v6 測試失敗:', error.message)
+    console.error('❌ NFT 合約 v11 測試失敗:', error.message)
     return false
   }
 }
@@ -64,7 +64,7 @@ async function diagnoseSeason20254() {
     const result = await callReadOnlyFunction({
       network,
       contractAddress: CONTRACT_ADDRESS,
-      contractName: 'subscription-nft-v6',
+      contractName: 'subscription-nft-v11',
       functionName: 'get-season-info',
       functionArgs: [
         standardPrincipalCV(creatorAddress),
@@ -136,7 +136,7 @@ async function diagnoseSeason20254() {
 
 // 測試分潤合約
 async function testRevenueSplitter() {
-  console.log('🔍 測試分潤合約 v6...')
+  console.log('🔍 測試分潤合約 v11...')
   
   try {
     const testAddress = CONTRACT_ADDRESS // 使用部署者地址
@@ -144,13 +144,13 @@ async function testRevenueSplitter() {
     const result = await callReadOnlyFunction({
       network,
       contractAddress: CONTRACT_ADDRESS,
-      contractName: 'revenue-splitter-v6',
+      contractName: 'revenue-splitter-v11',
       functionName: 'get-revenue-split',
       functionArgs: [standardPrincipalCV(testAddress)],
       senderAddress: testAddress
     })
     
-    console.log('✅ 分潤合約 v6 正常，返回結果:', result)
+    console.log('✅ 分潤合約 v11 正常，返回結果:', result)
     
     // 解析分潤配置
     if (result && result.value) {
@@ -160,14 +160,14 @@ async function testRevenueSplitter() {
     
     return true
   } catch (error) {
-    console.error('❌ 分潤合約 v6 測試失敗:', error.message)
+    console.error('❌ 分潤合約 v11 測試失敗:', error.message)
     return false
   }
 }
 
 // 執行所有測試和診斷
 async function runAllTests() {
-  console.log('🚀 開始測試 Satscribe V6 合約整合和診斷...\n')
+  console.log('🚀 開始測試 Satscribe V11 合約整合和診斷...\n')
   
   const results = await Promise.all([
     testCreatorRegistry(),
@@ -226,7 +226,7 @@ const contractsStore = useContractsStore()
 console.log('🔄 正在激活季度 20254...')
 const result = await contractsStore.walletStore.callContract(
   '${CONTRACT_ADDRESS}',
-  'subscription-nft-v6', 
+  'subscription-nft-v11', 
   'toggle-season-status',
   [uintCV(20254)]
 )

@@ -246,7 +246,7 @@ export const useWalletStore = defineStore('wallet', () => {
     try {
       const result = await callContract(
         'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ', // 合约地址
-        'subscription-nft-v10',
+        'subscription-nft-v11',
         'mint-subscription',
         [
           standardPrincipalCV(creatorAddress),
@@ -272,7 +272,7 @@ export const useWalletStore = defineStore('wallet', () => {
       
       const result = await callContract(
         'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ', // 合约地址
-        'revenue-splitter-v10',
+        'revenue-splitter-v11',
         'set-revenue-split',
         [
           listCV(membersList),
@@ -294,7 +294,7 @@ export const useWalletStore = defineStore('wallet', () => {
       
       const result = await callContract(
         'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ', // 合约地址
-        'creator-registry-v10',
+        'creator-registry-v11',
         'register-creator',
         [
           stringAsciiCV(name),
@@ -324,7 +324,7 @@ export const useWalletStore = defineStore('wallet', () => {
     try {
       const result = await readContract(
         'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ', // 合约地址
-        'subscription-nft-v10',
+        'subscription-nft-v11',
         'is-subscription-valid',
         [
           standardPrincipalCV(subscriber),
@@ -389,7 +389,7 @@ export const useWalletStore = defineStore('wallet', () => {
         console.log('📞 調用合約 is-registered-creator...')
         console.log('🏗️ 合約詳情:', {
           contractAddress: 'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ',
-          contractName: 'creator-registry-v10',
+          contractName: 'creator-registry-v11',
           functionName: 'is-registered-creator',
           senderAddress: addressToCheck
         })
@@ -398,7 +398,7 @@ export const useWalletStore = defineStore('wallet', () => {
         console.log('🔍 同時查詢創作者資料...')
         const creatorInfo = await readContract(
           'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ',
-          'creator-registry-v10',
+          'creator-registry-v11',
           'get-creator-info',
           [standardPrincipalCV(addressToCheck)]
         )
@@ -406,7 +406,7 @@ export const useWalletStore = defineStore('wallet', () => {
         
         const result = await readContract(
           'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ', // 合约地址
-          'creator-registry-v10',
+          'creator-registry-v11',
           'is-registered-creator',
           [standardPrincipalCV(addressToCheck)]
         )
@@ -473,7 +473,7 @@ export const useWalletStore = defineStore('wallet', () => {
         // 檢查是否是合約不存在的錯誤
         if (contractError.message && contractError.message.includes('contract not found')) {
           console.error('🚨 合約未部署！使用本地存儲作為回退')
-          console.error('🚨 請檢查合約地址是否正確：ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ.creator-registry-v10')
+          console.error('🚨 請檢查合約地址是否正確：ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ.creator-registry-v11')
         }
         
         // 如果是函數不存在的錯誤
@@ -503,7 +503,7 @@ export const useWalletStore = defineStore('wallet', () => {
     try {
       const result = await readContract(
         'ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ', // 合约地址
-        'creator-registry-v10',
+        'creator-registry-v11',
         'get-creator-info',
         [standardPrincipalCV(creatorAddress)]
       )
