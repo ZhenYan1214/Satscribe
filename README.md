@@ -171,26 +171,9 @@ satscribe/
 ```
 ---
 
-## Testing
-
-```bash
-# Smart Contract Testing
-cd contracts
-npm test
-npm run test:coverage
-
-# Frontend Testing
-cd frontend
-npm run test:unit
-npm run test:e2e
-```
-
----
-
 ## Deployment Information
 
 ### Testnet Deployment
-- **Contract Address**: `ST2FGWKW4M6KBY2P19WZRDH9TCDMGMTDGA2D301HQ`
 - **Network**: Stacks Testnet
 - **Wallet**: Leather Wallet
 
