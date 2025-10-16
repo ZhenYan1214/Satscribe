@@ -8,7 +8,6 @@
   [![Built on Stacks](https://img.shields.io/badge/Built%20on-Stacks-6C5CE7?style=flat-square)](https://stacks.co)
   [![Vue 3](https://img.shields.io/badge/Vue-3.x-4FC08D?style=flat-square&logo=vue.js)](https://vuejs.org)
   [![Clarity](https://img.shields.io/badge/Smart%20Contracts-Clarity-FF6B35?style=flat-square)](https://clarity-lang.org)
-  [![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 </div>
 
 ---
