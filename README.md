@@ -44,19 +44,6 @@ Fan Support: 10 STX
     ├── Artist (20%): 1.98 STX  
     └── Editor (10%): 0.99 STX
 ```
-
-### Soulbound Subscription Badges
-- **Non-transferable**: Authentic support proof preventing speculation
-- **Quarterly System**: Season-based subscription model enhancing fan retention
-- **Collectible Nature**: Each badge represents unique digital memorabilia
-- **Auto-expiration**: Automatic invalidation at quarter end ensuring time-bound access
-
-### Intelligent Revenue Splitting
-- **Dynamic Configuration**: Real-time adjustment of team profit-sharing ratios  
-- **Instant Execution**: Automated revenue distribution without manual intervention
-- **Complete Transparency**: All splitting records permanently recorded on-chain
-- **Multi-member Support**: Up to 10 team members per revenue split configuration
-
 ---
 
 ## Technical Architecture
